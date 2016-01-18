@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>英語入力補助プラグイン TTEnglishInputHelper （ベータ版）</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<h1 id="tteih_top">英語入力補助プラグイン TTEnglishInputHelper （ベータ版）</h1>
+
+<div class="tteih_nav">
+ <h4>TTEnglishInputHelper</h4>
+ <ul>
+  <li><a href="#">トップ</a></li>
+  <li><a href="#tteih_download">ダウンロード</a></li>
+  <li><a href="#tteih_install">インストール方法</a></li>
+  <li><a href="#tteih_uninstall">アンインストール方法</a></li>
+  <li><a href="#ttieh_getting_start">簡単な使い方</a>
+  <li><a href="#ttieh_screen">画面説明</a></li>
+  <li><a href="#tteih_contact">コンタクト</a></li>
+ </ul>
+ <h4>リンク</h4>
+ <ul>
+  <li><a href="http://ch.nicovideo.jp/delta_kimigatame/blomaga/ar764836">デルタ式英語音源の使い方</a></li>
+  <li><a href="http://ch.nicovideo.jp/delta_kimigatame/blomaga/ar761052">デルタ式英語リスト</a></li>
+  <li><a href="http://kasaneteto.jp/ongen_down.html">テト英語音源</a></li>
+ </ul>
+</div>
+
+<p>
+英語入力補助プラグイン TTEnglishInputHelper とは、
+英語の歌詞を、当プラグインが対応する UTAU 向け音声ライブラリー（現時点では<a href="http://kasaneteto.jp/ongen_down.html">テト英語音源</a>のみ）の音名のノートに変換する
+UTAU 用プラグインです。
+</p>
+<p>
+内臓の辞書にある単語なら、音名に変換することができるので、
+UTAU での英語の歌詞の入力にある程度の助けになるでしょう。
+</p>
+
+<h2 id="tteih_download">ダウンロード</h2>
+<p>次のボタン状のリンクからダウンロードできます。</p>
+<p><strong>※現在のバージョンは、ベータ版で、まだ、動作が不安定ですのでご注意ください！</strong></p>
+<p class="tteih_dlSec">
+ <a class="tteih_dlBtn" href="TTEnglishInputHelper-v0.3.0.zip">
+  TTEnglishInputHelper-v0.3.0.zip (Beta)</br>
+  (Published on 2015/04/13)</br>
+  Download
+ </a>
+</p>
+
+<h3>変更点</h3>
+<ol>
+ <li>（２重に起動した等）エラーが出て起動できない場合がある事への対応（これで直ったかは分かりませんが…）。</li>
+ <li>辞書に無い単語でも、ある程度、英語としての規則的な発音を推測する機能を追加（必ずしも正確ではありません）。</li>
+</ol>
+
+<h3>以前のバージョン</h3>
+<p><a href="history/index.html">以前のバージョンについてはこちらへ</a></p>
+
+
+<h2 id="tteih_install">インストール方法</h2>
+<p>
+UTAUを起動して、ダウンロードしたzipファイルをUTAUのウィンドウにドラッグ&ドロップしてください。
+</p>
+<p>ちなみに、バージョンごとにプラグインのフォルダを分けるようにしているため、今後のバージョンアップで新しいバージョンをインストールするたびにプラグインが増えてしまいますので、適宜、アンインストールしていただければと思います。</a>
+
+<h2 id="tteih_uninstall">アンインストール方法</h2>
+<h3>UTAUからプラグインフォルダを開く場合</h3>
+<ol>
+ <li>UTAUを起動します。</li>
+ <li>当プラグインを起動しているなら全て終了します。</li>
+ <li>UTAUのメニューの「ツール(T)」→「プラグイン(N)」→「プラグインフォルダを開く(O)」でプラグインのフォルダを開きます（複数開く場合があります）。</li>
+ <li>UTAUを終了します。</li> 
+ <li>開いたプラグインのフォルダから、「TTEnglishInputHelper-<バージョン>」のフォルダを探して削除します。</li>
+</ol>
+
+<h3>エクスプローラーでプラグインフォルダを開く場合</h3>
+<p>アンインストールする前に、当プラグインとUTAUを終了します。</p>
+<p>また、エクスプローラーの「表示」の「隠しファイル」にチェックを入れて隠しファイルが表示されるようにしておいた方がよいでしょう。</p>
+<p>
+Vista以降のWindowsならば、 C:\Users\<ユーザー名>\AppData\Roaming\UTAU\plugins\ の中に
+TTEnglishInputHelper-<バージョン> のフォルダができていますので、それを削除してください。
+</p>
+
+
+<h2 id="ttieh_getting_start">簡単な使い方</h2>
+
+<p>TTEnglishInputHelper の使い方は、大きく分けると2通りあります。</p>
+<p>1つ目は、プラグイン内で歌詞を入力する使い方です。</p>
+<p>2つ目は、 UTAU のノートに入力した英単語を変換する使い方です。</p>
+
+
+<h3 id="ttieh_getting_start_1">プラグイン内で歌詞を入力する使い方</h3>
+<p>
+UTAUのメニューバーの「プロジェクト」→「プロジェクトのプロパティ」で、
+「原音ファイルセット」を「重音テト英語音声ライブラリー」に設定してください。
+</p>
+<p>
+UTAU でノートを何も選んでいない状態で、
+UTAUのメニューバーの「ツール」→「プラグイン」→「TTEnglishInputHelper-<バージョン番号>」で起動してください。
+</p>
+<p>プラグインが起動すると、次のような画面が表示されます（画面の詳しい説明は後述します）。</p>
+<p class="tteih_fig"><img class="tteih_plgImg" src="tteihimg/ss01.png"></p>
+<p>
+上の方の「input english text here」と書かれているテキストボックスに、
+例えば「Let's start」と入力し、テキストボックスの下の「Convert」ボタンをクリックしてみましょう。
+</p>
+<p class="tteih_fig"><img class="tteih_plgImg" src="tteihimg/ss02.png"></p>
+<p>すると上の図のように、変換した結果が下の表に出力されます。</p>
+<p>ここで、一番下の「Save」ボタンをクリックしてください。下図のように UTAU に入力されます。</p>
+<p class="tteih_fig"><img class="tteih_utauImg" src="tteihimg/ss03.png"></p>
+<p>
+この状態で再生ボタンを押すと、間延びしていておかしいですが、なんとなく、入力した英単語の通りに声が出ていると思います。
+ここからは、 UTAU 上でちゃんと歌うようにパラメータを修正したり、必要なノートを挿入したりしていってください。
+</p>
+<p>
+最も簡単な使い方は、以上になります。
+</p>
+
+
+<h3 id="ttieh_getting_start_2">UTAU のノートに入力した英単語を変換する使い方</h3>
+<p><strong>※現時点では、UTAU上で入力した物の変換機能については、以下の点があり、不十分かも知れません。</strong></p>
+<ul>
+ <li>1ノート=1音節では無く、1単語で処理しています。</li>
+ <li>ノートの長さを保持せずに長さが固定になる等、音階以外の情報は消してしまいます。 </li>
+</ul>
+
+<p>
+UTAUのメニューバーの「プロジェクト」→「プロジェクトのプロパティ」で、
+「原音ファイルセット」を「重音テト英語音声ライブラリー」に設定してください。
+</p>
+<p>
+UTAU で、例えば、Lyricの欄に「Go ahead」と入力して「歌詞で挿入」ボタン（ピンクの長方形のアイコンのボタン）をクリックするなどして、
+下図のように1つのノートに1単語が入るように入力してください。
+</p>
+<p class="tteih_fig"><img class="tteih_utauImg" src="tteihimg/ss04.png"></p>
+<p>
+UTAUのメニューバーの「ツール」→「プラグイン」→「TTEnglishInputHelper-<バージョン番号>」で起動してください。
+</p>
+<p>プラグインが起動したら、下図の黒い太枠のように「Convert selected note」にチェックを入れてください。</p>
+<p class="tteih_fig"><img class="tteih_plgImg" src="tteihimg/ss05.png"></p>
+<p>
+この状態で、テキストボックスの下の「Convert」ボタンをクリックしてみましょう。
+</p>
+<p class="tteih_fig"><img class="tteih_plgImg" src="tteihimg/ss06.png"></p>
+<p>すると上の図のように、変換した結果が下の表に出力されます。</p>
+<p>ここで、一番下の「Save」ボタンをクリックしてください。下図のように UTAU に入力されます。</p>
+<p class="tteih_fig"><img class="tteih_utauImg" src="tteihimg/ss07.png"></p>
+<p>
+ノートが、変換後の物に置き換えられている事が分かると思います。
+</p>
+<p>
+この状態で再生ボタンを押すと、間延びしていておかしいですが、なんとなく、入力した英単語の通りに声が出ていると思います。
+ここからは、 UTAU 上でちゃんと歌うようにパラメータを修正したり、必要なノートを挿入したりしていってください。
+</p>
+<p>
+2つ目の使い方は、以上になります。
+</p>
+
+<p>
+上記の2つの使い方は、組み合わせることができます。詳しくは、後述の画面説明をご参照ください。
+</p>
+
+
+<h3>暫定版Presamp向け出力機能</h3>
+<p>
+暫定版のPresamp向け出力機能は、一旦、「Convert」ボタンで変換した後に、
+一番下の「for Presamp」ボタンをクリックすることで使えます。
+画面説明もご参照ください。
+</p>
+<p><strong>
+※UTAU上での入力を変換した場合は、音階や長さも含めたノートのすべてのプロパティが消えてデフォルトになります。
+</strong></p>
+
+
+<h2 id="ttieh_screen">画面説明</h2>
+
+<p>当プラグインの画面は下のようになります。</p>
+<p class="tteih_fig"><img class="tteih_plgImgBig" src="tteihimg/ss08.png"></p>
+
+<h4>①「Convert selected note」チェックボックス</h4>
+<p>
+このチェックボックスがチェックされていると、このプラグインの起動時に選択されていたノートを変換して、置き換えます。
+</p>
+
+<h4>②「Text insert mode」ドロップダウンリスト</h4>
+<p>
+次のテキストボックスに入力したテキストについて、変換するかしないかや、
+変換したノートを挿入する位置について、次のいずれかを選択します。
+</p>
+<ul>
+<li>「Don't convert text」: ③のテキスト入力欄に入力されたテキストを使用しません。</li>
+<li>「insert before」: 入力されたテキストを変換した物を選択したノートの前に挿入します。</li>
+<li>「insert after」: 入力されたテキストを変換した物を選択したノートの後に挿入します。</li>
+<li>「replace」: 入力されたテキストを変換した物で選択したノートを置換します。
+これを選ぶと、①の「Convert selected note」チェックボックスにチェックしても無視されます。</li>
+</ul>
+
+<h4>③テキスト入力欄</h4>
+<p>
+ここに英語のテキストを入力します。
+</p>
+<p>
+現時点では、大文字小文字を区別しません。
+</p>
+<p>
+シングルクォーテーション「'」は、アポストロフィとして、アルファベットと同様に扱います。
+</p>
+<p>
+数字を丸かっこ「()」で括って、英単語の後ろに「English(1)」などと付けると、同じ単語に複数の発音があった場合に、デフォルト以外の発音を選択することができます。
+</p>
+
+<h4>④「Convert」ボタン</h4>
+<p>
+このボタンをクリックすることで、入力されたテキストや、選択されたノートから変換して、下記の表に結果を表示します。
+</p>
+
+<h4>⑤「Result」テーブル（変換結果表）</h4>
+<p>
+ここに変換結果が表示されます。４つある列の意味は次の通りです。
+</p>
+<ul>
+<li>Word index: 変換元の単語が入力されたテキストまたはノートのうちの何番目の単語かを表示します。入力テキストの場合は「text.0」、選択されたノートの場合は「ust.#0000」のような表記になります。</li>
+<li>Source word: 変換元の単語です。同じ単語に複数の発声方法があった場合には、それらも併せてこのリストの下の図のように表示されます。</li>
+<li>Arpabet: 変換の中間の状態です。使用している辞書が持っている発音データの形式で表示されます。</li>
+<li>Note: 変換後のノートです。</li>
+</ul>
+<p class="tteih_fig"><img class="tteih_plgImg" src="tteihimg/ss09.png"></p>
+
+<h4>⑥「Save」ボタン</h4>
+<p>
+このボタンをクリックすることで、⑤の「Result」テーブルに表示された変換結果がUTAU側に反映されます。
+④の「Convert」ボタンをクリックしてから、このボタンをクリックしてください。
+</p>
+
+<h4>⑥「Save」ボタン</h4>
+<p>
+このボタンをクリックすることで、⑤の「Result」テーブルに表示された変換結果がUTAU側に反映されます（プラグインは終了します）。
+④の「Convert」ボタンをクリックしてから、このボタンをクリックしてください。
+</p>
+
+<h4>⑦「for Presamp」ボタン</h4>
+<p>
+このボタンをクリックすると、Presamp向け出力編集モードになります。次節をご参照ください。
+</p>
+
+<h4>⑧「Cancel」ボタン</h4>
+<p>
+何もせずにプラグインを終了して、UTAUに戻ります。右上の「×」をクリックしても同じです。
+</p>
+
+<p>Presamp向け出力編集モードの画面は下のようになります。</p>
+<p class="tteih_fig"><img class="tteih_plgImgBig" src="tteihimg/ss08.png"></p>
+
+<h4>(A)スペース区切り音節発音記号入力欄</h4>
+<p>
+ここにはデフォルトで、変換結果をさらにPresamp向けに加工して、スペース区切りにしたものが入ります。
+何となく、音節ごとの発音記号が入っている様になっているかと思いますが、おかしい所があるだろうと思いますので、手作業で直してください。
+</p>
+
+<h4>(B)「Save」ボタン</h4>
+<p>
+このボタンをクリックすることで、(A)スペース区切り音節発音記号入力欄のテキストを
+スペースで分割した物をノートとしてUTAU側に反映されます（プラグインは終了します）。
+</p>
+<p>
+
+<h4>(C)「Cancel」ボタン</h4>
+<p>
+Presamp向け出力編集モードを終えて、通常モードに戻ります（プラグインは終了しません）。
+</p>
+
+
+
+<h2 id="tteih_contact">コンタクト</h2>
+<p>ご意見・ご感想など何かありましたら、ツイッター上でハッシュタグ #tteih で。</>
+<p>あさくら・ふにょし （英語ができません）</p>
+<p>Twitter: <a href="https://twitter.com/hunyosi">hunyosi</a></p>
+
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<!--
+# [COPYING]
+#     TTEnglishInputHelper
+#     Copyright (C) 2015 ASAKURA, Hunyosi
+#
+#     This Source Code Form is subject to the terms of
+#     the Mozilla Public License, v. 2.0.
+#     If a copy of the MPL was not distributed with this file,
+#     You can obtain one at http://mozilla.org/MPL/2.0/.
+# [/COPYING]
+-->
+<html>
+ <head>
+  <meta charset="UTF-8">
+  <title>TTEnglishInputHelper</title>
+  <link rel="stylesheet" type="text/css" href="css/base.css">
+  <script data-main="js/main" src="js/lib/require.js"></script>
+ </head>
+ <body>
+  <div class="page" id="mainPage">
+   <div class="upSidePain" id="textPage">
+    <div class="header">
+     <span id="engRecLstType"><label for="selType">English RecList Type: </label><select id="selType"></select></span>
+     <span id="convNote"><input type="checkbox" id="chkConvNote"><label for="chkConvNote">Convert selected note</label></span>
+     |
+     <span id="insertTextMode"><label for="selInsertTextMode">Text insert mode: </label><select id="selInsertTextMode">
+      <option value="0">Don't convert text</option>
+      <option value="1">insert before</option>
+      <option value="2" selected>insert after</option>
+      <option value="3">replace</option>
+     </select></span>
+     <div class="licenseBtnBase">
+      <button id="btnOpenLicense">License</button>
+     </div>
+    </div>
+    <div class="main">
+     <textarea class="fullSizeTextArea" id="txtInput" placeholder="input english text here"></textarea>
+    </div>
+    <div class="footer">
+     <button id="btnTranslate">Convert</button>
+    </div>
+   </div>
+
+   <div class="downSidePain" id="tablePage">
+    <div class="header">
+     Results:
+    </div>
+    <div class="main">
+     <table>
+      <thead>
+       <tr><th class="fldNoteNo">Word index</th><th class="fldSrcWord">Source word</th><th class="fldArpabet">Arpabet</th><th class="fldNote">Note</th></tr>
+      </thead>
+      <tbody></tbody>
+     </table>
+    </div>
+    <div class="footer">
+     <button id="btnSave">Save</button>
+     <button id="btnForPresamp">for Presamp</button>
+     <button id="btnCancel">Cancel</button>
+     <button id="btnBack">Back</button>
+    </div>
+   </div>
+
+   <div class="upSidePain" id="forPresampPage">
+    <div class="header">
+     Space separated syllables for presamp:
+    </div>
+    <div class="main">
+     <textarea class="fullSizeTextArea" id="txtForPresamp" placeholder="input text for presamp here"></textarea>
+    </div>
+    <div class="footer">
+     <button id="btnSaveForPresamp">Save</button>
+     <button id="btnCancelForPresamp">Cancel</button>
+    </div>
+   </div>
+  </div>
+
+  <div class="page dialogBg" id="progressPage">
+   <div class="dialog" id="progressDialog">
+    <div class="header">
+     Progless:
+    </div>
+    <div class="main">
+     <div class="progressFrame"><div class="progressBar"></div></div>
+     <div class="progressConsole"><div class="console"></div></div>
+    </div>
+    <div class="footer">
+     <button id="btnProgressCancel">Cancel</button>
+    </div>
+   </div>
+  </div>
+
+  <div class="page dialogBg" id="licensePage">
+   <div class="dialog" id="licenseDialog">
+    <div class="header">
+     Licenses:
+    </div>
+    <div class="main">
+     <div class="licenseMain">
+     </div>
+    </div>
+    <div class="footer">
+     <button id="btnLicenseOk">Ok</button>
+    </div>
+   </div>
+  </div>
+ </body>
+</html>

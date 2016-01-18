@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<job id="main">
+<script language="JScript">
+/*
+# [COPYING]
+#     TTEnglishInputHelper
+#     Copyright (C) 2015 ASAKURA, Hunyosi
+#
+#     This Source Code Form is subject to the terms of
+#     the Mozilla Public License, v. 2.0.
+#     If a copy of the MPL was not distributed with this file,
+#     You can obtain one at http://mozilla.org/MPL/2.0/.
+# [/COPYING]
+*/
+var basePath = WScript.ScriptFullName.substring(
+  0, WScript.ScriptFullName.length - WScript.ScriptName.length);
+
+var appIniName = basePath + "eih\\application.ini";
+var runEnvName = basePath + "xulrunner\\xulrunner.exe";
+
+var cmdLine = "\"" + runEnvName + "\" -app " + "\"" + appIniName + "\"";
+var i1, z1;
+for (i1 = 0, z1 = WScript.arguments.length; i1 &lt; z1; ++ i1) {
+ cmdLine += " \"" + WScript.arguments.Item(i1) + "\"";
+}
+
+var wsh = new ActiveXObject("WScript.Shell");
+var exitCode = wsh.Run(cmdLine, 1, true);
+
+WScript.Quit(exitCode);
+</script>
+</job>

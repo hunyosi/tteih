@@ -1,0 +1,18 @@
+{
+  "name": "tteihconfig-dev",
+  "version": "1.0.0",
+  "description": "Configuration tool for TTEnglishInputHelper.",
+  "main": "build.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "node build.js"
+  },
+  "keywords": ["UTAU", "TTEIH"],
+  "author": "Hunyosi Asakura",
+  "license": "MPL-2.0",
+  "dependencies": {
+    "electron-packager": "^5.2.0",
+    "iconv-lite": "^0.4.13",
+    "jszip": "^2.5.0"
+  }
+}

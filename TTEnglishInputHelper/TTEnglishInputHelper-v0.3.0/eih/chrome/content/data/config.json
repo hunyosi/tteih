@@ -1,0 +1,18 @@
+{
+ "about this file": "このファイルは設定ファイルです。 UTF-8 で保存してください。",
+
+ "files": {
+  "cmudict"       : {"path": "data/cmudict/cmudict-0.7b"       , "type": "text", "encoding": "US-ASCII"},
+  "cmudict.phones": {"path": "data/cmudict/cmudict-0.7b.phones", "type": "text", "encoding": "US-ASCII"},
+
+  "delta_eng_teto0401": {"path": "data/voicemap/delta_eng_teto0401.tsv", "type": "text", "encoding": "US-ASCII"}
+ },
+
+ "voicemaps": [
+  {
+   "name"     : "Delta English for Kasane Teto",
+   "vbnameptn": "delta_eng_teto0401",
+   "file"     : "delta_eng_teto0401"
+  }
+ ]
+}

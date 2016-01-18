@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>tteihconfig</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<h1 id="tteih_top">tteihconfig</h1>
+
+<div class="tteih_nav">
+ <h4>TTEnglishInputHelper</h4>
+ <ul>
+  <li><a href="index.html">Home</a></li>
+  <li><a href="#">Page top</a></li>
+  <li><a href="#tteih_download">Download</a></li>
+  <li><a href="#tteih_install">Install</a></li>
+  <li><a href="#tteih_uninstall">Uninstall</a></li>
+  <li><a href="#ttieh_getting_start">How to use other voicebank</a>
+  <li><a href="#ttieh_input_file_format">Input file format</a>
+ </ul>
+</div>
+
+<p>
+This is a tool to make a mapping file for TTEnglishInpurHelper.
+The mapping file is configuration to convert from Arpabet sequence to voicebank entry.
+</p>
+
+<h2 id="tteih_download">Download</h2>
+<p class="tteih_dlSec">
+ <a class="tteih_dlBtn" href="tteihconfig.zip">
+  tteihconfig.zip</br>
+  (Published on 2016/01/17)</br>
+  Download
+ </a>
+</p>
+
+
+<h2 id="tteih_install">Install</h2>
+<p>
+Expand tteihconfig.zip to any folder.
+</p>
+
+<h2 id="tteih_uninstall">Uninstall</h2>
+<p>
+Delete expanded folder.
+</p>
+
+
+<h2 id="ttieh_getting_start">How to use other voicebank</h2>
+
+<ol>
+  <li>
+    Create a input file for this tool. The input file mapping phonenic symbols of voicebank to Arpabet symbols.
+    <ul>
+      <li>See: <a href="#ttieh_input_file_format">Input file format</a></li>
+    </ul>
+  </li>
+
+  <li>
+    Make a mapping file for target voicebank
+    <ul>
+      <li>
+        <p>Execute "bin\tteihconfig.exe". And oparate using procedure given on the screen.</p>
+        <p><img src="tteihconfigimg/SS01.png"></p>
+      </li>
+    </ul>
+  </li>
+
+  <li>
+    Put the mapping file into voicemap folder of TTEnglishInputHelper plug-in.
+    <ul>
+      <li>
+        <p>UTAU menu bar [Tools] &#8594; [Plug-Ins] &#8594; [Open Plug-Ins Folder]</p>
+        <p><img src="tteihconfigimg/SS02.png"></p>
+      </li>
+      <li>
+        <p>Open TTEinglishInputHelper\chrome\contents\data\voicemap, and copy to the folder.</p>
+        <p><img src="tteihconfigimg/SS03.png"></p>
+      </li>
+    </ul>
+  </li>
+
+  <li>
+    Modify config.json of TTEnglishInputHelper plug-in.
+    <ul>
+    </ul>
+  </li>
+
+  <li>
+    Start TTEnglishInputHelper plug-in.
+    <ul>
+    </ul>
+  </li>
+</ol>
+
+
+<h2 id="ttieh_input_file_format">Input file format</h2>
+
+<h3>Exampls</h3>
+<dl>
+  <dt>"example\MinaraiMona_to_arpabet.tsv"</dt>
+  <dd>for MinaraiMona</dd>
+
+  <dt>"example\x-sampa_to_arpabet.tsv"</dt>
+  <dd>for generic X-SAMPA</dd>
+</dl>
+
+<h3>File format</h3>
+<ul>
+  <li>Tab separated values format.</li>
+  <li>First line is not field captions. First line is data.</li>
+</ul>
+
+<p>This file content is following rows set.</p>
+<table>
+<tr>
+<th><pre>r\c</pre></th>
+<td><pre>A	B	C        	D	E	F	G	H	...</pre></td>
+</tr>
+<tr>
+<th>
+<pre>
+1
+2
+3
+4
+5
+6
+7
+8
+</pre>
+</th>
+<td>
+<pre>
+s\|	-1	*replace*	$$
+^-	-1	*head*
+-$	-1	*tail*
+\s+	-1	*split*
+	-1	*bypass*	/NG/	@n		g@	
+breath	-1	*invalid*
+~	0	*ignore*
+tth	10	DH
+</pre>
+</td>
+</tr>
+</table>
+
+<ol>
+  <li>
+    <h4>Replace rows (option)</h4>
+    <table>
+      <tr><th>Column</th><th>Value</th><th>Description</th></tr>
+      <tr><td>1</td><td>regexp</td><td>search pattern (JavaScript RegExp)</td></tr>
+      <tr><td>2</td><td>"-1"</td><td>&nbsp;</td></tr>
+      <tr><td>3</td><td>"*replace*"</td><td>&nbsp;</td></tr>
+      <tr><td>4</td><td>string</td><td>replace string (JavaScript String.prototype.replace)</td></tr>
+    </table>
+  </li>
+
+  <li>
+    <h4>Start phonenic symbol pattern row (require)</h4>
+    <table>
+      <tr><th>Column</th><th>Value</th><th>Description</th></tr>
+      <tr><td>1</td><td>regexp</td><td>search pattern (JavaScript RegExp)</td></tr>
+      <tr><td>2</td><td>"-1"</td><td>&nbsp;</td></tr>
+      <tr><td>3</td><td>"*head*"</td><td>&nbsp;</td></tr>
+    </table>
+  </li>
+
+  <li>
+    <h4>End phonenic symbol pattern row (require)</h4>
+    <table>
+      <tr><th>Column</th><th>Value</th><th>Description</th></tr>
+      <tr><td>1</td><td>regexp</td><td>search pattern (JavaScript RegExp)</td></tr>
+      <tr><td>2</td><td>"-1"</td><td>&nbsp;</td></tr>
+      <tr><td>3</td><td>"*tail*"</td><td>&nbsp;</td></tr>
+    </table>
+  </li>
+
+  <li>
+    <h4>Split row (option)</h4>
+    <p>for Delta (@delta_kuro) type english list (space separeted phonenic symbols).
+    <table>
+      <tr><th>Column</th><th>Value</th><th>Description</th></tr>
+      <tr><td>1</td><td>regexp</td><td>search pattern (JavaScript RegExp)</td></tr>
+      <tr><td>2</td><td>"-1"</td><td>&nbsp;</td></tr>
+      <tr><td>3</td><td>"*split*"</td><td>&nbsp;</td></tr>
+    </table>
+  </li>
+
+  <li>
+    <h4>Immediate output row (option)</h4>
+    <table>
+      <tr><th>Column</th><th>Value</th><th>Description</th></tr>
+      <tr><td>1</td><td>empty</td><td></td></tr>
+      <tr><td>2</td><td>"-1"</td><td>&nbsp;</td></tr>
+      <tr><td>3</td><td>"*bypass*"</td><td>&nbsp;</td></tr>
+      <tr><td>4</td><td>previouse"/"body"/"next</td><td>arpabet patterns</td></tr>
+      <tr><td>5</td><td>name</td><td>voicebank entry name 1</td></tr>
+      <tr><td>6</td><td>item1"="val1"/"item2"="val2"/"...</td><td>voice parameters 1</td></tr>
+      <tr><td>7</td><td>name</td><td>voicebank entry name 2</td></tr>
+      <tr><td>8</td><td>item1"="val1"/"item2"="val2"/"...</td><td>voice parameters 2</td></tr>
+      <tr><td>:</td><td>:</td><td>:</td></tr>
+    </table>
+  </li>
+
+  <li>
+    <h4>Excludion voicebank entry rows (option)</h4>
+    <table>
+      <tr><th>Column</th><th>Value</th><th>Description</th></tr>
+      <tr><td>1</td><td>name</td><td>voicebank entry name</td></tr>
+      <tr><td>2</td><td>"-1"</td><td>&nbsp;</td></tr>
+      <tr><td>3</td><td>"*invalid*"</td><td>&nbsp;</td></tr>
+    </table>
+  </li>
+
+  <li>
+    <h4>Skip phonenic symbol rows (option)</h4>
+    <table>
+      <tr><th>Column</th><th>Value</th><th>Description</th></tr>
+      <tr><td>1</td><td>symbol</td><td>phonenic symbol of voicebank</td></tr>
+      <tr><td>2</td><td>"0"</td><td>&nbsp;</td></tr>
+      <tr><td>3</td><td>"*ignore*"</td><td>&nbsp;</td></tr>
+    </table>
+  </li>
+
+  <li>
+    <h4>Phonenic symbol mapping rows (require)</h4>
+    <table>
+      <tr><th>Column</th><th>Value</th><th>Description</th></tr>
+      <tr><td>1</td><td>symbol</td><td>phonenic symbol of voicebank</td></tr>
+      <tr><td>2</td><td>weight (>0)</td><td>This value is using to resolve priority.</td></tr>
+      <tr><td>3</td><td>arpabet</td><td>arpabet symbol</td></tr>
+    </table>
+  </li>
+</ol>
+</body>
+</html>

@@ -1,0 +1,4 @@
+name=TTEnglishInputHelper-v0.3.0
+execute=eih.wsf
+shell=use
+ustversion=1.00

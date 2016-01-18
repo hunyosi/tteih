@@ -1,0 +1,4 @@
+type=editplugin
+folder=TTEnglishInputHelper-v0.3.0
+contentsdir=TTEnglishInputHelper-v0.3.0
+description=This is plugin to translate English word to voicebank element name.

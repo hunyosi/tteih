@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<!--
+# [COPYING]
+#     TTEIHConfig
+#     Copyright (C) 2016 Hunyosi Asakura
+#
+#     This Source Code Form is subject to the terms of
+#     the Mozilla Public License, v. 2.0.
+#     If a copy of the MPL was not distributed with this file,
+#     You can obtain one at http://mozilla.org/MPL/2.0/.
+# [/COPYING]
+-->
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>TTEIH Config</title>
+  <style>
+    #saveResultPart {
+      visibility: hidden;
+    }
+  </style>
+  <script>
+    'use strict';
+    const ipc = require('ipc');
+
+    function loadFile(inputFileElm, encoding) {
+      return new Promise((resolve, reject) => {
+        const files = inputFileElm.files;
+        if (files.length < 1) {
+          reject('do\'nt selected file');
+          return;
+        }
+        const fr = new FileReader();
+        fr.addEventListener('loadend', () => {
+          const data = fr.result;
+          resolve(data);
+        });
+        fr.readAsText(files[0], encoding);
+      });
+    }
+
+
+    function loadFileById(name, inputFileId, selectEncodingId, textEncodingId) {
+      const selectElm = document.getElementById(selectEncodingId);
+      const inputTextElm = document.getElementById(textEncodingId);
+
+      let encoding = '';
+      const selectedIndex = selectElm.selectedIndex;
+      if (0 <= selectedIndex) {
+        encoding = selectElm.options[selectedIndex].value;
+        if (encoding.length < 1) {
+          encoding = inputTextElm.value;
+        }
+      }
+
+      if (encoding.length < 1) {
+        return Promise.reject('require encoding of ' + name);
+      }
+
+      const inputFileElm = document.getElementById(inputFileId);
+
+      if (inputFileElm.files.length < 1) {
+        return Promise.reject('require file of ' + name);
+      }
+
+      return loadFile(inputFileElm, encoding);
+    }
+
+
+    function clearMsg() {
+      const preMsg = document.getElementById('preMsg');
+      while (preMsg.lastChild != null) {
+        preMsg.removeChild(preMsg.lastChild);
+      }
+    }
+
+    function putMsg(msg) {
+      const preMsg = document.getElementById('preMsg');
+      preMsg.appendChild(document.createTextNode(msg + '\n'));
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const btnExec = document.getElementById('btnExec');
+      const saveResultPart = document.getElementById('saveResultPart');
+
+      ipc.on('succeedProcess', (outputData) => {
+        clearMsg();
+        putMsg('Succeed!');
+        putMsg('Result:');
+        putMsg(outputData);
+
+        const encoding = 'UTF-8';
+        const aElm = document.getElementById('aSaveResult');
+        aElm.addEventListener('click', (event) => {
+          const b = new Blob([outputData], {
+            type: 'text/plain;charset=' + encoding
+          });
+          const bUrl = URL.createObjectURL(b);
+          aElm.setAttribute('href', bUrl);
+          aElm.setAttribute('download', 'voicemap.tsv');
+        });
+
+        btnExec.disabled = false;
+        saveResultPart.style.visibility = 'visible';
+      });
+
+      function failureProcess(err) {
+        clearMsg();
+        putMsg('Failure!');
+        putMsg('Cause:');
+        putMsg(err);
+        btnExec.disabled = false;
+        saveResultPart.style.visibility = 'hidden';
+      }
+
+      ipc.on('failureProcess', failureProcess);
+
+      btnExec.addEventListener('click', () => {
+        btnExec.disabled = true;
+        saveResultPart.style.visibility = 'hidden';
+
+        var otoIniData, mappingData;
+        loadFileById('oto.ini', 'otoIniFile', 'selectOtoIniEncoding', 'textOtoIniEncoding')
+          .then((data) => {
+            otoIniData = data;
+            return loadFileById('mapping', 'mappingFile', 'selectMappingEncoding', 'textMappingEncoding');
+          })
+          .then((data) => {
+            mappingData = data;
+            ipc.send('doProcess', {
+              otoIniData,
+              mappingData
+            });
+          })
+          .catch(failureProcess);
+      });
+    });
+  </script>
+</head>
+
+<body>
+  <div>
+    <ol>
+      <li>
+        Please, select oto.ini file of target voicebank.
+        <ul>
+          <li>
+            <label>encoding:
+              <select id="selectOtoIniEncoding">
+                <option value="US-ASCII" selected>US-ASCII</option>
+                <option value="UTF-8">UTF-8</option>
+                <option value="Shift_JIS">Shift_JIS</option>
+                <option value="">other &#8594;</option>
+              </select>
+              <input type="text" id="textOtoIniEncoding" value="">
+            </label>
+          </li>
+          <li>
+            <label>file path:
+              <input type="file" id="otoIniFile" accept=".ini,text/plain">
+            </label>
+          </li>
+        </ul>
+      </li>
+
+      <li>
+        Please, select voicebank's phonetic symbols to Arpabet mapping file.
+        <ul>
+          <li>
+            <label>encoding:
+              <select id="selectMappingEncoding">
+                <option value="US-ASCII" selected>US-ASCII</option>
+                <option value="UTF-8">UTF-8</option>
+                <option value="Shift_JIS">Shift_JIS</option>
+                <option value="">other &#8594;</option>
+              </select>
+              <input type="text" id="textMappingEncoding" value="">
+            </label>
+          </li>
+          <li>
+            <label>file path:
+              <input type="file" id="mappingFile" accept=".tsv,text/plain">
+            </label>
+          </li>
+        </ul>
+      </li>
+
+      <li>
+        Please, click "Execute" button.
+        <ul>
+          <li>
+            <button id="btnExec">Execute</button>
+          </li>
+        </ul>
+      </li>
+
+      <li id="saveResultPart">
+        Please, click "Save result" link.
+        <ul>
+          <li>
+            <a id="aSaveResult" href="#">Save result</a>
+          </li>
+        </ul>
+      </li>
+    </ol>
+  </div>
+  <pre id="preMsg"></pre>
+  <div id="divResult"></div>
+</body>
+
+</html>

@@ -1,0 +1,93 @@
+html {
+ margin: 0px;
+ padding: 0px;
+ background-color: #AAAAAA;
+}
+
+body {
+ margin: 25px 25px 25px 300px;
+ padding: 25px;
+ background-color: #EEEEEE;
+ border: 10px #FF8888 solid;
+}
+
+body h1:first-child {
+ margin-top: 0px;
+}
+
+
+.tteih_nav {
+ position: fixed;
+ top: 50px;
+ left: 25px;
+ width: 175px;
+ margin: 0px;
+ padding: 25px;
+ background-color: #EEEEEE;
+ border: 10px #FF8888 solid;
+}
+
+.tteih_nav h4:first-child {
+ margin-top: 0px;
+}
+
+.tteih_nav ul {
+ padding: 0px 0px 0px 1em;
+ margin: 0px;
+}
+
+
+.tteih_dlSec {
+ text-align: center;
+}
+
+.tteih_dlBtn {
+ display: inline-block;
+ width: 300px;
+ padding-top: 25px;
+ padding-bottom: 25px;
+ border-radius: 10px;
+ border: 1px #CCCCCC solid;
+ -webkit-border-radius: 10px;
+ -moz-border-radius: 10px;
+ background: linear-gradient(#FFFFFF, #DDDDDD);  
+ background: -moz-linear-gradient(top, #FFFFFF, #DDDDDD);
+ background: -webkit-gradient(linear, left top, left bottom, from(#FFFFFF), to(#DDDDDD));
+ text-align: center;
+}
+
+.tteih_dlBtn:hover {
+ width: 298px;
+ padding-top: 24px;
+ padding-bottom: 24px;
+ border: 2px #888888 solid;
+}
+
+.tteih_dlBtn:active {
+ background: -moz-linear-gradient(top, #DDDDDD, #FFFFFF);
+ background: -webkit-gradient(linear, left top, left bottom, from(#DDDDDD), to(#FFFFFF));
+ background: linear-gradient(#DDDDDD, #FFFFFF);  
+ width: 298px;
+ padding-top: 24px;
+ padding-bottom: 24px;
+ border: 2px #FFFFFF solid;
+}
+
+.tteih_plgImg {
+ width: 400px;
+}
+
+.tteih_plgImgBig {
+ width: 500px;
+}
+
+/*
+.tteih_utauImg {
+ width: 600px;
+}
+*/
+
+.tteih_fig {
+ text-align: center;
+}
+

@@ -1,0 +1,9 @@
+{
+  "binDir": "bin",
+  "contentsDir": "",
+  "toRoot": [
+    "LICENSE",
+    "example"
+  ],
+  "toContentsDir": []
+}

@@ -1,0 +1,9 @@
+* text=auto
+
+install.txt text eol=crlf
+plugin.txt text eol=crlf
+
+*.png binary
+*.jpg binary
+*.gif binary
+
