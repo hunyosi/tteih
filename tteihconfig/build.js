@@ -236,7 +236,6 @@ function parseEqSignSepratedKVPairs(str) {
 
 
 
-
 class AppPackager {
   constructor() {
     this.targetName = null;
@@ -271,6 +270,8 @@ class AppPackager {
         }
       }
 
+      fs.mkdirSync('dist');
+
       resolve(this);
     }, 0));
   }
@@ -278,7 +279,7 @@ class AppPackager {
 
   makeZipFile() {
     const zip = new FsZip();
-    zip.addLocalFile(`${this.targetName}-win32-ia32`, this.binDir);
+    zip.addLocalFile(`dist/${this.targetName}-win32-ia32`, this.binDir);
 
     const config = this.config;
     if (config != null) {
@@ -290,7 +291,7 @@ class AppPackager {
       }
     }
 
-    zip.writeZipFile(`${this.targetName}.zip`);
+    zip.writeZipFile(`dist/${this.targetName}.zip`);
     return Promise.resolve(this);
   }
 
@@ -302,7 +303,8 @@ class AppPackager {
         name: this.targetName,
         platform: 'win32',
         arch: 'ia32',
-        version: '0.35.4'
+        version: '0.35.4',
+        out: './dist'
       }, (err, appPath) => {
         if (err) {
           reject(err);
