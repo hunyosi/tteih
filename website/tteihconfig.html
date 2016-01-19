@@ -62,7 +62,7 @@ Delete expanded folder.
     <ul>
       <li>
         <p>Execute "bin\tteihconfig.exe". And oparate using procedure given on the screen.</p>
-        <p><img src="tteihconfigimg/SS01.png"></p>
+        <p><img src="tteihconfigimg/ss01.png"></p>
       </li>
     </ul>
   </li>
@@ -72,11 +72,11 @@ Delete expanded folder.
     <ul>
       <li>
         <p>UTAU menu bar [Tools] &#8594; [Plug-Ins] &#8594; [Open Plug-Ins Folder]</p>
-        <p><img src="tteihconfigimg/SS02.png"></p>
+        <p><img src="tteihconfigimg/ss02.png"></p>
       </li>
       <li>
         <p>Open TTEinglishInputHelper\chrome\contents\data\voicemap, and copy to the folder.</p>
-        <p><img src="tteihconfigimg/SS03.png"></p>
+        <p><img src="tteihconfigimg/ss03.png"></p>
       </li>
     </ul>
   </li>
@@ -84,13 +84,14 @@ Delete expanded folder.
   <li>
     Modify config.json of TTEnglishInputHelper plug-in.
     <ul>
+      <li>
+        <p><img src="tteihconfigimg/ss04.png"></p>
+      </li>
     </ul>
   </li>
 
   <li>
     Start TTEnglishInputHelper plug-in.
-    <ul>
-    </ul>
   </li>
 </ol>
 
@@ -115,7 +116,7 @@ Delete expanded folder.
 <p>This file content is following rows set.</p>
 <table>
 <tr>
-<th><pre>r\c</pre></th>
+<th><pre>r&#65340;c</pre></th>
 <td><pre>A	B	C        	D	E	F	G	H	...</pre></td>
 </tr>
 <tr>
@@ -137,7 +138,7 @@ s\|	-1	*replace*	$$
 ^-	-1	*head*
 -$	-1	*tail*
 \s+	-1	*split*
-	-1	*bypass*	/NG/	@n		g@	
+	-1	*bypass*	/NG/	@n		g@
 breath	-1	*invalid*
 ~	0	*ignore*
 tth	10	DH
@@ -151,10 +152,10 @@ tth	10	DH
     <h4>Replace rows (option)</h4>
     <table>
       <tr><th>Column</th><th>Value</th><th>Description</th></tr>
-      <tr><td>1</td><td>regexp</td><td>search pattern (JavaScript RegExp)</td></tr>
-      <tr><td>2</td><td>"-1"</td><td>&nbsp;</td></tr>
-      <tr><td>3</td><td>"*replace*"</td><td>&nbsp;</td></tr>
-      <tr><td>4</td><td>string</td><td>replace string (JavaScript String.prototype.replace)</td></tr>
+      <tr><td>A</td><td>regexp</td><td>search pattern (JavaScript RegExp)</td></tr>
+      <tr><td>B</td><td>"-1"</td><td>&nbsp;</td></tr>
+      <tr><td>C</td><td>"*replace*"</td><td>&nbsp;</td></tr>
+      <tr><td>D</td><td>string</td><td>replace string (JavaScript String.prototype.replace)</td></tr>
     </table>
   </li>
 
@@ -162,9 +163,9 @@ tth	10	DH
     <h4>Start phonenic symbol pattern row (require)</h4>
     <table>
       <tr><th>Column</th><th>Value</th><th>Description</th></tr>
-      <tr><td>1</td><td>regexp</td><td>search pattern (JavaScript RegExp)</td></tr>
-      <tr><td>2</td><td>"-1"</td><td>&nbsp;</td></tr>
-      <tr><td>3</td><td>"*head*"</td><td>&nbsp;</td></tr>
+      <tr><td>A</td><td>regexp</td><td>search pattern (JavaScript RegExp)</td></tr>
+      <tr><td>B</td><td>"-1"</td><td>&nbsp;</td></tr>
+      <tr><td>C</td><td>"*head*"</td><td>&nbsp;</td></tr>
     </table>
   </li>
 
@@ -172,9 +173,9 @@ tth	10	DH
     <h4>End phonenic symbol pattern row (require)</h4>
     <table>
       <tr><th>Column</th><th>Value</th><th>Description</th></tr>
-      <tr><td>1</td><td>regexp</td><td>search pattern (JavaScript RegExp)</td></tr>
-      <tr><td>2</td><td>"-1"</td><td>&nbsp;</td></tr>
-      <tr><td>3</td><td>"*tail*"</td><td>&nbsp;</td></tr>
+      <tr><td>A</td><td>regexp</td><td>search pattern (JavaScript RegExp)</td></tr>
+      <tr><td>B</td><td>"-1"</td><td>&nbsp;</td></tr>
+      <tr><td>C</td><td>"*tail*"</td><td>&nbsp;</td></tr>
     </table>
   </li>
 
@@ -183,9 +184,9 @@ tth	10	DH
     <p>for Delta (@delta_kuro) type english list (space separeted phonenic symbols).
     <table>
       <tr><th>Column</th><th>Value</th><th>Description</th></tr>
-      <tr><td>1</td><td>regexp</td><td>search pattern (JavaScript RegExp)</td></tr>
-      <tr><td>2</td><td>"-1"</td><td>&nbsp;</td></tr>
-      <tr><td>3</td><td>"*split*"</td><td>&nbsp;</td></tr>
+      <tr><td>A</td><td>regexp</td><td>search pattern (JavaScript RegExp)</td></tr>
+      <tr><td>B</td><td>"-1"</td><td>&nbsp;</td></tr>
+      <tr><td>C</td><td>"*split*"</td><td>&nbsp;</td></tr>
     </table>
   </li>
 
@@ -193,14 +194,14 @@ tth	10	DH
     <h4>Immediate output row (option)</h4>
     <table>
       <tr><th>Column</th><th>Value</th><th>Description</th></tr>
-      <tr><td>1</td><td>empty</td><td></td></tr>
-      <tr><td>2</td><td>"-1"</td><td>&nbsp;</td></tr>
-      <tr><td>3</td><td>"*bypass*"</td><td>&nbsp;</td></tr>
-      <tr><td>4</td><td>previouse"/"body"/"next</td><td>arpabet patterns</td></tr>
-      <tr><td>5</td><td>name</td><td>voicebank entry name 1</td></tr>
-      <tr><td>6</td><td>item1"="val1"/"item2"="val2"/"...</td><td>voice parameters 1</td></tr>
-      <tr><td>7</td><td>name</td><td>voicebank entry name 2</td></tr>
-      <tr><td>8</td><td>item1"="val1"/"item2"="val2"/"...</td><td>voice parameters 2</td></tr>
+      <tr><td>A</td><td>empty</td><td></td></tr>
+      <tr><td>B</td><td>"-1"</td><td>&nbsp;</td></tr>
+      <tr><td>C</td><td>"*bypass*"</td><td>&nbsp;</td></tr>
+      <tr><td>D</td><td>previouse"/"body"/"next</td><td>arpabet patterns</td></tr>
+      <tr><td>E</td><td>name</td><td>voicebank entry name 1</td></tr>
+      <tr><td>F</td><td>item1"="val1"/"item2"="val2"/"...</td><td>voice parameters 1</td></tr>
+      <tr><td>G</td><td>name</td><td>voicebank entry name 2</td></tr>
+      <tr><td>H</td><td>item1"="val1"/"item2"="val2"/"...</td><td>voice parameters 2</td></tr>
       <tr><td>:</td><td>:</td><td>:</td></tr>
     </table>
   </li>
@@ -209,9 +210,9 @@ tth	10	DH
     <h4>Excludion voicebank entry rows (option)</h4>
     <table>
       <tr><th>Column</th><th>Value</th><th>Description</th></tr>
-      <tr><td>1</td><td>name</td><td>voicebank entry name</td></tr>
-      <tr><td>2</td><td>"-1"</td><td>&nbsp;</td></tr>
-      <tr><td>3</td><td>"*invalid*"</td><td>&nbsp;</td></tr>
+      <tr><td>A</td><td>name</td><td>voicebank entry name</td></tr>
+      <tr><td>B</td><td>"-1"</td><td>&nbsp;</td></tr>
+      <tr><td>C</td><td>"*invalid*"</td><td>&nbsp;</td></tr>
     </table>
   </li>
 
@@ -219,9 +220,9 @@ tth	10	DH
     <h4>Skip phonenic symbol rows (option)</h4>
     <table>
       <tr><th>Column</th><th>Value</th><th>Description</th></tr>
-      <tr><td>1</td><td>symbol</td><td>phonenic symbol of voicebank</td></tr>
-      <tr><td>2</td><td>"0"</td><td>&nbsp;</td></tr>
-      <tr><td>3</td><td>"*ignore*"</td><td>&nbsp;</td></tr>
+      <tr><td>A</td><td>symbol</td><td>phonenic symbol of voicebank</td></tr>
+      <tr><td>B</td><td>"0"</td><td>&nbsp;</td></tr>
+      <tr><td>C</td><td>"*ignore*"</td><td>&nbsp;</td></tr>
     </table>
   </li>
 
@@ -229,9 +230,9 @@ tth	10	DH
     <h4>Phonenic symbol mapping rows (require)</h4>
     <table>
       <tr><th>Column</th><th>Value</th><th>Description</th></tr>
-      <tr><td>1</td><td>symbol</td><td>phonenic symbol of voicebank</td></tr>
-      <tr><td>2</td><td>weight (>0)</td><td>This value is using to resolve priority.</td></tr>
-      <tr><td>3</td><td>arpabet</td><td>arpabet symbol</td></tr>
+      <tr><td>A</td><td>symbol</td><td>phonenic symbol of voicebank</td></tr>
+      <tr><td>B</td><td>weight (>0)</td><td>This value is using to resolve priority.</td></tr>
+      <tr><td>C</td><td>arpabet</td><td>arpabet symbol</td></tr>
     </table>
   </li>
 </ol>
