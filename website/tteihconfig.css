@@ -1,0 +1,20 @@
+pre {
+  margin: 0px;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+th {
+  padding-right: 1em;
+  background-color: #CCFFCC;
+  font-weight: normal;
+}
+
+td {
+  padding-right: 1em;
+  background-color: #FFFFFF;
+}
+

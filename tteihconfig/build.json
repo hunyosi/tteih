@@ -3,6 +3,7 @@
   "contentsDir": "",
   "toRoot": [
     "LICENSE",
+    "README.md",
     "example"
   ],
   "toContentsDir": []
