@@ -91,3 +91,12 @@ body h1:first-child {
  text-align: center;
 }
 
+
+.tteih_notes:before {
+ content: "\203B";
+}
+
+.tteih_notes {
+ padding-left: 1em;
+ text-indent: -1em;
+}

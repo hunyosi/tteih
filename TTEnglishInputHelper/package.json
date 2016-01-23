@@ -1,0 +1,30 @@
+{
+  "name": "tteih",
+  "version": "0.4.0",
+  "description": "English input helper for UTAU",
+  "main": "build.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "node build.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hunyosi/tteih.git"
+  },
+  "keywords": [
+    "UTAU",
+    "plugin",
+    "TTEIH"
+  ],
+  "author": "Hunyosi Asakura",
+  "license": "MPL-2.0",
+  "bugs": {
+    "url": "https://github.com/hunyosi/tteih/issues"
+  },
+  "homepage": "http://hunyoi.com/pub/tteih/",
+  "dependencies": {
+    "electron-packager": "^5.2.0",
+    "iconv-lite": "^0.4.13",
+    "jszip": "^2.5.0"
+  }
+}

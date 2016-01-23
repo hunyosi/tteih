@@ -1,0 +1,10 @@
+{
+  "toRoot": [
+    "fordist/readme.txt",
+    "LICENSE"
+  ],
+  "toContentsDir": [
+    "fordist/readme.txt",
+    "LICENSE"
+  ]
+}
