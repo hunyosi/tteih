@@ -1,8 +1,13 @@
 /*
- hanonage_electron
- file: build.js
- author: Hunyosi Asakura
- license: CC0-1.0
+# [COPYING]
+#     TTEIHConfig
+#     Copyright (C) 2016 Hunyosi Asakura
+#
+#     This Source Code Form is subject to the terms of
+#     the Mozilla Public License, v. 2.0.
+#     If a copy of the MPL was not distributed with this file,
+#     You can obtain one at http://mozilla.org/MPL/2.0/.
+# [/COPYING]
 */
 'use strict';
 
@@ -301,6 +306,8 @@ class UtauPluginPackager {
         }
       }
 
+      fs.mkdirSync('dist');
+
       resolve(this);
     }, 0));
   }
@@ -316,7 +323,7 @@ class UtauPluginPackager {
       encoding: 'CP932',
       newLine: '\r\n'
     });
-    zip.addLocalFile(`${this.targetName}-win32-ia32`, this.binDir);
+    zip.addLocalFile(`dist/${this.targetName}-win32-ia32`, this.binDir);
 
     const config = this.config;
     if (config != null) {
@@ -328,7 +335,7 @@ class UtauPluginPackager {
       }
     }
 
-    zip.writeZipFile(`${this.targetName}.zip`);
+    zip.writeZipFile(`dist${this.targetName}.zip`);
     return Promise.resolve(this);
   }
 
@@ -340,7 +347,8 @@ class UtauPluginPackager {
         name: this.targetName,
         platform: 'win32',
         arch: 'ia32',
-        version: '0.35.4'
+        version: '0.35.4',
+        out: './dist'
       }, (err, appPath) => {
         if (err) {
           reject(err);

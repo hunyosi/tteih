@@ -1,0 +1,13 @@
+{
+  "name": "tteih",
+  "version": "0.4.0",
+  "description": "Configuration tool for TTEnglishInputHelper.",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["UTAU", "TTEIH"],
+  "author": "Hunyosi Asakura",
+  "license": "MPL-2.0",
+  "dependencies": {}
+}
