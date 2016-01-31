@@ -16,11 +16,11 @@ const BrowserWindow = require('browser-window');
 const crashReporter = require('crash-reporter');
 const ipc = require('ipc');
 const fs = require('fs');
-const iconvLite = require('iconv-lite');
+//const iconvLite = require('iconv-lite');
 
 crashReporter.start();
 
-
+/*
 function parseIni(src) {
   const sessions = [];
   const sessionStrs = src.split(/\[/);
@@ -120,7 +120,7 @@ ipc.on('doProcess', (evt, msg) => {
     reply(err);
   });
 });
-
+*/
 
 var mainWnd;
 
@@ -136,5 +136,5 @@ app.on('ready', () => {
   mainWnd.on('closed', () => {
     mainWnd = null;
   });
-  mainWnd.loadUrl('file://' + __dirname + '/index.html');
+  mainWnd.loadUrl('file://' + __dirname + '/view/index.html');
 });

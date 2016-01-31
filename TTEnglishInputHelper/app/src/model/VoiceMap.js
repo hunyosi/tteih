@@ -1,3 +1,5 @@
+const tt = require('tt.js');
+const progressObj = require('Progress.js');
 
 
 function stripNumber(src) {
@@ -306,7 +308,7 @@ VoiceMap.prototype.pronunationsToVoiceNames = function(src) {
 
       try {
 
-        if (progressCancelFlag) {
+        if (progressObj.cancelFlag) {
           reject(null);
           return;
         }
@@ -509,7 +511,7 @@ function wordsToVoiceNames(words, dict, voMap) {
   return new Promise(function(resolve, reject) {
     function transFromTextLoop() {
       try {
-        if (progressCancelFlag) {
+        if (progressObj.cancelFlag) {
           reject(null);
           return;
         }
