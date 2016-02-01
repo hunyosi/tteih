@@ -10,16 +10,7 @@
 # [/COPYING]
 */
 
-if (typeof (define) === "undefined") {
- window.define = function() {
-  var fn = arguments[arguments.length - 1];
-  window.tt = fn();
- }
-}
-
-
-define(function (require) {
-
+module.exports = (function () {
 
  function damyFunc(){
  }
@@ -80,7 +71,7 @@ define(function (require) {
    if ("name" in c) {
     return c.name;
    }
- 
+
    regExAry = /^\s*function\s+([^\(]+)\(/.exec(c+"");
    if (regExAry) {
     return trim(regExAry[1]);
@@ -483,7 +474,7 @@ pp("loadFiles: 0");
       isEmpty(fileInfo["type"])) {
      throw "loadFiles: illegal file set.";
     }
-    if (fileInfo["type"] === "text" && 
+    if (fileInfo["type"] === "text" &&
       isEmpty(fileInfo["encoding"])) {
      throw "loadFiles: illegal file set.";
     }
@@ -491,7 +482,7 @@ pp("loadFiles: 0");
      name: k,
      path: fileInfo["path"],
      type: fileInfo["type"],
-     encoding: (isEmpty(fileInfo["encoding"]) ? 
+     encoding: (isEmpty(fileInfo["encoding"]) ?
        fileInfo["encoding"] : null)
     });
    }
