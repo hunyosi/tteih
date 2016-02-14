@@ -167,118 +167,27 @@ module.exports = (function () {
 
 
  function drawGraph(canvas, ary, param) {
-  if (param == null) {
-   param = {};
-  }
-  var ctx = canvas.getContext("2d");
-  var max_val = +0;
-  var abs_val = +0;
-  var i1 = 0|0, z1 = ary.length|0;
-  var scalex = z1 - 1;
-  var w, h, zeroy;
-  var offset = 0;
-  if (param.offset != null) {
-   offset = param.offset|0;
-  }
-
-  if (param.length != null) {
-   z1 = param.length|0;
-  }
-
-  if (param.scaleY != null) {
-   max_val = +param.scaleY;
-  } else {
-   for (i1 = 0; i1 < z1; ++ i1) {
-    abs_val = ary[offset + i1];
-    if (abs_val < 0) { abs_val = -abs_val; }
-    if (max_val < abs_val) { max_val = abs_val; }
-   }
-  }
-
-  if (param.scaleX != null) {
-   scalex = +param.scaleX;
-  }
-
-  w = canvas.width;
-  h = canvas.height;
-  zeroy = h / 2;
-  ctx.beginPath();
-  ctx.moveTo(0, h - (zeroy + ary[offset] * zeroy / max_val));
-  for (i1 = 1; i1 < z1; ++ i1) {
-   ctx.lineTo(i1 * w / scalex,
-     h - (zeroy + ary[offset + i1] * zeroy / max_val));
-  }
-  ctx.stroke();
  }
 
  function drawGraphScaleY(canvas, ary, scaley)
  {
-  scaley = +scaley;
-  var ctx = canvas.getContext("2d");
-  var i1 = 0|0, z1 = ary.length|0;
-  var w, h, zeroy;
-
-  w = canvas.width;
-  h = canvas.height;
-  zeroy = h / 2;
-  ctx.beginPath();
-  ctx.moveTo(0, h - (zeroy + ary[0] * zeroy / scaley));
-  for (i1 = 1; i1 < z1; ++ i1) {
-   ctx.lineTo(i1 * w / (z1 - 1),
-     h - (zeroy + ary[i1] * zeroy / scaley));
-  }
-  ctx.stroke();
  }
 
 
  function drawGraphScaleXY(canvas, ary, scalex, scaley)
  {
-  scalex = +scalex;
-  scaley = +scaley;
-  var ctx = canvas.getContext("2d");
-  var i1 = 0|0, z1 = ary.length|0;
-  var w, h, zeroy;
-
-  w = canvas.width;
-  h = canvas.height;
-  zeroy = h / 2;
-  ctx.beginPath();
-  ctx.moveTo(0, h - (zeroy + ary[0] * zeroy / scaley));
-  for (i1 = 1; i1 < z1; ++ i1) {
-   ctx.lineTo(i1 * w / scalex,
-     h - (zeroy + ary[i1] * zeroy / scaley));
-  }
-  ctx.stroke();
  }
 
  function drawDftGraphScaleXY(canvas, ary, scalex, scaley)
  {
-  scalex = +scalex;
-  scaley = +scaley;
-  var ctx = canvas.getContext("2d");
-  var i1 = 0|0, z1 = ary.length|0;
-  var w, h, zeroy;
-  var x;
-
-  w = canvas.width;
-  h = canvas.height;
-  zeroy = h / 2;
-  ctx.beginPath();
-  for (i1 = 0; i1 < z1; ++ i1) {
-   x = i1 * w / scalex;
-   ctx.moveTo(x, h - zeroy);
-   ctx.lineTo(x, h - (zeroy + ary[i1] * zeroy / scaley));
-   ctx.stroke();
-  }
  }
 
 
- function tt(document) {
-  var undefined;
+ class tt {
+   tt()  {
+   }
 
-  var curPrintElement = null;
-
-  function setCurPrintElement(elm) {
+  setCurPrintElement(elm) {
    var oldPrintElement = curPrintElement;
    curPrintElement = elm;
    return oldPrintElement;
@@ -367,169 +276,6 @@ module.exports = (function () {
    div.appendChild(document.createElement("br"));
   }
 
- function loadText(path, encoding, callback) {
-pp("loadText: 0");
-  path = path+"";
-  callback = (callback && callback.constructor === Object ?
-    callback : {});
-  var win = window;
-  var xhr = new XMLHttpRequest();
-  xhr.open("GET", path, true);
-  xhr.overrideMimeType("text/plain;charset=" + encoding);
-  xhr.addEventListener("load", function() {
-   var text = xhr.responseText;
-   if (typeof (callback.success) === "function") {
-    win.setTimeout(function(){
-     callback.success(text);
-    }, 0);
-   }
-  }, false);
-  xhr.addEventListener("error", function(e) {
-   if (typeof (callback.error) === "function") {
-    win.setTimeout(function(){
-     callback.error(xhr);
-    }, 0);
-   }
-  }, false);
-  xhr.addEventListener("abort", function(e) {
-   if (typeof (callback.abort) === "function") {
-    win.setTimeout(function(){
-     callback.abort(text);
-    }, 0);
-   }
-  }, false);
-  xhr.send();
- }
-
- function loadFile(path, type, encoding, callback) {
-pp("loadFile: path=" + path);
-  callback = forceObject(callback);
-  var onSuccess = getFunc(callback, "success");
-  var onFailure = getFunc(callback, "failure");
-  var resType = 0;
-  var xhr = new XMLHttpRequest();
-  xhr.open("GET", path, true);
-  type = (""+type).toLowerCase()
-  if (type === "text" || type === "json") {
-   encoding = (isEmpty(encoding) ? "UTF-8" : encoding);
-   xhr.overrideMimeType("text/plain;charset=" + encoding);
-   resType = 0;
-  } else if (type === "document") {
-   xhr.responseType = "document";
-   resType = 1;
-  } else if (type === "arraybuffer") {
-   xhr.responseType = "ArrayBuffer";
-   resType = 2;
-  } else if (type === "blob") {
-   xhr.responseType = "blob";
-   resType = 2;
-  }
-  xhr.addEventListener("load", function() {
-   try{
-    var data;
-    if (resType === 0) {
-     data = xhr.responseText;
-    } if (resType === 1) {
-     data = xhr.responseXML;
-    } else {
-     data = xhr.response;
-    }
-    if (type === "json") {
-     if (typeof JSON !== "undefined" && "parse" in JSON) {
-      data = JSON.parse(data);
-     } else {
-      data = eval("(function(){return " + data + ";})()");
-     }
-    }
-    window.setTimeout(function(){ onSuccess(data); }, 0);
-   } catch(e) {
-    pp("exception="+e);
-   }
-  }, false);
-  xhr.addEventListener("error", function(e) {
-   onFailure();
-  }, false);
-  xhr.send();
- }
-
-
- function loadFiles(fileSet, callback) {
-pp("loadFiles: 0");
-  callback = forceObject(callback);
-  var onSuccess = getFunc(callback, "success");
-  var onFailure = getFunc(callback, "failure");
-  var fileList = createFileList(fileSet);
-  var fileListLen = fileList.length;
-  var fileListIdx = 0;
-  var dataSet = {};
-  loadFilesImpl();
-
-  function createFileList(fileSet) {
-   var fileInfo;
-   var fileList = [];
-   var k;
-   for (k in fileSet) {
-    fileInfo = fileSet[k];
-    if (isEmpty(fileInfo["path"]) ||
-      isEmpty(fileInfo["type"])) {
-     throw "loadFiles: illegal file set.";
-    }
-    if (fileInfo["type"] === "text" &&
-      isEmpty(fileInfo["encoding"])) {
-     throw "loadFiles: illegal file set.";
-    }
-    fileList.push({
-     name: k,
-     path: fileInfo["path"],
-     type: fileInfo["type"],
-     encoding: (isEmpty(fileInfo["encoding"]) ?
-       fileInfo["encoding"] : null)
-    });
-   }
-   return fileList;
-  }
-
-  function loadFilesImpl() {
-   var fileInfo = fileList[fileListIdx];
-   var name = fileInfo.name;
-   loadFile(fileInfo.path, fileInfo.type, fileInfo.encoding, {
-    success: function(data){
-     dataSet[name] = data;
-     ++ fileListIdx;
-     if (fileListIdx < fileListLen) {
-      loadFilesImpl();
-     } else {
-      onSuccess(dataSet);
-     }
-    },
-    failure: function(){
-     onFailure();
-    }
-   });
-  }
- }
-
-  function id(idStr) {
-   return document.getElementById(idStr);
-  }
-
-  function name(nameStr) {
-   return document.getElementsByName(nameStr);
-  }
-
-  function tag(nameStr) {
-   return document.getElementsByTagName(nameStr);
-  }
-
-  function query(queryStr) {
-   return document.querySelectorAll(queryStr);
-  }
-
-  this.id = id;
-  this.name = name;
-  this.tag = tag;
-  this.query = query;
-
   this.pp = pp;
   this.printLn = printLn;
   this.print = print;
@@ -555,11 +301,6 @@ pp("loadFiles: 0");
   this.printGraphLn = printGraphLn;
 
   this.isEmpty = isEmpty;
-
-  this.loadText = loadText;
-  this.loadFile = loadFile;
-  this.loadFiles = loadFiles;
-
  }
 
  tt.prototype.tt = tt;
