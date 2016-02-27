@@ -1,9 +1,6 @@
 const ipc = require('ipc');
 
 
-function wrapObj(obj) {
-  
-}
 
 
 class IpcMsgComm {
@@ -13,11 +10,9 @@ class IpcMsgComm {
   send(msg, params) {
     const obj = {
       msg: msg,
-      params: []
+      params: null
     };
-    for (params) {
-
-    }
+    obj.params = wrapObj(params);
     ipc.send('IpcMsgComm.sendMsg', JSON.stringify(obj));
   }
 }
