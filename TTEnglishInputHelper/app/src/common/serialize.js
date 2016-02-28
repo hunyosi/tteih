@@ -3,6 +3,10 @@
 module.exports = (function(globalObj){
   'use strict';
 
+  const getKeys = globalObj.Function.prototype.call.bind(
+    globalObj.Object.prototype.keys);
+  const toPrimitive = globalObj.Symbol.toPrimitive;
+
   function toJSONObject(obj) {
     if (obj === null) {
       return {isObject: false, cls: 'null'};
@@ -26,10 +30,12 @@ module.exports = (function(globalObj){
     const clsName = obj.constructor.name;
     if (typeof obj['toJSON'] === 'function') {
       return {isObject: true, cls: clsName, val: obj.toJSON()};
+    } else if (typeof obj[toPrimitive] === 'function') {
+        return {isObject: true, cls: clsName, val: obj[toPrimitive]()};
     } else if (clsName === 'String'
         || clsName === 'Number'
         || clsName === 'Boolean') {
-      return {isObject: true, cls: clsName, val: obj};
+      return {isObject: true, cls: clsName, val: obj.valueOf()};
     } else if (clsName === 'Array') {
       const newObj = [];
       for (let elm of obj) {
@@ -39,10 +45,8 @@ module.exports = (function(globalObj){
       return {isObject: true, cls: clsName, val: newObj};
     } else {
       const newObj = {};
-      for (let key in obj) {
-        if (obj.hasOwnProperty(key)) {
-          newObj[key] = toJSONObject(obj[key]);
-        }
+      for (let key of getKeys(val)) {
+        newObj[key] = toJSONObject(obj[key]);
       }
       return {isObject: true, cls: clsName, val: newObj};
     }
@@ -56,14 +60,11 @@ module.exports = (function(globalObj){
         return (void)0;
       } else  if (cls === 'null') {
         return null;
-      } else  if (cls === 'string'
-          || cls === 'number'
-          || cls === 'boolean') {
-        return obj.val;
       } else {
-        throw new Exception('unsupported value type: ' + cls);
+        return obj.val;
       }
     } else {
+
       const klass = clsSet[cls];
       if (typeof klass === 'function') {
         if (typeof klass['fromJSON'] === 'function') {
@@ -89,25 +90,46 @@ module.exports = (function(globalObj){
       if (cls === 'Object') {
         const newObj = {};
         const val = obj.val;
-        for (let key in val) {
-          if (val.hasOwnProperty(key)) {
-            newObj[key] = fromJSONObject(val[key], clsSet);
-          }
+        for (let key of getKeys(val)) {
+          newObj[key] = fromJSONObject(val[key], clsSet);
         }
         return newObj;
       }
 
       const globalKlass = globalObj[cls];
       if (typeof globalKlass === 'function') {
-
+        if (typeof klass['fromJSON'] === 'function') {
+          return globalKlass.fromJSON(obj.val);
+        } else if (typeof globalKlass.prototype['fromJSON'] === 'function') {
+          const newObj = new globalKlass();
+          newObj.fromJSON(obj.val);
+          return newObj;
+        } else {
+          return new globalKlass(obj.val);
+        }
       }
 
       throw new Exception('Unknown class: ' + cls);
     }
   }
 
+
+  function serialize(obj) {
+    const jsonObj = toJSONObject(obj);
+    const s = JSON.stringify(obj);
+    return s;
+  }
+
+  function deserialize(s, clsSet) {
+    const jsonObj = JSON.parse(s);
+    const newObj = fromJSONObject(jsonObj);
+    return newObj;
+  }
+
   return {
     toJSONObject,
-    fromJSONObject
+    fromJSONObject,
+    serialize,
+    deserialize
   };
 })((function(){return this;})())

@@ -1,3 +1,4 @@
+const serialize = require('../common/serialize.js')
 const ipc = require('ipc');
 
 
@@ -7,13 +8,8 @@ class IpcMsgComm {
   IpcMsgComm() {
   }
 
-  send(msg, params) {
-    const obj = {
-      msg: msg,
-      params: null
-    };
-    obj.params = wrapObj(params);
-    ipc.send('IpcMsgComm.sendMsg', JSON.stringify(obj));
+  send(data) {
+    ipc.send('IpcMsgComm.sendMsg', data);
   }
 }
 
@@ -23,6 +19,13 @@ class MsgComm {
   }
 
   send(msg, params) {
+    const obj = {
+      id:
+      msg: msg,
+      params: serialize.toJSONObject(params);
+    };
+    String str = JSON.stringify(obj);
+
   }
 }
 
