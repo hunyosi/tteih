@@ -50,7 +50,7 @@ resolve/reject Promise              |
 
 */
 
-const serialize = require('serialize.js')
+import * as serialize from 'serialize.js';
 
 
 function enumerateMethods(cls)
@@ -94,7 +94,7 @@ function deserializeMessage(str, clsMap)
 }
 
 
-const CommunicatorStub = (()=>{
+export const CommunicatorStub = (()=>{
   const _onReceive = Symbol();
   const _onResponse = Symbol();
 
@@ -123,7 +123,7 @@ const CommunicatorStub = (()=>{
 })();
 
 
-const MsgCommServer = (()=>{
+export const MsgCommServer = (()=>{
   const _communicator = Symbol();
   const _classes = Symbol();
   const _instances = Symbol();
@@ -300,7 +300,7 @@ const MsgCommServer = (()=>{
 })();
 
 
-const MsgCommClient = (()=>{
+export const MsgCommClient = (()=>{
   const _communicator = Symbol();
   const _stubClasses = Symbol();
   const _stubInstances = Symbol();
