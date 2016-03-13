@@ -20,7 +20,7 @@ function testEntries(dirPath, filterRegExp) {
 module.exports = {
   entry: testEntries('./src/test/', /_test\.js$/),
   output: {
-    path: './test',
+    path: './built/test',
     filename: '[name].js'
   },
   module: {

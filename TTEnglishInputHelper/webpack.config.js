@@ -1,7 +1,7 @@
 module.exports = {
   entry: './src/utagawasan.js',
   output: {
-    path: './app/lib/',
+    path: './built/app/lib/',
     filename: 'bundle.js'
   },
   module: {

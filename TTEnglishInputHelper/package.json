@@ -4,12 +4,13 @@
   "description": "English input helper for UTAU",
   "main": "build.js",
   "directories": {
-    "test": "test"
+    "test": "built/test"
   },
   "scripts": {
-    "test": "webpack --config webpack.config.test.js && mocha",
-    "compile": "webpack",
-    "exec": "electron app",
+    "test": "webpack --config webpack.config.test.js && mocha ./built/test",
+    "preparec": "node prepareToCompile.js",
+    "compile": "node prepareToCompile.js && webpack",
+    "exec": "electron built/app",
     "build": "node build.js"
   },
   "repository": {
