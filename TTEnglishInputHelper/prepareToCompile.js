@@ -468,7 +468,7 @@ function operateSrcDstPair(srcFile, dstFile, dst, excludeList) {
       srcFile.copy(dstFile.path);
     } else {
       const srcFileMTime = Math.floor(srcFile.mtime.getTime() / 1000);
-      const dstFileMTime = Math.floor(srcFile.mtime.getTime() / 1000); // Because, cleared millisecond
+      const dstFileMTime = Math.floor(dstFile.mtime.getTime() / 1000); // Because, cleared millisecond
       if (srcFileMTime !== dstFileMTime) {
         console.log(`update copy ${path.relative(cwd, srcFile.path)} --> ${path.relative(cwd, dstFile.path)}`)
         srcFile.copy(dstFile.path);
@@ -497,3 +497,4 @@ function syncFiles(src, dst, excludeSrc, excludeDst) {
 
 setGlobalBasePath(__dirname);
 syncFiles('app', 'built/app', null, 'built/app/lib');
+

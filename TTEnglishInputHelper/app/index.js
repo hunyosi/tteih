@@ -136,5 +136,5 @@ app.on('ready', () => {
   mainWnd.on('closed', () => {
     mainWnd = null;
   });
-  mainWnd.loadUrl('file://' + __dirname + '/view/index.html');
+  mainWnd.loadUrl('file://' + __dirname + '/index.html');
 });
