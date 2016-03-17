@@ -1,8 +1,10 @@
-const tt = require('tt.js');
-const progressObj = require('Progress.js');
+import * as ConvUnknownWord from './ConvUnknownWord.js';
+import tt from './tt.js';
+import Progress from './Progress.js';
+const progressObj = Progress.getInstanse();
 
 
-function transFromText(ust, txt, dict, voMap) {
+export function transFromText(ust, txt, dict, voMap) {
   tt.pp("transFromText");
 
   var push = Array.prototype.push;

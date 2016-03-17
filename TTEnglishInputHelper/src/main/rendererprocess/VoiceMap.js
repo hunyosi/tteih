@@ -1,5 +1,6 @@
-const tt = require('tt.js');
-const progressObj = require('Progress.js');
+import tt from './tt.js';
+import Progress from './Progress.js';
+const progressObj = Progress.getInstanse();
 
 function VoiceMapRule(
   lookbehind, patternBody, lookahead, voElmsToRepl) {
@@ -31,7 +32,7 @@ VoiceMapRule.prototype.toString = function() {
 };
 
 
-function VoiceMap() {
+export default function VoiceMap() {
   this.rules = {};
   this.warns = [];
 }
@@ -323,5 +324,3 @@ VoiceMap.prototype.pronunationsToVoiceNames = function(src) {
     setTimeout(translateLoop, 0);
   });
 };
-
-module.exports = VoiceMap;

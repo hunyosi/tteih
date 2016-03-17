@@ -10,18 +10,7 @@
 # [/COPYING]
 */
 
-if (typeof (define) === "undefined") {
- window.define = function() {
-  var fn = arguments[arguments.length - 1];
-  window.tt.xul = fn(window.tt);
- }
-}
-
-
-define(["tt"], function (tt) {
-
-
- function loadText(fileName, charset) {
+function loadText(fileName, charset) {
   var data = "";
 
   var file = Components.classes["@mozilla.org/file/local;1"]
@@ -47,14 +36,14 @@ define(["tt"], function (tt) {
  }
 
 
- function saveText(fileName, charset, data) {
+function saveText(fileName, charset, data) {
   var file = Components.classes["@mozilla.org/file/local;1"]
     .createInstance(Components.interfaces.nsILocalFile);
   file.initWithPath(fileName);
 
   var fos = Components.classes["@mozilla.org/network/file-output-stream;1"]
     .createInstance(Components.interfaces.nsIFileOutputStream);
-  fos.init(file, 0x02 | 0x08 | 0x20, 0664, 0); // write, create, truncate
+  fos.init(file, 0x02 | 0x08 | 0x20, 0o664, 0); // write, create, truncate
 
   var cos = Components.classes["@mozilla.org/intl/converter-output-stream;1"]
     .createInstance(Components.interfaces.nsIConverterOutputStream);
@@ -68,11 +57,8 @@ define(["tt"], function (tt) {
 
 
 
- function xul () {
+export default function xul () {
  }
 
  xul.loadText = loadText;
  xul.saveText = saveText;
-
- return xul;
-});

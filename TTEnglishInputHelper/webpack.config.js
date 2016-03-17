@@ -1,8 +1,11 @@
 module.exports = {
-  entry: './src/utagawasan.js',
+  entry: {
+    rendererprocess:'./src/main/rendererprocess/rendererprocess.js',
+    mainprocess:'./src/main/mainprocess/mainprocess.js',
+  },
   output: {
     path: './built/app/lib/',
-    filename: 'bundle.js'
+    filename: '[name].js'
   },
   module: {
     loaders: [

@@ -10,16 +10,6 @@
 # [/COPYING]
 */
 
-if (typeof (define) !== "function") {
- window.define = function() {
-  var fn = arguments[arguments.length - 1];
-  window.ConvUnknownWord = fn();
- }
-}
-
-
-define(function(){
-
 function cvre(ptn) {
  var SingleVowelChar = "AEIOUY";
  var SingleConsonantChar = "BCDFGHJKLMNPQRSTVXZ";
@@ -195,7 +185,7 @@ var EnglishWritingElements = [
 ];
 
 
-function convUnknownEnglishWord(word)
+export function convUnknownEnglishWord(word)
 {
  var wd = word.trim().toUpperCase();
  var p = convUnknownEnglishWordSuffix(wd);
@@ -550,14 +540,4 @@ function convUnknownWordImpl(ewe, wd, wdIdx, wdLen)
  }
 
  return pronunciation;
-}
-
- return {
-  convUnknownEnglishWord: convUnknownEnglishWord
- };
-});
-
-
-if (typeof (require) !== "function") {
- (function(u){ window.define = u; })();
 }

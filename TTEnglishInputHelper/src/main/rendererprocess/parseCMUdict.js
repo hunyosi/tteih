@@ -1,5 +1,6 @@
+import tt from './tt.js';
 
-function parseCMUdict(str) {
+export function parseCMUdict(str) {
   tt.pp("parseCMUdict");
   var dict = {};
   var lines = str.split(/\u000D\u000A|\u000A|\u000D/);

@@ -1,3 +1,4 @@
+'use strict';
 /*
 # [COPYING]
 #     TTEnglishInputHelper
@@ -9,16 +10,7 @@
 #     You can obtain one at http://mozilla.org/MPL/2.0/.
 # [/COPYING]
 */
-
-if (typeof (define) === "undefined") {
- window.define = function() {
-  var fn = arguments[arguments.length - 1];
-  window.tt.ust = fn(window.tt);
- }
-}
-
-
-define(["tt"], function (tt) {
+import tt from './tt.js';
 
  function USTElement(parent) {
   this.parent = parent;
@@ -97,7 +89,7 @@ define(["tt"], function (tt) {
  USTElement.prototype.setLyric = function(v){
   if (tt.isEmpty(v)) {
    this.items["Lyric"] = "";
-  } else { 
+  } else {
    this.items["Lyric"] = v+"";
   }
  };
@@ -249,7 +241,7 @@ define(["tt"], function (tt) {
   var k, v;
   z1 = secs.length;
   for (i1 = 1; i1 < z1; i1 += 2) {
-   elm = obj.createElement(); 
+   elm = obj.createElement();
    elm.name = secs[i1].replace(/^(\s|\[)*|(\]|\s)*$/g, "");
    items = secs[i1 + 1].split(/((?:^|\n)[^=]+=)/);
    z2 = items.length;
@@ -289,11 +281,9 @@ tt.pp("USTDocument.prototype.each: end");
   return new USTElement(this);
  };
 
- function ust() {
+export default function ust() {
  }
  ust.prototype = USTDocument;
  ust.USTDocument = USTDocument;
  ust.USTElement = USTElement;
  ust.parse = USTDocument.parse
- return ust;
-});
