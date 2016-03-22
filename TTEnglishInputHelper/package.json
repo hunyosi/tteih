@@ -7,7 +7,7 @@
     "test": "built/test"
   },
   "scripts": {
-    "test": "webpack --config webpack.config.test.js && mocha ./built/test",
+    "test": "node ./tool/prepareToTest.js && webpack --config webpack.config.test.js && mocha ./built/test",
     "preparec": "node prepareToCompile.js",
     "compile": "node prepareToCompile.js && webpack",
     "exec": "electron built/app",

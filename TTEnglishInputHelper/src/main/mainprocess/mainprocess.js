@@ -1,2 +1,2 @@
-import ipc from 'ipc';
-import fs from 'fs';
+const ipc = request('ipc');
+const fs = request('fs');

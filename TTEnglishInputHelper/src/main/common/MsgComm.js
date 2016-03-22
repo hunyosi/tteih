@@ -1,3 +1,4 @@
+'use strict';
 
 /*
 main process                renderer process
@@ -50,7 +51,7 @@ resolve/reject Promise              |
 
 */
 
-import * as serialize from 'serialize.js';
+import * as serialize from './serialize.js';
 
 
 function enumerateMethods(cls)
@@ -98,7 +99,7 @@ export const CommunicatorStub = (()=>{
   const _onReceive = Symbol();
   const _onResponse = Symbol();
 
-  class CommunicatorStub {
+  return class CommunicatorStub {
     constructor() {
       this[_onReceive] = null;
       this[_onResponse] = null;
@@ -138,10 +139,9 @@ export const MsgCommServer = (()=>{
       this[_sequenceNumbers] = new Map();
       this[_fromJsonClasses] = new Map();
 
-      if (! classes) {
+      if (classes) {
         if (classes.constructor === Object
-           || classes instanceOf Map
-           || classes instanceOf WeakMap) {
+           || classes instanceof Map) {
           for (let pair of classes) {
             this.addClassWithName(pair[0], pair[1]);
           }
@@ -306,7 +306,7 @@ export const MsgCommClient = (()=>{
   const _stubInstances = Symbol();
   const _responseCallbackes = Symbol();
 
-  const _seqNo - Symbol()
+  const _seqNo = Symbol()
 
   return class MsgCommClient{
     constructor(communicator) {
@@ -369,7 +369,7 @@ export const MsgCommClient = (()=>{
 
     getInstance(clsName) {
       return new Promise((resolve, reject)=>{
-        this.send('new' {cls:clsName})
+        this.send('new', {cls:clsName})
         .then(
           (seqNo)=>{
             const instance = new this[_stubClasses].get(clsName);
@@ -391,7 +391,7 @@ export const MsgCommClient = (()=>{
           msg: msg,
           data: params
         };
-        String str = serializeMessage(obj, this[_stubClasses]);
+        const str = serializeMessage(obj, this[_stubClasses]);
         this[_communicator].send(str);
       });
     }
@@ -433,6 +433,3 @@ export const MsgCommClient = (()=>{
     }
   };
 })();
-
-
-module.exports = {};

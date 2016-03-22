@@ -22,7 +22,7 @@ function getValue(obj, key) {
     return void(0);
   }
 
-  if (obj instanceof Map || obj instanceof WeakMap) {
+  if (obj instanceof Map) {
     return obj.get(key);
   } else {
     return obj[key];
@@ -46,14 +46,14 @@ export function toJSONObject(obj, clsMap) {
 
   const clsName = obj.constructor.name;
   if (hasKey(clsMap, clsName)) {
-    const cls = getValue(clsMap);
+    const cls = getValue(clsMap, clsName);
     if (typeof cls['toJSON'] === 'function') {
-      return [clsName, cls.toJSON(obj)];
+      return [clsName, cls.toJSON(obj, clsMap)];
     }
   }
 
   if (typeof obj['toJSON'] === 'function') {
-    return [clsName, obj.toJSON()];
+    return [clsName, obj.toJSON(clsMap)];
   } else if (typeof obj[toPrimitive] === 'function') {
     return [clsName, obj[toPrimitive]()];
   } else if (clsName === 'String' || clsName === 'Number' || clsName === 'Boolean') {
@@ -61,49 +61,44 @@ export function toJSONObject(obj, clsMap) {
   } else if (clsName === 'Array') {
     const newObj = [];
     for (let elm of obj) {
-      const newElm = toJSONObject(elm);
+      const newElm = toJSONObject(elm, clsMap);
       newObj.push(newElm);
     }
     return [newObj];
   } else if (clsName === 'Object') {
     const newObj = {};
     for (let key of Object.keys(obj)) {
-      newObj[key] = toJSONObject(obj[key]);
+      newObj[key] = toJSONObject(obj[key], clsMap);
     }
     return newObj;
   } else {
     const newObj = {};
     for (let key of Object.keys(obj)) {
-      newObj[key] = toJSONObject(obj[key]);
+      newObj[key] = toJSONObject(obj[key], clsMap);
     }
     return [clsName, newObj];
   }
 }
 
 
-function createInstanceFromJSONObject(cls, jsonObj) {
-  if (typeof klass['fromJSON'] === 'function') {
-    return cls.fromJSON(jsonObj);
+function createInstanceFromJSONObject(cls, jsonObj, clsMap) {
+  if (typeof cls['fromJSON'] === 'function') {
+    return cls.fromJSON(jsonObj, clsMap);
 
   } else if (typeof cls.prototype['fromJSON'] === 'function') {
     const newObj = new cls();
-    newObj.fromJSON(jsonObj);
+    newObj.fromJSON(jsonObj, clsMap);
     return newObj;
 
   } else if (typeof jsonObj === 'object') {
-    if (jsonObj.constructor === Array) {
-      const ary = [];
-      for (let elm of jsonObj) {
-        any.push(fromJSONObject(elm));
-      }
-      return new cls(ary);
-
-    } else {
+    if (jsonObj.constructor === Object) {
       const newObj = new cls();
       for (let key of Object.keys(jsonObj)) {
-        newObj[key] = fromJSONObject(jsonObj[key]);
+        newObj[key] = fromJSONObject(jsonObj[key], clsMap);
       }
       return newObj;
+    } else {
+      return new cls(jsonObj);
     }
 
   } else {
@@ -121,9 +116,8 @@ export function fromJSONObject(obj, clsMap) {
 
   if (obj.constructor === Object) {
     const newObj = {};
-    const val = obj[1];
-    for (let key of Object.keys(val)) {
-      newObj[key] = fromJSONObject(val[key], clsMap);
+    for (let key of Object.keys(obj)) {
+      newObj[key] = fromJSONObject(obj[key], clsMap);
     }
     return newObj;
   } else if (obj.constructor !== Array) {
@@ -147,12 +141,12 @@ export function fromJSONObject(obj, clsMap) {
 
   const klass = getValue(clsMap, cls);
   if (typeof klass === 'function') {
-    return createInstanceFromJSONObject(klass, obj[1]);
+    return createInstanceFromJSONObject(klass, obj[1], clsMap);
   }
 
   const globalKlass = globalObj[cls];
   if (typeof globalKlass === 'function') {
-    return createInstanceFromJSONObject(globalKlass, obj[1]);
+    return createInstanceFromJSONObject(globalKlass, obj[1], clsMap);
   }
 
   throw new Exception('Unknown class: ' + cls);
