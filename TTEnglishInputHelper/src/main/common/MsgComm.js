@@ -59,9 +59,9 @@ function enumerateMethods(cls)
   const methodSet = new Set();
   const root = cls.prototype;
 
-  for (let p = root; p !== Object.prototype; p = Object.getPrototyprOf(p)) {
+  for (let p = root; p !== Object.prototype; p = Object.getPrototypeOf(p)) {
     for (let n of Object.getOwnPropertyNames(p)) {
-      if (typeof root[n] === 'function') {
+      if (n !== 'constructor' && typeof root[n] === 'function') {
         methodSet.add(n);
       }
     }
@@ -139,19 +139,18 @@ export const MsgCommServer = (()=>{
       this[_sequenceNumbers] = new Map();
       this[_fromJsonClasses] = new Map();
 
-      if (classes) {
-        if (classes.constructor === Object
-           || classes instanceof Map) {
-          for (let pair of classes) {
-            this.addClassWithName(pair[0], pair[1]);
-          }
-        } else if (classes.constructor === Object) {
+      if (typeof classes === 'object') {
+        if (classes.constructor === Object) {
           for (let key of Object.keys(classes)) {
             this.addClassWithName(key, classes[key]);
           }
+        } else if (classes instanceof Map) {
+          for (let pair of classes) {
+            this.addClassWithName(pair[0], pair[1]);
+          }
         } else {
           for (let cls of classes) {
-            thia.addClass(cls);
+            this.addClass(cls);
           }
         }
       }
@@ -162,12 +161,12 @@ export const MsgCommServer = (()=>{
 
     addClass(cls) {
       const name = cls.name;
-      addClassWithName(name, cls);
+      this.addClassWithName(name, cls);
     }
 
     addClassWithName(name, cls) {
       this[_classes].set(name, cls);
-      this[_instances].set(name, new WeakMap());
+      this[_instances].set(name, new Map());
       this[_sequenceNumbers].set(name, 0);
 
       const self = this;
@@ -182,10 +181,10 @@ export const MsgCommServer = (()=>{
     getClassInfo() {
       const classes = this[_classes];
       const ary = [];
-      for (let key of classes.keys()) {
+      for (let pair of classes) {
         ary.push([
-          key,
-          enumerateMethods(classes[key])
+          pair[0],
+          enumerateMethods(pair[1])
         ]);
       }
       return ary;
@@ -193,7 +192,7 @@ export const MsgCommServer = (()=>{
 
     createInstance(clsName, param) {
       const classes = this[_classes];
-      const isntances = this[_instances];
+      const instances = this[_instances];
       const sequenceNumbers = this[_sequenceNumbers];
 
       const cls = classes.get(clsName);
@@ -202,14 +201,14 @@ export const MsgCommServer = (()=>{
       }
 
       const seqNo = sequenceNumbers.get(clsName);
+      const nextSeqNo = seqNo + 1;
 
       const instance = new cls(param);
-      instances.get(clsName).set(seqNo, instance);
+      instances.get(clsName).set(nextSeqNo, instance);
 
-      const nextSeqNo = seqNo + 1;
       sequenceNumbers.set(clsName, nextSeqNo);
 
-      return seqNo;
+      return nextSeqNo;
     }
 
     invokeMethod(cls, seqNo, methodName, params) {
