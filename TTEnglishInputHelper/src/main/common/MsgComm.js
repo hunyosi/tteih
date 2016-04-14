@@ -240,7 +240,7 @@ export const MsgCommServer = (()=>{
         return seqNo;
 
       } else if (msg === 'clsinfo') {
-        const clsinfo = getClassInfo();
+        const clsinfo = this.getClassInfo();
         return clsinfo;
 
       } else {
