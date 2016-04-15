@@ -212,7 +212,7 @@ describe('MsgComm', function () {
       actual = mcs.dispatchMessage('invoke', {cls:'Abc', seqNo:objId, method:'getCount', params:[]});
       assert.strictEqual(/*expected*/5, actual);
     });
-    it('onReceiveMessage1', function(){
+    it('onReceiveMessage clsinfo', function(){
       class ClsA {
         constructor(){
           this.count = 0;
@@ -228,32 +228,35 @@ describe('MsgComm', function () {
       const mcs = new MsgComm.MsgCommServer(cs);
       mcs.addClassWithName('Abc', ClsA);
 
-      var actual;
+      cs.onResponse = (actual) => {
+        assert.deepEqual(/*expected*/{
+          id:1,
+          msg:'clsinfo',
+          ok:true,
+          data:[[[['Abc', [['add', 'getCount']]]]]]
+        }, JSON.parse(actual));
+      };
+      mcs.onReceiveMessage({}, '{"id":1,"msg":"clsinfo"}');
 
-      actual = mcs.dispatchMessage('clsinfo');
-      assert.deepEqual(/*expected*/[
-        ['Abc', ['add', 'getCount']]
-      ], actual);
-
-      const objId = mcs.dispatchMessage('new', {cls:'Abc'});
-      actual = objId;
-      assert.strictEqual(/*expected*/1, actual);
-      const objId2 = mcs.dispatchMessage('new', {cls:'Abc'});
-      actual = objId2;
-      assert.strictEqual(/*expected*/2, actual);
-
-      actual = mcs.dispatchMessage('invoke', {cls:'Abc', seqNo:objId, method:'add', params:[3]});
-      assert.strictEqual(/*expected*/void 0, actual);
-      actual = mcs.dispatchMessage('invoke', {cls:'Abc', seqNo:objId, method:'getCount', params:[]});
-      assert.strictEqual(/*expected*/3, actual);
-      actual = mcs.dispatchMessage('invoke', {cls:'Abc', seqNo:objId2, method:'add', params:[1]});
-      assert.strictEqual(/*expected*/void 0, actual);
-      actual = mcs.dispatchMessage('invoke', {cls:'Abc', seqNo:objId2, method:'getCount', params:[]});
-      assert.strictEqual(/*expected*/1, actual);
-      actual = mcs.dispatchMessage('invoke', {cls:'Abc', seqNo:objId, method:'add', params:[2]});
-      assert.strictEqual(/*expected*/void 0, actual);
-      actual = mcs.dispatchMessage('invoke', {cls:'Abc', seqNo:objId, method:'getCount', params:[]});
-      assert.strictEqual(/*expected*/5, actual);
+      // const objId = mcs.onReceiveMessage('new', {cls:'Abc'});
+      // actual = objId;
+      // assert.strictEqual(/*expected*/1, actual);
+      // const objId2 = mcs.dispatchMessage('new', {cls:'Abc'});
+      // actual = objId2;
+      // assert.strictEqual(/*expected*/2, actual);
+      //
+      // actual = mcs.dispatchMessage('invoke', {cls:'Abc', seqNo:objId, method:'add', params:[3]});
+      // assert.strictEqual(/*expected*/void 0, actual);
+      // actual = mcs.dispatchMessage('invoke', {cls:'Abc', seqNo:objId, method:'getCount', params:[]});
+      // assert.strictEqual(/*expected*/3, actual);
+      // actual = mcs.dispatchMessage('invoke', {cls:'Abc', seqNo:objId2, method:'add', params:[1]});
+      // assert.strictEqual(/*expected*/void 0, actual);
+      // actual = mcs.dispatchMessage('invoke', {cls:'Abc', seqNo:objId2, method:'getCount', params:[]});
+      // assert.strictEqual(/*expected*/1, actual);
+      // actual = mcs.dispatchMessage('invoke', {cls:'Abc', seqNo:objId, method:'add', params:[2]});
+      // assert.strictEqual(/*expected*/void 0, actual);
+      // actual = mcs.dispatchMessage('invoke', {cls:'Abc', seqNo:objId, method:'getCount', params:[]});
+      // assert.strictEqual(/*expected*/5, actual);
     });
   });
 });

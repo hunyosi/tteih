@@ -78,7 +78,7 @@ function enumerateMethods(cls)
 function serializeMessage(obj)
 {
   const newObj = {};
-  for (let key of obj.keys()) {
+  for (let key of Object.keys(obj)) {
     newObj[key] = obj[key];
   }
 

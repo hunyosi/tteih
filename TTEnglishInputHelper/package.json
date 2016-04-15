@@ -7,7 +7,7 @@
     "test": "built/test"
   },
   "scripts": {
-    "test": "node ./tool/prepareToTest.js && webpack --config webpack.config.test.js && mocha ./built/test",
+    "test": "node ./tool/prepareToTest.js && webpack --config webpack.config.test.js && mocha --require source-map-support/register ./built/test",
     "preparec": "node prepareToCompile.js",
     "compile": "node prepareToCompile.js && webpack",
     "exec": "electron built/app",
@@ -36,6 +36,7 @@
     "electron-prebuilt": "^0.37.1",
     "iconv-lite": "^0.4.13",
     "jszip": "^2.5.0",
+    "source-map-support": "^0.4.0",
     "webpack": "^1.12.14"
   }
 }
