@@ -237,10 +237,33 @@ describe('MsgComm', function () {
         }, JSON.parse(actual));
       };
       mcs.onReceiveMessage({}, '{"id":1,"msg":"clsinfo"}');
+    });
+    it('onReceiveMessage new', function(){
+      class ClsA {
+        constructor(){
+          this.count = 0;
+        }
+        add(val){
+          this.count += val;
+        }
+        getCount(){
+         return this.count;
+        }
+      }
+      const cs = new MsgComm.CommunicatorStub();
+      const mcs = new MsgComm.MsgCommServer(cs);
+      mcs.addClassWithName('Abc', ClsA);
 
-      // const objId = mcs.onReceiveMessage('new', {cls:'Abc'});
-      // actual = objId;
-      // assert.strictEqual(/*expected*/1, actual);
+      cs.onResponse = (actual) => {
+        assert.deepEqual(/*expected*/{
+          id:1,
+          msg:'new',
+          ok:true,
+          data:1
+        }, JSON.parse(actual));
+      };
+      mcs.onReceiveMessage({}, '{"id":1, "msg":"new", "data":{"cls":"Abc"}}');
+
       // const objId2 = mcs.dispatchMessage('new', {cls:'Abc'});
       // actual = objId2;
       // assert.strictEqual(/*expected*/2, actual);
