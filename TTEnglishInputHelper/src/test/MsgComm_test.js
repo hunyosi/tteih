@@ -380,4 +380,12 @@ describe('MsgComm', function () {
       });
     });
   });
+  describe('MsgCommClient', function () {
+    it('new MsgCommClient', function () {
+      const cs = new MsgComm.CommunicatorStub();
+      const mcs = new MsgComm.MsgCommClient(cs);
+      var actual = 'OK';
+      assert.equal( /*expected*/'OK', actual);
+    });
+  });
 });
