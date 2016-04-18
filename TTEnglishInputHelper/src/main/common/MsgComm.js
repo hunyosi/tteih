@@ -114,7 +114,7 @@ export const CommunicatorStub = (()=>{
     }
 
     send(str) {
-      onReceive({}, str);
+      this[_onReceive]({}, str);
     }
 
     response(obj, str) {
@@ -313,6 +313,9 @@ export const MsgCommClient = (()=>{
       this[_stubClasses] = new Map();
       this[_stubInstances] = new Map();
       this[_responseCallbackes] = [];
+
+      this[_communicator].onResponse = (
+          (data)=>this.onReceiveResponce(data));
     }
 
     addClass(clsName, methodNames) {
@@ -348,7 +351,7 @@ export const MsgCommClient = (()=>{
       }
 
       this[_stubClasses].set(clsName, stubCls);
-      this[_stubInstances].set(clsName, new WeakMap());
+      this[_stubInstances].set(clsName, new Map());
     }
 
     fetchClass(cls) {
@@ -384,7 +387,7 @@ export const MsgCommClient = (()=>{
 
     send(msg, params) {
       return new Promise((resolve, reject)=>{
-        const id = getMessageId(resolve, reject);
+        const id = this.getMessageId(resolve, reject);
         const obj = {
           id: id,
           msg: msg,
@@ -395,7 +398,7 @@ export const MsgCommClient = (()=>{
       });
     }
 
-    onReceiveResponce(str) {
+    onReceiveResponce(msgStr) {
       const obj = deserializeMessage(msgStr, this[_stubClasses]);
       const id = obj.id;
       const ok = obj.ok;
@@ -405,7 +408,7 @@ export const MsgCommClient = (()=>{
       cbAry[id] = null;
 
       const resolve = cbSet[0];
-      const reject = cbSet[0];
+      const reject = cbSet[1];
 
       if (ok) {
         resolve(data);

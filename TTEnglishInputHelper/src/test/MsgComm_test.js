@@ -383,9 +383,40 @@ describe('MsgComm', function () {
   describe('MsgCommClient', function () {
     it('new MsgCommClient', function () {
       const cs = new MsgComm.CommunicatorStub();
-      const mcs = new MsgComm.MsgCommClient(cs);
+      const mcc = new MsgComm.MsgCommClient(cs);
       var actual = 'OK';
       assert.equal( /*expected*/'OK', actual);
+    });
+    it('MsgCommClient usage', function () {
+      class ClsA {
+        constructor(){
+          this.count = 0;
+        }
+        add(val){
+          this.count += val;
+        }
+        getCount(){
+         return this.count;
+        }
+      }
+
+      const cs = new MsgComm.CommunicatorStub();
+
+      const mcs = new MsgComm.MsgCommServer(cs, [ClsA]);
+
+      let instanceOfClsA;
+      const mcc = new MsgComm.MsgCommClient(cs);
+      var actual = 'OK';
+      assert.equal( /*expected*/'OK', actual);
+//      return mcc.fetchClass()
+//        .then(()=>new Promise((resolve)=>{assert.equal(/*expected*/'ok', 'ok'); resolve();}))
+//        .then(()=>mcs.getInstance('ClsA'))
+//        .then((actual)=>new Promise((resolve)=>{assert.equal(/*expected*/true, actual != null); resolve();}))
+//        .then((instance)=>{instanceOfClsA = instance; return instanceOfClsA.getCount();})
+//        .then((actual)=>new Promise((resolve)=>{assert.equal( /*expected*/0, actual); resolve();}))
+//        .then(()=>instanceOfClsA.add(5))
+//        .then(()=>instanceOfClsA.getCount())
+//        .then((actual)=>new Promise((resolve)=>{assert.equal( /*expected*/5, actual); resolve();}))
     });
   });
 });
