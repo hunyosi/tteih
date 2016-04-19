@@ -406,8 +406,11 @@ describe('MsgComm', function () {
 
       let instanceOfClsA;
       const mcc = new MsgComm.MsgCommClient(cs);
-      return mcc.fetchClass()
-        .then(()=>new Promise((resolve)=>{assert.equal(/*expected*/'ok', 'ok'); resolve();}))
+//      var actual = 'NG';
+//      assert.equal( /*expected*/'OK', actual);
+//      return new Promise((done)=>{
+        return mcc.fetchClass()
+          .then(()=>{console.log('after fetchClass Promise'); return new Promise((resolve)=>{console.log('after fetchClass Promise');assert.equal(/*expected*/'ok', 'ok'); resolve();});})
 //        .then(()=>mcs.getInstance('ClsA'))
 //        .then((actual)=>new Promise((resolve)=>{assert.equal(/*expected*/true, actual != null); resolve();}))
 //        .then((instance)=>{instanceOfClsA = instance; return instanceOfClsA.getCount();})
@@ -415,6 +418,9 @@ describe('MsgComm', function () {
 //        .then(()=>instanceOfClsA.add(5))
 //        .then(()=>instanceOfClsA.getCount())
 //        .then((actual)=>new Promise((resolve)=>{assert.equal( /*expected*/5, actual); resolve();}))
+          .catch((err)=>console.log('catch:', err))
+          ;
+//      });
     });
   });
 });

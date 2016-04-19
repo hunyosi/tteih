@@ -1,3 +1,6 @@
 'use strict';
 const fileUtil = require('./fileUtil.js');
-(new fileUtil.File('./built/test')).remove();
+
+const builtTestDir = './built/test';
+
+(new fileUtil.File(builtTestDir)).remove();
