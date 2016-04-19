@@ -406,10 +406,8 @@ describe('MsgComm', function () {
 
       let instanceOfClsA;
       const mcc = new MsgComm.MsgCommClient(cs);
-      var actual = 'OK';
-      assert.equal( /*expected*/'OK', actual);
-//      return mcc.fetchClass()
-//        .then(()=>new Promise((resolve)=>{assert.equal(/*expected*/'ok', 'ok'); resolve();}))
+      return mcc.fetchClass()
+        .then(()=>new Promise((resolve)=>{assert.equal(/*expected*/'ok', 'ok'); resolve();}))
 //        .then(()=>mcs.getInstance('ClsA'))
 //        .then((actual)=>new Promise((resolve)=>{assert.equal(/*expected*/true, actual != null); resolve();}))
 //        .then((instance)=>{instanceOfClsA = instance; return instanceOfClsA.getCount();})
