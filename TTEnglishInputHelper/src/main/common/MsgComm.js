@@ -114,10 +114,12 @@ export const CommunicatorStub = (()=>{
     }
 
     send(str) {
+      console.log('send: ' + str);
       this[_onReceive]({}, str);
     }
 
     response(obj, str) {
+      console.log('response: ' + str);
       this[_onResponse](str);
     }
   };
@@ -358,7 +360,9 @@ export const MsgCommClient = (()=>{
       return new Promise((resolve, reject)=>{
         this.send('clsinfo', null)
         .then((clsInfo)=>{
+          console.log('fetchClass after send:', clsInfo);
           for (let pair of clsInfo) {
+            console.log('fetchClass:', pair)
             this.addClass(pair[0], pair[1]);
           }
           resolve();
@@ -387,7 +391,7 @@ export const MsgCommClient = (()=>{
 
     send(msg, params) {
       return new Promise((resolve, reject)=>{
-        const id = this.getMessageId(resolve, reject);
+        const id = this.getMessageId((data)=>{console.log('res resolve');resolve(data)}, (data)=>{console.log('res reject');reject(data)});
         const obj = {
           id: id,
           msg: msg,
