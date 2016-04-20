@@ -54,8 +54,7 @@ resolve/reject Promise              |
 import * as serialize from './serialize.js';
 
 
-function enumerateMethods(cls)
-{
+function enumerateMethods(cls) {
   const methodSet = new Set();
   const root = cls.prototype;
 
@@ -75,8 +74,7 @@ function enumerateMethods(cls)
 }
 
 
-function serializeMessage(obj)
-{
+function serializeMessage(obj) {
   const newObj = {};
   for (let key of Object.keys(obj)) {
     newObj[key] = obj[key];
@@ -87,15 +85,14 @@ function serializeMessage(obj)
 }
 
 
-function deserializeMessage(str, clsMap)
-{
+function deserializeMessage(str, clsMap) {
   const newObj = JSON.parse(str);
   newObj.data = serialize.fromJSONObject(newObj.data, clsMap);
   return newObj;
 }
 
 
-export const CommunicatorStub = (()=>{
+export const CommunicatorStub = (() => {
   const _onReceive = Symbol();
   const _onResponse = Symbol();
 
@@ -114,19 +111,17 @@ export const CommunicatorStub = (()=>{
     }
 
     send(str) {
-      console.log('send: ' + str);
       this[_onReceive]({}, str);
     }
 
     response(obj, str) {
-      console.log('response: ' + str);
       this[_onResponse](str);
     }
   };
 })();
 
 
-export const MsgCommServer = (()=>{
+export const MsgCommServer = (() => {
   const _communicator = Symbol();
   const _classes = Symbol();
   const _instances = Symbol();
@@ -158,7 +153,7 @@ export const MsgCommServer = (()=>{
       }
 
       this[_communicator].onReceive = (
-          (resObj, data)=>this.onReceiveMessage(resObj, data));
+        (resObj, data) => this.onReceiveMessage(resObj, data));
     }
 
     addClass(cls) {
@@ -198,7 +193,7 @@ export const MsgCommServer = (()=>{
       const sequenceNumbers = this[_sequenceNumbers];
 
       const cls = classes.get(clsName);
-      if (! cls) {
+      if (!cls) {
         throw new Exception('do not have class: ', clsName);
       }
 
@@ -215,12 +210,12 @@ export const MsgCommServer = (()=>{
 
     invokeMethod(cls, seqNo, methodName, params) {
       const instancesOfCls = this[_instances].get(cls);
-      if (! instancesOfCls) {
+      if (!instancesOfCls) {
         throw new Exception(`unknwon class: ${cls}`);
       }
 
       const instance = this[_instances].get(cls).get(seqNo);
-      if (! instance) {
+      if (!instance) {
         throw new Exception(`unknwon seqNo: cls=${cls}, seqNo=${seqNo}`);
       }
 
@@ -264,22 +259,22 @@ export const MsgCommServer = (()=>{
 
       if (data instanceof Promise) {
         data.then(
-          (result)=>{
+          (result) => {
             const res = {
-              id:obj.id,
+              id: obj.id,
               msg,
-              ok:true,
-              data:result
+              ok: true,
+              data: result
             };
             const serializedMessage = serializeMessage(res);
             this[_communicator].response(resObj, serializedMessage);
           },
-          (result)=>{
+          (result) => {
             const res = {
-              id:obj.id,
+              id: obj.id,
               msg,
-              ok:false,
-              data:result
+              ok: false,
+              data: result
             };
             const serializedMessage = serializeMessage(res);
             this[_communicator].response(resObj, serializedMessage);
@@ -288,7 +283,7 @@ export const MsgCommServer = (()=>{
 
       } else {
         const res = {
-          id:obj.id,
+          id: obj.id,
           msg,
           ok,
           data
@@ -301,7 +296,7 @@ export const MsgCommServer = (()=>{
 })();
 
 
-export const MsgCommClient = (()=>{
+export const MsgCommClient = (() => {
   const _communicator = Symbol();
   const _stubClasses = Symbol();
   const _stubInstances = Symbol();
@@ -309,7 +304,7 @@ export const MsgCommClient = (()=>{
 
   const _seqNo = Symbol()
 
-  return class MsgCommClient{
+  return class MsgCommClient {
     constructor(communicator) {
       this[_communicator] = communicator;
       this[_stubClasses] = new Map();
@@ -317,13 +312,33 @@ export const MsgCommClient = (()=>{
       this[_responseCallbackes] = [];
 
       this[_communicator].onResponse = (
-          (data)=>this.onReceiveResponce(data));
+        (data) => this.onReceiveResponce(data));
+    }
+
+    getInstance(clsName) {
+      return this.send('new', {
+          cls: clsName
+        })
+        .then((seqNo) => {
+          const instance = new(this[_stubClasses].get(clsName))(seqNo);
+          this[_stubInstances].set(seqNo, instance);
+          return instance;
+        });
+    }
+
+    fetchClass(cls) {
+      return this.send('clsinfo', null)
+        .then((clsInfo) => {
+          for (let pair of clsInfo) {
+            this.addClass(pair[0], pair[1]);
+          }
+        });
     }
 
     addClass(clsName, methodNames) {
-      const parent = then;
+      const parent = this;
 
-      const stubCls = class{
+      const stubCls = class {
         constructor(seqNo) {
           this[_seqNo] = seqNo;
         }
@@ -342,56 +357,25 @@ export const MsgCommClient = (()=>{
       };
 
       for (let methodName of methodNames) {
-        Object.defineProperty(stubCls.prototype, methodName, {value:function(){
-          return parent.send('invoke', {
-            cls: clsName,
-            seqNo: this[_seqNo],
-            method: methodName,
-            params: Array.prototype.slice.call(arguments)
-          });
-        }});
+        Object.defineProperty(stubCls.prototype, methodName, {
+          value: function() {
+            return parent.send('invoke', {
+              cls: clsName,
+              seqNo: this[_seqNo],
+              method: methodName,
+              params: Array.prototype.slice.call(arguments)
+            });
+          }
+        });
       }
 
       this[_stubClasses].set(clsName, stubCls);
       this[_stubInstances].set(clsName, new Map());
     }
 
-    fetchClass(cls) {
-      return new Promise((resolve, reject)=>{
-        this.send('clsinfo', null)
-        .then((clsInfo)=>{
-          console.log('fetchClass after send:', clsInfo);
-          for (let pair of clsInfo) {
-            console.log('fetchClass:', pair)
-            this.addClass(pair[0], pair[1]);
-          }
-          resolve();
-        },
-        (err)=>{
-          reject(err);
-        });
-      });
-    }
-
-    getInstance(clsName) {
-      return new Promise((resolve, reject)=>{
-        this.send('new', {cls:clsName})
-        .then(
-          (seqNo)=>{
-            const instance = new this[_stubClasses].get(clsName);
-            this[_stubInstances].set(seqNo, instance);
-            resolve(instance);
-          },
-          (cause)=>{
-            reject(cause);
-          }
-        );
-      });
-    }
-
     send(msg, params) {
-      return new Promise((resolve, reject)=>{
-        const id = this.getMessageId((data)=>{console.log('res resolve');resolve(data)}, (data)=>{console.log('res reject');reject(data)});
+      return new Promise((resolve, reject) => {
+        const id = this.getMessageId(resolve, reject);
         const obj = {
           id: id,
           msg: msg,
@@ -426,7 +410,7 @@ export const MsgCommClient = (()=>{
       const cbAry = this[_responseCallbackes];
       const cbAryLen = cbAry.length;
       let elm;
-      for (let idx = 0; idx < cbAryLen; ++ idx) {
+      for (let idx = 0; idx < cbAryLen; ++idx) {
         elm = cbAry[idx];
         if (elm == null) {
           cbAry[idx] = cbSet;
