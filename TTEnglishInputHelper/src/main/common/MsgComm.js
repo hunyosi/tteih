@@ -10,7 +10,7 @@ run renderer process -------------->+
     |                           prepare
     |                               |
     |                stub info      |
-    |<------------------------- send prepared msg
+    |<------------------------- send prepared                                                                   msg
     |                               |
     |        stub info              |
 response ok ----------------------->|
@@ -258,8 +258,7 @@ export const MsgCommServer = (() => {
       }
 
       if (data instanceof Promise) {
-        data.then(
-          (result) => {
+        data.then((result) => {
             const res = {
               id: obj.id,
               msg,
@@ -268,8 +267,8 @@ export const MsgCommServer = (() => {
             };
             const serializedMessage = serializeMessage(res);
             this[_communicator].response(resObj, serializedMessage);
-          },
-          (result) => {
+          })
+          .catch((result) => {
             const res = {
               id: obj.id,
               msg,
@@ -278,8 +277,7 @@ export const MsgCommServer = (() => {
             };
             const serializedMessage = serializeMessage(res);
             this[_communicator].response(resObj, serializedMessage);
-          }
-        );
+          });
 
       } else {
         const res = {
