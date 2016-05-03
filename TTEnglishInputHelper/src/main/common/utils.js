@@ -11,47 +11,159 @@
 # [/COPYING]
 */
 
+export function isLittleEndian() {
+  var u8buf = new Uint8Array(2);
+  u8buf[0] = 0xCD;
+  u8buf[1] = 0xAB;
+  var u16buf = new Uint16Array(u8buf.buffer);
+  return (u16buf[0] === 0xABCD);
+}
+
+export function arrayBufferToString(aryBuf, header) {
+  var bytes = aryBuf.byteLength;
+  var padding = ((bytes % 2) === 1);
+
+  var len = (padding ? bytes - 1 : bytes) / 2;
+  var u16Ary = new Uint16Array(aryBuf, 0, len);
+  var str = String.fromCharCode.apply(null, u16Ary);
+  if (padding) {
+    var u8Ary = new Uint8Array(aryBuf);
+    str += String.fromCharCode(u8Ary[bytes - 1]);
+  }
+
+  if (header) {
+    var headBuf = new Uint8Array(2);
+    if (padding) {
+      headBuf[0] = 0x01;
+      headBuf[1] = 0xF1;
+    } else {
+      headBuf[0] = 0x02;
+      headBuf[1] = 0xF2;
+    }
+
+    var headStr = String.fromCharCode.apply(null, new Uint16Array(headBuf.buffer))[0]
+
+    return headStr + str;
+  } else {
+    return str;
+  }
+}
+
+export function stringToArrayBuffer(str, header, oddBytes) {
+  var strLen = str.length;
+  if (header && strLen < 1) {
+    throw new Error('argument error in stringArrayBuffer');
+  }
+  var offset = 0;
+  var padding = oddBytes ? 1 : 0;
+  var dataByteOrderIsLE = true;
+  var machineByteOrderIsLE = true;
+  if (header) {
+    var hdr = str.charCodeAt(0);
+    offset = 1;
+    padding = hdr & 0x0001;
+    dataByteOrderIsLE = (hdr & 0xF000) != 0;
+    machineByteOrderIsLE = isLittleEndian();
+  }
+
+  var words = (strLen - offset) - padding;
+  var bytes = (strLen - offset) * 2 - padding;
+
+  var aryBuf = new ArrayBuffer(bytes);
+
+  var u16Ary = new Uint16Array(aryBuf, 0, words);
+  var idx;
+  if (dataByteOrderIsLE === machineByteOrderIsLE) {
+    for (idx = 0; idx < words; ++ idx) {
+      u16Ary[idx] = str.charCodeAt(offset + idx);
+    }
+  } else {
+    for (idx = 0; idx < words; ++ idx) {
+      var c = str.charCodeAt(offset + idx);
+      u16Ary[idx] = ((c & 0xFF) << 8) | ((c >> 8) & 0xFF);
+    }
+  }
+
+  if (padding !== 0) {
+    var u8Ary = new Uint8Array(aryBuf);
+    u8Ary[bytes - 1] = str.charCodeAt(strLen - 1) & 0xFF;
+  }
+
+  return aryBuf;
+}
+
+
 export function escapeJSStr(str) {
   str = str + '';
+  var xStr;
   var i, z = str.length, c, buf = '';
+  var highSurrogate = null, codePoint, cpLow;
   for (i = 0; i < z; ++ i) {
     c = str.charCodeAt(i);
+
+    if (highSurrogate !== null) {
+      if (0xDC00 <= c && c <= 0xDFFF) {
+        codePoint = 0x10000 + (highSurrogate - 0xD800) * 0x400 + (c - 0xDC00);
+        cpLow = codePoint & 0xFFFF;
+        if (cpLow === 0xFFFE || cpLow === 0xFFFF) {
+          xStr = '000' + highSurrogate.toString(16);
+          buf += '\\u' + xStr.substring(xStr.length - 4);
+          xStr = '000' + c.toString(16);
+          buf += '\\u' + xStr.substring(xStr.length - 4);
+        } else {
+          buf += String.fromCharCode(highSurrogate);
+          buf += String.fromCharCode(c);
+        }
+        continue;
+      } else {
+        xStr = '000' + highSurrogate.toString(16);
+        buf += '\\u' + xStr.substring(xStr.length - 4);
+      }
+      highSurrogate = null;
+    }
+
     if (c <= 0xFF) {
-      if (c == 0x5C) {
+      if (c === 0x5C) {
         buf += '\\\\';
-      } else if (c == 0x21) {
+      } else if (c === 0x21) {
         buf += '\\\"';
-      } else if (c == 0x27) {
+      } else if (c === 0x27) {
         buf += '\\\'';
-      } else if (c == 0x09) {
+      } else if (c === 0x09) {
         buf += '\\t';
-      } else if (c == 0x0A) {
+      } else if (c === 0x0A) {
         buf += '\\n';
-      } else if (c == 0x0D) {
+      } else if (c === 0x0D) {
         buf += '\\r';
-      } else if (c == 0x08) {
+      } else if (c === 0x08) {
         buf += '\\b';
-      } else if (c == 0x0B) {
+      } else if (c === 0x0B) {
         buf += '\\v';
-      } else if (c == 0x0C) {
+      } else if (c === 0x0C) {
         buf += '\\f';
-      } else if (c == 0x00) {
+      } else if (c === 0x00) {
         buf += '\\0';
-      } else if (c < 0x20 || (0x7F <= c && c < 0xA0)) {
-        var xStr = '0' + c.toString(16);
+      } else if (c <= 0x1F || (0x7F <= c && c <= 0x9F)) {
+        xStr = '0' + c.toString(16);
         buf += '\\x' + xStr.substring(xStr.length - 2);
       } else {
         buf += String.fromCharCode(c);
       }
-    } else if (c == 0x2028) {
-      buf += '\\u2028';
-    } else if (c == 0x2029) {
-      buf += '\\u2029';
+    } else if (0xD800 <= c && c <= 0xDBFF) {
+        highSurrogate = c;
+    } else if (c === 0x2028 || c === 0x2029 || (0xDC00 <= c && c <= 0xDFFF) || (0xFDD0 <= c && c <= 0xFDEF) || c === 0xFFFE || c === 0xFFFF) {
+      xStr = '000' + c.toString(16);
+      buf += '\\u' + xStr.substring(xStr.length - 4);
     } else {
-      var uStr = '000' + c.toString(16);
-      buf += '\\u' + uStr.substring(uStr.length - 4);
+      buf += String.fromCharCode(c);
     }
   }
+
+  if (highSurrogate !== null) {
+    xStr = '000' + highSurrogate.toString(16);
+    buf += '\\u' + xStr.substring(xStr.length - 4);
+  }
+
   return buf;
 }
 
