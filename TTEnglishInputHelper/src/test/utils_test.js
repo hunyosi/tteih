@@ -86,10 +86,39 @@ describe('utils', function () {
 
       var str = utils.isLittleEndian() ? '\u0210\u5634\u0078' : '\u1002\u3456\u0078';
 
-      const aryBuf = utils.stringToArrayBuffer(str, false, true);
+      const aryBuf = utils.stringToArrayBuffer(str, false, 0, 5);
       const actual = new Uint8Array(aryBuf);
 
       assert.deepEqual(expected, actual);
+    });
+    it('even byte length with header', function () {
+      const expected = new Uint16Array(2);
+      expected[0] = 0x0210;
+      expected[1] = 0x5634;
+
+      const aryBuf = utils.stringToArrayBuffer('\uF202\u0210\u5634', true);
+      const actual = new Uint16Array(aryBuf);
+      assert.deepEqual(expected, actual);
+
+      const aryBuf2 = utils.stringToArrayBuffer('\u02F2\u1002\u3456', true);
+      const actual2 = new Uint16Array(aryBuf2);
+      assert.deepEqual(expected, actual2);
+    });
+    it('odd byte length with header', function () {
+      const expected = new Uint8Array(5);
+      expected[0] = 0x10;
+      expected[1] = 0x02;
+      expected[2] = 0x34;
+      expected[3] = 0x56;
+      expected[4] = 0x78;
+
+      const aryBuf = utils.stringToArrayBuffer('\uF101\u0210\u5634\u0078', true);
+      const actual = new Uint8Array(aryBuf);
+      assert.deepEqual(expected, actual);
+
+      const aryBuf2 = utils.stringToArrayBuffer('\u01F1\u1002\u3456\u0078', true);
+      const actual2 = new Uint8Array(aryBuf2);
+      assert.deepEqual(expected, actual2);
     });
   });
 });

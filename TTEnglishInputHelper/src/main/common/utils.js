@@ -19,66 +19,116 @@ export function isLittleEndian() {
   return (u16buf[0] === 0xABCD);
 }
 
-export function arrayBufferToString(aryBuf, header) {
+
+export function arrayBufferToString(aryBuf, header, byteLength, outputAsLittleEndian) {
+  var machineByteOrderIsLE = isLittleEndian();
+  var dataByteOrderIsLE = machineByteOrderIsLE;
+
   var bytes = aryBuf.byteLength;
+  if (arguments.length >= 3) {
+    byteLength = byteLength | 0;
+    if (byteLength < 0) {
+      throw new Error('byteLength < 0');
+    }
+
+    if (byteLength < bytes) {
+      bytes = byteLength;
+    }
+
+    if (arguments.length >= 4) {
+      dataByteOrderIsLE = outputAsLittleEndian;
+    }
+  }
+
   var padding = ((bytes % 2) === 1);
 
   var len = (padding ? bytes - 1 : bytes) / 2;
+
   var u16Ary = new Uint16Array(aryBuf, 0, len);
-  var str = String.fromCharCode.apply(null, u16Ary);
+  var str;
+  if (dataByteOrderIsLE === machineByteOrderIsLE) {
+    str = String.fromCharCode.apply(null, u16Ary);
+  } else {
+    str = '';
+    for (var idx = 0; idx < len; ++len) {
+      var elm = u16Ary[idx];
+      var c = ((elm & 0xFF) << 8) | ((elm >> 8) & 0xFF);
+      str += String.fromCharCode.apply(null, c);
+    }
+  }
+
   if (padding) {
     var u8Ary = new Uint8Array(aryBuf);
     str += String.fromCharCode(u8Ary[bytes - 1]);
   }
 
   if (header) {
-    var headBuf = new Uint8Array(2);
-    if (padding) {
-      headBuf[0] = 0x01;
-      headBuf[1] = 0xF1;
-    } else {
-      headBuf[0] = 0x02;
-      headBuf[1] = 0xF2;
-    }
-
-    var headStr = String.fromCharCode.apply(null, new Uint16Array(headBuf.buffer))[0]
-
+    var headBuf = (padding ? 0x0101 : 0x0202) |
+      (dataByteOrderIsLE ? 0xF000 : 0x00F0);
+    var headStr = String.fromCharCode(headBuf);
     return headStr + str;
   } else {
     return str;
   }
 }
 
-export function stringToArrayBuffer(str, header, oddBytes) {
+
+export function stringToArrayBuffer(str, header, offsetInStr, byteLength, inputAsLittleEndian) {
   var strLen = str.length;
   if (header && strLen < 1) {
     throw new Error('argument error in stringArrayBuffer');
   }
+
   var offset = 0;
-  var padding = oddBytes ? 1 : 0;
-  var dataByteOrderIsLE = true;
-  var machineByteOrderIsLE = true;
+  if (arguments.length >= 3) {
+    offsetInStr = offsetInStr | 0;
+    if (offsetInStr < 0) {
+      throw new Error('offsetInStr < 0');
+    }
+
+    offset = offsetInStr;
+  }
+
+  var padding = 0;
+  var machineByteOrderIsLE = isLittleEndian();
+  var dataByteOrderIsLE = machineByteOrderIsLE;
   if (header) {
-    var hdr = str.charCodeAt(0);
-    offset = 1;
+    var hdr = str.charCodeAt(offset);
+    offset += 1;
     padding = hdr & 0x0001;
     dataByteOrderIsLE = (hdr & 0xF000) != 0;
-    machineByteOrderIsLE = isLittleEndian();
   }
 
   var words = (strLen - offset) - padding;
   var bytes = (strLen - offset) * 2 - padding;
+
+  if (arguments.length >= 4) {
+    byteLength = byteLength | 0;
+    if (byteLength < 0) {
+      throw new Error('byteLength < 0');
+    }
+
+    if (byteLength < bytes) {
+      bytes = byteLength;
+      padding = byteLength % 2;
+      words = (byteLength - padding) / 2;
+    }
+
+    if (arguments.length >= 5) {
+      dataByteOrderIsLE = inputAsLittleEndian;
+    }
+  }
 
   var aryBuf = new ArrayBuffer(bytes);
 
   var u16Ary = new Uint16Array(aryBuf, 0, words);
   var idx;
   if (dataByteOrderIsLE === machineByteOrderIsLE) {
-    for (idx = 0; idx < words; ++ idx) {
+    for (idx = 0; idx < words; ++idx) {
       u16Ary[idx] = str.charCodeAt(offset + idx);
     }
   } else {
-    for (idx = 0; idx < words; ++ idx) {
+    for (idx = 0; idx < words; ++idx) {
       var c = str.charCodeAt(offset + idx);
       u16Ary[idx] = ((c & 0xFF) << 8) | ((c >> 8) & 0xFF);
     }
@@ -86,7 +136,7 @@ export function stringToArrayBuffer(str, header, oddBytes) {
 
   if (padding !== 0) {
     var u8Ary = new Uint8Array(aryBuf);
-    u8Ary[bytes - 1] = str.charCodeAt(strLen - 1) & 0xFF;
+    u8Ary[bytes - 1] = str.charCodeAt(offset + words) & 0xFF;
   }
 
   return aryBuf;
@@ -96,9 +146,11 @@ export function stringToArrayBuffer(str, header, oddBytes) {
 export function escapeJSStr(str) {
   str = str + '';
   var xStr;
-  var i, z = str.length, c, buf = '';
-  var highSurrogate = null, codePoint, cpLow;
-  for (i = 0; i < z; ++ i) {
+  var i, z = str.length,
+    c, buf = '';
+  var highSurrogate = null,
+    codePoint, cpLow;
+  for (i = 0; i < z; ++i) {
     c = str.charCodeAt(i);
 
     if (highSurrogate !== null) {
@@ -150,7 +202,7 @@ export function escapeJSStr(str) {
         buf += String.fromCharCode(c);
       }
     } else if (0xD800 <= c && c <= 0xDBFF) {
-        highSurrogate = c;
+      highSurrogate = c;
     } else if (c === 0x2028 || c === 0x2029 || (0xDC00 <= c && c <= 0xDFFF) || (0xFDD0 <= c && c <= 0xFDEF) || c === 0xFFFE || c === 0xFFFF) {
       xStr = '000' + c.toString(16);
       buf += '\\u' + xStr.substring(xStr.length - 4);
