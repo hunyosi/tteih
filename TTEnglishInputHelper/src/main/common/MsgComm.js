@@ -52,6 +52,7 @@ resolve/reject Promise              |
 */
 
 import * as serialize from './serialize.js';
+import * as utils from './utils.js';
 
 
 function enumerateMethods(cls) {
@@ -157,7 +158,7 @@ export const MsgCommServer = (() => {
     }
 
     addClass(cls) {
-      const name = cls.name;
+      const name = utils.getName(cls);
       this.addClassWithName(name, cls);
     }
 

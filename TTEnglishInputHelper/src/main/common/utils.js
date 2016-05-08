@@ -226,6 +226,29 @@ export function trim(str) {
 }
 
 
+export function getName(obj) {
+  if ('name' in obj) {
+    var name = obj.name;
+    if (typeof name === 'string') {
+      return name;
+    }
+  }
+
+  var objStr = obj + '';
+
+  var funcStringMatched = /^\s*function\s+([^\(]+)\(/.exec(objStr);
+  if (funcStringMatched) {
+    return trim(funcStringMatched[1]);
+  }
+
+  var classStringMatched = /^\s*class\s+([^ \t\r\n\{]+)\s*\{/.exec(objStr);
+  if (classStringMatched) {
+    return trim(classStringMatched[1]);
+  }
+
+  return null;
+}
+
 export function getType(obj) {
   var typeString = typeof obj;
   if (typeString !== 'object') {
@@ -236,13 +259,9 @@ export function getType(obj) {
   }
   var c = obj.constructor;
   if (c instanceof Function) {
-    if ('name' in c) {
-      return c.name;
-    }
-
-    var funcStringMatched = /^\s*function\s+([^\(]+)\(/.exec(c + '');
-    if (funcStringMatched) {
-      return trim(funcStringMatched[1]);
+    var clsName = getName(c);
+    if (clsName !== null) {
+      return clsName;
     }
   }
 

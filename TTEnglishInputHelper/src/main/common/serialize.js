@@ -1,5 +1,6 @@
 'use strict';
 import globalObj from './globalObj.js';
+import * as utils from './utils.js';
 
 const getKeys = Function.prototype.call.bind(
   Object.prototype.keys);
@@ -44,7 +45,7 @@ export function toJSONObject(obj, clsMap) {
     throw new TypeError(`can not convert ${t} to JSON object`);
   }
 
-  const clsName = obj.constructor.name;
+  const clsName = utils.getName(obj.constructor);
   if (hasKey(clsMap, clsName)) {
     const cls = getValue(clsMap, clsName);
     if (typeof cls['toJSON'] === 'function') {
