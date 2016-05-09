@@ -1,6 +1,7 @@
 'use strict';
 
 import * as serialize from '../main/common/serialize.js';
+import * as utils from '../main/common/utils.js';
 
 const assert = require('assert');
 
@@ -52,6 +53,17 @@ describe('serialize', () => {
 
       var actual = serialize.toJSONObject(new Abc());
       assert.deepEqual( /*expected*/['Abc', {}], actual);
+    });
+    it('ArrayBuffer', () => {
+      const obj = new ArrayBuffer(4);
+      const ary = new Uint16Array(obj);
+//      ary[0] = 0xDC12;
+//      ary[1] = 0xD834;
+      ary[0] = 0x0041;
+      ary[1] = 0x0042;
+      var actual = serialize.toJSONObject(obj);
+//      assert.deepEqual( /*expected*/['ArrayBuffer', '\uF202\uDC13\uD834'], actual);
+      assert.deepEqual( /*expected*/['ArrayBuffer', '\uF202\u0041\u0042'], actual);
     });
     it('toJSON() instance method', () => {
       class Ghi {

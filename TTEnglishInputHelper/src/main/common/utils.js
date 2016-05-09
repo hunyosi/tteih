@@ -24,6 +24,10 @@ export function arrayBufferToString(aryBuf, header, byteLength, outputAsLittleEn
   var machineByteOrderIsLE = isLittleEndian();
   var dataByteOrderIsLE = machineByteOrderIsLE;
 
+  if (aryBuf.constructor != ArrayBuffer) {
+    aryBuf = aryBuf.buffer;
+  }
+
   var bytes = aryBuf.byteLength;
   if (arguments.length >= 3) {
     byteLength = byteLength | 0;

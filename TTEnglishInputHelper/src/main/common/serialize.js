@@ -59,6 +59,9 @@ export function toJSONObject(obj, clsMap) {
     return [clsName, obj[toPrimitive]()];
   } else if (clsName === 'String' || clsName === 'Number' || clsName === 'Boolean') {
     return obj.valueOf();
+  } else if (clsName === 'ArrayBuffer' || clsName === 'Uint8Array' || clsName === 'Int8Array' || clsName === 'Uint8ClampedArray' || clsName === 'Int16Array' || clsName === 'Uint16Array' || clsName === 'Int32Array' || clsName === 'Uint32Array' || clsName === 'Float32Array' || clsName === 'Float64Array') {
+    const newObj = utils.arrayBufferToString(obj, true);
+    return [clsName, newObj];
   } else if (clsName === 'Array') {
     const newObj = [];
     for (let elm of obj) {
