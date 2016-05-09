@@ -57,13 +57,31 @@ describe('serialize', () => {
     it('ArrayBuffer', () => {
       const obj = new ArrayBuffer(4);
       const ary = new Uint16Array(obj);
-//      ary[0] = 0xDC12;
-//      ary[1] = 0xD834;
       ary[0] = 0x0041;
       ary[1] = 0x0042;
       var actual = serialize.toJSONObject(obj);
-//      assert.deepEqual( /*expected*/['ArrayBuffer', '\uF202\uDC13\uD834'], actual);
-      assert.deepEqual( /*expected*/['ArrayBuffer', '\uF202\u0041\u0042'], actual);
+      if (utils.isLittleEndian()) {
+        assert.deepEqual( /*expected*/['ArrayBuffer', '\uF202\u0041\u0042'], actual);
+      } else {
+        assert.deepEqual( /*expected*/['ArrayBuffer', '\u02F2\u0041\u0042'], actual);
+      }
+    });
+    it('ArrayBuffer illegal surrogate pair', () => {
+      const obj = new ArrayBuffer(4);
+      const ary = new Uint16Array(obj);
+      ary[0] = 0xDC12;
+      ary[1] = 0xD834;
+      var actual = serialize.toJSONObject(obj);
+      assert.strictEqual( /*expected*/Array, actual.constructor);
+      assert.strictEqual( /*expected*/'ArrayBuffer', actual[0]);
+      assert.strictEqual( /*expected*/String, actual[1].constructor);
+      if (utils.isLittleEndian()) {
+        assert.deepEqual( /*expected*/0xF202, actual[1].charCodeAt(0));
+      } else {
+        assert.deepEqual( /*expected*/0x02F2, actual[1].charCodeAt(0));
+      }
+      assert.deepEqual( /*expected*/0xDC12, actual[1].charCodeAt(1));
+      assert.deepEqual( /*expected*/0xD834, actual[1].charCodeAt(2));
     });
     it('toJSON() instance method', () => {
       class Ghi {
