@@ -211,7 +211,7 @@ describe('serialize', () => {
       var actual = serialize.fromJSONObject({});
       assert.deepEqual( /*expected*/{}, actual);
     });
-    it('ArrayBuffer', () => {
+    it('ArrayBuffer (Uint16Array)', () => {
       const obj = ['Uint16Array', String.fromCharCode(
         (utils.isLittleEndian() ? 0xF202 : 0x02F2),
         0x0041,
@@ -223,7 +223,7 @@ describe('serialize', () => {
       assert.strictEqual( /*expected*/0x0041, actual[0]);
       assert.strictEqual( /*expected*/0x0042, actual[1]);
     });
-    it('ArrayBuffer illegal surrogate pair', () => {
+    it('ArrayBuffer (Uint16Array) illegal surrogate pair', () => {
       const obj = ['Uint16Array', String.fromCharCode(
         (utils.isLittleEndian() ? 0xF202 : 0x02F2),
         0xDC12,
@@ -236,6 +236,88 @@ describe('serialize', () => {
       assert.strictEqual( /*expected*/0xDC12, actual[0]);
       assert.strictEqual( /*expected*/0xD834, actual[1]);
       assert.strictEqual( /*expected*/0xFFFE, actual[2]);
+    });
+    it('ArrayBuffer', () => {
+      const obj = ['ArrayBuffer', String.fromCharCode(
+        (utils.isLittleEndian() ? 0xF202 : 0x02F2),
+        0xDC12,
+        0xD834
+      )];
+      var actual = serialize.fromJSONObject(obj);
+      assert.strictEqual( /*expected*/ArrayBuffer, actual.constructor);
+    });
+    it('ArrayBuffer (Uint8Array)', () => {
+      const obj = ['Uint8Array', String.fromCharCode(
+        (utils.isLittleEndian() ? 0xF202 : 0x02F2),
+        0xDC12,
+        0xD834
+      )];
+      var actual = serialize.fromJSONObject(obj);
+      assert.strictEqual( /*expected*/Uint8Array, actual.constructor);
+    });
+    it('ArrayBuffer (Uint8ClampedArray)', () => {
+      const obj = ['Uint8ClampedArray', String.fromCharCode(
+        (utils.isLittleEndian() ? 0xF202 : 0x02F2),
+        0xDC12,
+        0xD834
+      )];
+      var actual = serialize.fromJSONObject(obj);
+      assert.strictEqual( /*expected*/Uint8ClampedArray, actual.constructor);
+    });
+    it('ArrayBuffer Int8Array)', () => {
+      const obj = ['Int8Array', String.fromCharCode(
+        (utils.isLittleEndian() ? 0xF202 : 0x02F2),
+        0xDC12,
+        0xD834
+      )];
+      var actual = serialize.fromJSONObject(obj);
+      assert.strictEqual( /*expected*/Int8Array, actual.constructor);
+    });
+    it('ArrayBuffer Int16Array)', () => {
+      const obj = ['Int16Array', String.fromCharCode(
+        (utils.isLittleEndian() ? 0xF202 : 0x02F2),
+        0xDC12,
+        0xD834
+      )];
+      var actual = serialize.fromJSONObject(obj);
+      assert.strictEqual( /*expected*/Int16Array, actual.constructor);
+    });
+    it('ArrayBuffer Uint32Array)', () => {
+      const obj = ['Uint32Array', String.fromCharCode(
+        (utils.isLittleEndian() ? 0xF202 : 0x02F2),
+        0xDC12,
+        0xD834
+      )];
+      var actual = serialize.fromJSONObject(obj);
+      assert.strictEqual( /*expected*/Uint32Array, actual.constructor);
+    });
+    it('ArrayBuffer Int32Array)', () => {
+      const obj = ['Int32Array', String.fromCharCode(
+        (utils.isLittleEndian() ? 0xF202 : 0x02F2),
+        0xDC12,
+        0xD834
+      )];
+      var actual = serialize.fromJSONObject(obj);
+      assert.strictEqual( /*expected*/Int32Array, actual.constructor);
+    });
+    it('ArrayBuffer Float32Array)', () => {
+      const obj = ['Float32Array', String.fromCharCode(
+        (utils.isLittleEndian() ? 0xF202 : 0x02F2),
+        0xDC12,
+        0xD834
+      )];
+      var actual = serialize.fromJSONObject(obj);
+      assert.strictEqual( /*expected*/Float32Array, actual.constructor);
+    });
+    it('ArrayBuffer Float64Array)', () => {
+      const obj = ['Float64Array', String.fromCharCode(
+        (utils.isLittleEndian() ? 0xF202 : 0x02F2),
+        0xDC12,
+        0xD834,
+        1, 2
+      )];
+      var actual = serialize.fromJSONObject(obj);
+      assert.strictEqual( /*expected*/Float64Array, actual.constructor);
     });
     it('formJSON class method', () => {
       class ClsA {

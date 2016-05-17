@@ -151,10 +151,25 @@ export function fromJSONObject(obj, clsMap) {
 
   if (clsName === 'ArrayBuffer') {
     return utils.stringToArrayBuffer(obj[1], true);
+  } else if (clsName === 'Uint8Array') {
+    return new Uint8Array(utils.stringToArrayBuffer(obj[1], true));
+  } else if (clsName === 'Uint8ClampedArray') {
+    return new Uint8ClampedArray(utils.stringToArrayBuffer(obj[1], true));
+  } else if (clsName === 'Int8Array') {
+    return new Int8Array(utils.stringToArrayBuffer(obj[1], true));
   } else if (clsName === 'Uint16Array') {
     return new Uint16Array(utils.stringToArrayBuffer(obj[1], true));
+  } else if (clsName === 'Int16Array') {
+    return new Int16Array(utils.stringToArrayBuffer(obj[1], true));
+  } else if (clsName === 'Uint32Array') {
+    return new Uint32Array(utils.stringToArrayBuffer(obj[1], true));
+  } else if (clsName === 'Int32Array') {
+    return new Int32Array(utils.stringToArrayBuffer(obj[1], true));
+  } else if (clsName === 'Float32Array') {
+    return new Float32Array(utils.stringToArrayBuffer(obj[1], true));
+  } else if (clsName === 'Float64Array') {
+    return new Float64Array(utils.stringToArrayBuffer(obj[1], true));
   }
-  //  || clsName === 'Uint8Array' || clsName === 'Int8Array' || clsName === 'Uint8ClampedArray' || clsName === 'Int16Array' || clsName === 'Uint16Array' || clsName === 'Int32Array' || clsName === 'Uint32Array' || clsName === 'Float32Array' || clsName === 'Float64Array'
 
   const globalKlass = globalObj[clsName];
   if (typeof globalKlass === 'function') {
