@@ -213,7 +213,7 @@ describe('serialize', () => {
     });
     it('ArrayBuffer', () => {
       const obj = ['Uint16Array', String.fromCharCode(
-        0xF202,
+        (utils.isLittleEndian() ? 0xF202 : 0x02F2),
         0x0041,
         0x0042
       )];
@@ -223,23 +223,20 @@ describe('serialize', () => {
       assert.strictEqual( /*expected*/0x0041, actual[0]);
       assert.strictEqual( /*expected*/0x0042, actual[1]);
     });
-    // it('ArrayBuffer illegal surrogate pair', () => {
-    //   const obj = new ArrayBuffer(4);
-    //   const ary = new Uint16Array(obj);
-    //   ary[0] = 0xDC12;
-    //   ary[1] = 0xD834;
-    //   var actual = serialize.toJSONObject(obj);
-    //   assert.strictEqual( /*expected*/Array, actual.constructor);
-    //   assert.strictEqual( /*expected*/'ArrayBuffer', actual[0]);
-    //   assert.strictEqual( /*expected*/String, actual[1].constructor);
-    //   if (utils.isLittleEndian()) {
-    //     assert.deepEqual( /*expected*/0xF202, actual[1].charCodeAt(0));
-    //   } else {
-    //     assert.deepEqual( /*expected*/0x02F2, actual[1].charCodeAt(0));
-    //   }
-    //   assert.deepEqual( /*expected*/0xDC12, actual[1].charCodeAt(1));
-    //   assert.deepEqual( /*expected*/0xD834, actual[1].charCodeAt(2));
-    // });
+    it('ArrayBuffer illegal surrogate pair', () => {
+      const obj = ['Uint16Array', String.fromCharCode(
+        (utils.isLittleEndian() ? 0xF202 : 0x02F2),
+        0xDC12,
+        0xD834,
+        0xFFFE
+      )];
+      var actual = serialize.fromJSONObject(obj);
+      assert.strictEqual( /*expected*/Uint16Array, actual.constructor);
+      assert.strictEqual( /*expected*/3, actual.length);
+      assert.strictEqual( /*expected*/0xDC12, actual[0]);
+      assert.strictEqual( /*expected*/0xD834, actual[1]);
+      assert.strictEqual( /*expected*/0xFFFE, actual[2]);
+    });
     it('formJSON class method', () => {
       class ClsA {
         constructor(name, age) {
