@@ -182,7 +182,7 @@ export function fromJSONObject(obj, clsMap) {
 
 export function serialize(obj) {
   const jsonObj = toJSONObject(obj);
-  const s = JSON.stringify(obj);
+  const s = JSON.stringify(jsonObj);
   return s;
 }
 

@@ -11,6 +11,50 @@
 # [/COPYING]
 */
 
+const base64DefaultNumToCharMap = [
+  'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
+  'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
+  'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X',
+  'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f',
+  'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
+  'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
+  'w', 'x', 'y', 'z', '0', '1', '2', '3',
+  '4', '5', '6', '7', '8', '9', '+', '/'
+]
+
+const base64DefaultCharToNumMap = {};
+{
+  const len = base64DefaultNumToCharMap.length;
+  for (let idx = 0; idx < len; ++idx) {
+    base64DefaultCharToNumMap[base64DefaultNumToCharMap[idx]] = idx;
+  }
+}
+
+export class Base64 {
+  constructor() {
+    this._numToCharMap = base64DefaultNumToCharMap;
+    this._charToNumMap = base64DefaultCharToNumMap;
+  }
+
+  // set(num, chr) {
+  //   let newNumToChar = []:
+  //   let newCharToNum = {}:
+  // }
+
+  encode(src) {
+    return Base64._encodeInternal(src, this._numToCharMap);
+  }
+
+  static encode(src) {
+    return Base64._encodeInternal(src, base64DefaultNumToCharMap);
+  }
+
+  static _encodeInternal(src, charToNum) {
+    const ary = (src.constructor === ArrayBuffer ? src : src.buffer);
+  }
+}
+
+
 export function isLittleEndian() {
   var u8buf = new Uint8Array(2);
   u8buf[0] = 0xCD;
