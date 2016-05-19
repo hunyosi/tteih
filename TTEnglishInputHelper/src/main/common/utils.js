@@ -30,10 +30,14 @@ const base64DefaultCharToNumMap = {};
   }
 }
 
+const base64DefaultPaddingChar = '=';
+
+
 export class Base64 {
   constructor() {
     this._numToCharMap = base64DefaultNumToCharMap;
     this._charToNumMap = base64DefaultCharToNumMap;
+    this._paddingChar = base64DefaultPaddingChar;
   }
 
   // set(num, chr) {
@@ -42,15 +46,49 @@ export class Base64 {
   // }
 
   encode(src) {
-    return Base64._encodeInternal(src, this._numToCharMap);
+    return Base64._encodeInternal(src, this._numToCharMap, this._paddingChar);
   }
 
   static encode(src) {
-    return Base64._encodeInternal(src, base64DefaultNumToCharMap);
+    return Base64._encodeInternal(src, base64DefaultNumToCharMap, base64DefaultPaddingChar);
   }
 
-  static _encodeInternal(src, charToNum) {
+  static _encodeInternal(src, numToChar, paddingChar) {
     const ary = (src.constructor === ArrayBuffer ? src : src.buffer);
+    if (getType(ary) != 'ArrayBuffer') {
+      throw new TypeError();
+    }
+
+    let dstBuf = '';
+    const srcBuf = new Uint8Array(ary);
+    const rest = srcBuf.length % 3;
+    const len = srcBuf.length - rest;
+    let idx;
+    for (idx = 0; idx < len; idx += 3) {
+      const src1 = srcBuf[idx];
+      const src2 = srcBuf[idx + 1];
+      const src3 = srcBuf[idx + 2];
+      const dst1 = (src1 >> 2) & 0x3F;
+      const dst2 = ((src1 & 0x03) << 4) | ((src2 >> 4) & 0x0F);
+      const dst3 = ((src2 & 0x0F) << 2) | ((src3 >> 6) & 0x03);
+      const dst4 = src3 & 0x3F;
+      dstBuf += numToChar[dst1] + numToChar[dst2] + numToChar[dst3] + numToChar[dst4];
+    }
+    if (rest == 2) {
+      const src1 = srcBuf[idx];
+      const src2 = srcBuf[idx + 1];
+      const dst1 = (src1 >> 2) & 0x3F;
+      const dst2 = ((src1 & 0x03) << 4) | ((src2 >> 4) & 0x0F);
+      const dst3 = ((src2 & 0x0F) << 2);
+      dstBuf += numToChar[dst1] + numToChar[dst2] + numToChar[dst3] + paddingChar;
+    } else if (rest == 1) {
+      const src1 = srcBuf[idx];
+      const src2 = srcBuf[idx + 1];
+      const dst1 = (src1 >> 2) & 0x3F;
+      const dst2 = ((src1 & 0x03) << 4);
+      dstBuf += numToChar[dst1] + numToChar[dst2] + paddingChar + paddingChar;
+    }
+    return dstBuf;
   }
 }
 

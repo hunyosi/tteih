@@ -5,6 +5,31 @@ import * as utils from '../main/common/utils.js';
 const assert = require('assert');
 
 describe('utils', function() {
+  describe('Base64', function() {
+    describe('static encode', function() {
+      it('3 byte', function() {
+        const ary = new Uint8Array(3);
+        ary[0] = 0x12;
+        ary[1] = 0x34;
+        ary[2] = 0x56;
+        // 0001 0010  0011 0100  0101 0110
+        // 0001 00  10 0011  0100 01  01 0110
+        // 000 100  100 011  010 001  010 110
+        const actual = utils.Base64.encode(ary);
+        assert.strictEqual( /*expected*/ 'EjRW', actual);
+      });
+      it('2 byte', function() {
+        const ary = new Uint8Array(2);
+        ary[0] = 0x12;
+        ary[1] = 0x34;
+        // 0001 0010  0011 0100
+        // 0001 00  10 0011  0100 --
+        // 000 100  100 011  010 000
+        const actual = utils.Base64.encode(ary);
+        assert.strictEqual( /*expected*/ 'EjQ=', actual);
+      });
+    });
+  });
   describe('arrayBufferToString', function() {
     it('even byte length without header', function() {
       const aryBuf = new ArrayBuffer(4);
