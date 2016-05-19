@@ -7,7 +7,7 @@ const assert = require('assert');
 describe('utils', function() {
   describe('Base64', function() {
     describe('static encode', function() {
-      it('3 byte', function() {
+      it('3 bytes', function() {
         const ary = new Uint8Array(3);
         ary[0] = 0x12;
         ary[1] = 0x34;
@@ -18,7 +18,7 @@ describe('utils', function() {
         const actual = utils.Base64.encode(ary);
         assert.strictEqual( /*expected*/ 'EjRW', actual);
       });
-      it('2 byte', function() {
+      it('2 bytes', function() {
         const ary = new Uint8Array(2);
         ary[0] = 0x12;
         ary[1] = 0x34;
@@ -28,6 +28,54 @@ describe('utils', function() {
         const actual = utils.Base64.encode(ary);
         assert.strictEqual( /*expected*/ 'EjQ=', actual);
       });
+      it('1 byte', function() {
+        const ary = new Uint8Array(1);
+        ary[0] = 0x12;
+        // 0001 0010
+        // 0001 00  10 ----
+        // 000 100  100 000
+        const actual = utils.Base64.encode(ary);
+        assert.strictEqual( /*expected*/ 'Eg==', actual);
+      });
+    });
+    it('6 bytes', function() {
+      const ary = new Uint8Array(6);
+      ary[0] = 0xAB;
+      ary[1] = 0xCD;
+      ary[2] = 0xEF;
+      ary[3] = 0x12;
+      ary[4] = 0x34;
+      ary[5] = 0x56;
+      // 1010 1011  1100 1101  1110 1111     0001 0010  0011 0100  0101 0110
+      // 1010 10  11 1100  1101 11  10 1111  0001 00  10 0011  0100 01  01 0110
+      // 101 010  111 100  110 111  101 111  000 100  100 011  010 001  010 110
+      const actual = utils.Base64.encode(ary);
+      assert.strictEqual( /*expected*/ 'q83vEjRW', actual);
+    });
+    it('5 bytes', function() {
+      const ary = new Uint8Array(5);
+      ary[0] = 0xAB;
+      ary[1] = 0xCD;
+      ary[2] = 0xEF;
+      ary[3] = 0x12;
+      ary[4] = 0x34;
+      // 0001 0010  0011 0100
+      // 0001 00  10 0011  0100 --
+      // 000 100  100 011  010 000
+      const actual = utils.Base64.encode(ary);
+      assert.strictEqual( /*expected*/ 'q83vEjQ=', actual);
+    });
+    it('4 byte', function() {
+      const ary = new Uint8Array(4);
+      ary[0] = 0xAB;
+      ary[1] = 0xCD;
+      ary[2] = 0xEF;
+      ary[3] = 0x12;
+      // 0001 0010
+      // 0001 00  10 ----
+      // 000 100  100 000
+      const actual = utils.Base64.encode(ary);
+      assert.strictEqual( /*expected*/ 'q83vEg==', actual);
     });
   });
   describe('arrayBufferToString', function() {
