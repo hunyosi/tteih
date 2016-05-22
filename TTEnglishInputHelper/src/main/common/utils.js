@@ -74,6 +74,7 @@ export class Base64 {
       const dst4 = src3 & 0x3F;
       dstBuf += numToChar[dst1] + numToChar[dst2] + numToChar[dst3] + numToChar[dst4];
     }
+
     if (rest == 2) {
       const src1 = srcBuf[idx];
       const src2 = srcBuf[idx + 1];
@@ -88,9 +89,14 @@ export class Base64 {
       const dst2 = ((src1 << 4) & 0x30);
       dstBuf += numToChar[dst1] + numToChar[dst2] + paddingChar + paddingChar;
     }
+
     return dstBuf;
   }
 
+
+  decode(src) {
+    return Base64._decodeInternal(src, this._charToNumMap, this._paddingChar);
+  }
 
   static decode(src) {
     return Base64._decodeInternal(src, base64DefaultCharToNumMap, base64DefaultPaddingChar);
@@ -100,12 +106,14 @@ export class Base64 {
     let idx;
 
     let srcLen = src.length;
-    while (0 < srcLen) {
-      idx = srcLen - 1;
-      if (src.charAt(idx) !== paddingChar) {
-        break;
+    if (paddingChar !== null || paddingChar !== void (0) || 1 < paddingChar.length) {
+      while (0 < srcLen) {
+        idx = srcLen - 1;
+        if (src.charAt(idx) !== paddingChar) {
+          break;
+        }
+        srcLen = idx;
       }
-      srcLen = idx;
     }
 
     const rest = srcLen % 4;
@@ -124,6 +132,19 @@ export class Base64 {
       dstBuf[dstIdx + 2] = ((src3 << 6) & 0xC0) | (src4 & 0x3F);
       dstIdx += 3;
     }
+
+    if (rest == 3) {
+      const src1 = charToNum[src.charAt(idx    )];
+      const src2 = charToNum[src.charAt(idx + 1)];
+      const src3 = charToNum[src.charAt(idx + 2)];
+      dstBuf[dstIdx    ] = ((src1 << 2) & 0xFC) | ((src2 >> 4) & 0x03);
+      dstBuf[dstIdx + 1] = ((src2 << 4) & 0xF0) | ((src3 >> 2) & 0x0F);
+    } else if (rest == 2) {
+      const src1 = charToNum[src.charAt(idx    )];
+      const src2 = charToNum[src.charAt(idx + 1)];
+      dstBuf[dstIdx    ] = ((src1 << 2) & 0xFC) | ((src2 >> 4) & 0x03);
+    }
+
     return dstBuf.buffer;
   }
 }
