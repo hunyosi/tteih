@@ -68,27 +68,63 @@ export class Base64 {
       const src1 = srcBuf[idx];
       const src2 = srcBuf[idx + 1];
       const src3 = srcBuf[idx + 2];
-      const dst1 = (src1 >> 2) & 0x3F;
-      const dst2 = ((src1 & 0x03) << 4) | ((src2 >> 4) & 0x0F);
-      const dst3 = ((src2 & 0x0F) << 2) | ((src3 >> 6) & 0x03);
+      const dst1 = ((src1 >> 2) & 0x3F);
+      const dst2 = ((src1 << 4) & 0x30) | ((src2 >> 4) & 0x0F);
+      const dst3 = ((src2 << 2) & 0x3C) | ((src3 >> 6) & 0x03);
       const dst4 = src3 & 0x3F;
       dstBuf += numToChar[dst1] + numToChar[dst2] + numToChar[dst3] + numToChar[dst4];
     }
     if (rest == 2) {
       const src1 = srcBuf[idx];
       const src2 = srcBuf[idx + 1];
-      const dst1 = (src1 >> 2) & 0x3F;
-      const dst2 = ((src1 & 0x03) << 4) | ((src2 >> 4) & 0x0F);
-      const dst3 = ((src2 & 0x0F) << 2);
+      const dst1 = ((src1 >> 2) & 0x3F);
+      const dst2 = ((src1 << 4) & 0x30) | ((src2 >> 4) & 0x0F);
+      const dst3 = ((src2 << 2) & 0x3C);
       dstBuf += numToChar[dst1] + numToChar[dst2] + numToChar[dst3] + paddingChar;
     } else if (rest == 1) {
       const src1 = srcBuf[idx];
       const src2 = srcBuf[idx + 1];
-      const dst1 = (src1 >> 2) & 0x3F;
-      const dst2 = ((src1 & 0x03) << 4);
+      const dst1 = ((src1 >> 2) & 0x3F);
+      const dst2 = ((src1 << 4) & 0x30);
       dstBuf += numToChar[dst1] + numToChar[dst2] + paddingChar + paddingChar;
     }
     return dstBuf;
+  }
+
+
+  static decode(src) {
+    return Base64._decodeInternal(src, base64DefaultCharToNumMap, base64DefaultPaddingChar);
+  }
+
+  static _decodeInternal(src, charToNum, paddingChar) {
+    let idx;
+
+    let srcLen = src.length;
+    while (0 < srcLen) {
+      idx = srcLen - 1;
+      if (src.charAt(idx) !== paddingChar) {
+        break;
+      }
+      srcLen = idx;
+    }
+
+    const rest = srcLen % 4;
+    const srcBodyLen = srcLen - rest;
+    const dstLen = srcBodyLen / 4 * 3 + (rest > 0 ? rest - 1 : 0);
+    const dstBuf = new Uint8Array(dstLen);
+    let dstIdx = 0;
+
+    for (idx = 0; idx < srcBodyLen; idx += 4) {
+      const src1 = charToNum[src.charAt(idx    )];
+      const src2 = charToNum[src.charAt(idx + 1)];
+      const src3 = charToNum[src.charAt(idx + 2)];
+      const src4 = charToNum[src.charAt(idx + 3)];
+      dstBuf[dstIdx    ] = ((src1 << 2) & 0xFC) | ((src2 >> 4) & 0x03);
+      dstBuf[dstIdx + 1] = ((src2 << 4) & 0xF0) | ((src3 >> 2) & 0x0F);
+      dstBuf[dstIdx + 2] = ((src3 << 6) & 0xC0) | (src4 & 0x3F);
+      dstIdx += 3;
+    }
+    return dstBuf.buffer;
   }
 }
 
