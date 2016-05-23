@@ -22,8 +22,7 @@ const base64DefaultNumToCharMap = [
   '4', '5', '6', '7', '8', '9', '+', '/'
 ]
 
-const base64DefaultCharToNumMap = {};
-{
+const base64DefaultCharToNumMap = {}; {
   const len = base64DefaultNumToCharMap.length;
   for (let idx = 0; idx < len; ++idx) {
     base64DefaultCharToNumMap[base64DefaultNumToCharMap[idx]] = idx;
@@ -40,10 +39,47 @@ export class Base64 {
     this._paddingChar = base64DefaultPaddingChar;
   }
 
-  // set(num, chr) {
-  //   let newNumToChar = []:
-  //   let newCharToNum = {}:
-  // }
+  setNumToChar(num, chr) {
+    const newNumToChar = this._numToCharMap.concat();
+    const newCharToNum = {};
+    const len = newNumToChar.length;
+    let idx;
+
+    let pairs;
+    if (arguents.lenth === 1 && num instanceof Array) {
+      pairs = num;
+    } else {
+      num = num | 0;
+      chr = chr + '';
+      pairs = [num, chr];
+    }
+
+    for (let pair of pairs) {
+      let n = pair[0] | 0;
+      let c = pair[1] + '';
+
+      if (n < 0 || n >= len) {
+        throw new Error('first value is out of range. (0 <= n <= ${len - 1})');
+      }
+
+      if (c.length != 1) {
+        throw new Error('second value is not a charactor.');
+      }
+
+      newNumToChar[n] = c;
+    }
+
+    for (idx = 0; idx < len; ++idx) {
+      newCharToNum[newNumToChar[idx]] = idx;
+    }
+
+    this._numToCharMap = newNumToChar;
+    this._charToNumMap = newCharToNum;
+  }
+
+  set paddingChar(chr) {
+    this._paddingChar = chr;
+  }
 
   encode(src) {
     return Base64._encodeInternal(src, this._numToCharMap, this._paddingChar);
@@ -106,7 +142,7 @@ export class Base64 {
     let idx;
 
     let srcLen = src.length;
-    if (paddingChar !== null || paddingChar !== void (0) || 1 < paddingChar.length) {
+    if (paddingChar !== null || paddingChar !== void(0) || 1 < paddingChar.length) {
       while (0 < srcLen) {
         idx = srcLen - 1;
         if (src.charAt(idx) !== paddingChar) {
@@ -123,26 +159,26 @@ export class Base64 {
     let dstIdx = 0;
 
     for (idx = 0; idx < srcBodyLen; idx += 4) {
-      const src1 = charToNum[src.charAt(idx    )];
+      const src1 = charToNum[src.charAt(idx)];
       const src2 = charToNum[src.charAt(idx + 1)];
       const src3 = charToNum[src.charAt(idx + 2)];
       const src4 = charToNum[src.charAt(idx + 3)];
-      dstBuf[dstIdx    ] = ((src1 << 2) & 0xFC) | ((src2 >> 4) & 0x03);
+      dstBuf[dstIdx] = ((src1 << 2) & 0xFC) | ((src2 >> 4) & 0x03);
       dstBuf[dstIdx + 1] = ((src2 << 4) & 0xF0) | ((src3 >> 2) & 0x0F);
       dstBuf[dstIdx + 2] = ((src3 << 6) & 0xC0) | (src4 & 0x3F);
       dstIdx += 3;
     }
 
     if (rest == 3) {
-      const src1 = charToNum[src.charAt(idx    )];
+      const src1 = charToNum[src.charAt(idx)];
       const src2 = charToNum[src.charAt(idx + 1)];
       const src3 = charToNum[src.charAt(idx + 2)];
-      dstBuf[dstIdx    ] = ((src1 << 2) & 0xFC) | ((src2 >> 4) & 0x03);
+      dstBuf[dstIdx] = ((src1 << 2) & 0xFC) | ((src2 >> 4) & 0x03);
       dstBuf[dstIdx + 1] = ((src2 << 4) & 0xF0) | ((src3 >> 2) & 0x0F);
     } else if (rest == 2) {
-      const src1 = charToNum[src.charAt(idx    )];
+      const src1 = charToNum[src.charAt(idx)];
       const src2 = charToNum[src.charAt(idx + 1)];
-      dstBuf[dstIdx    ] = ((src1 << 2) & 0xFC) | ((src2 >> 4) & 0x03);
+      dstBuf[dstIdx] = ((src1 << 2) & 0xFC) | ((src2 >> 4) & 0x03);
     }
 
     return dstBuf.buffer;
