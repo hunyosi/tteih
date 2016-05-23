@@ -78,7 +78,16 @@ export class Base64 {
   }
 
   set paddingChar(chr) {
-    this._paddingChar = chr;
+    if (chr === null || chr === void (0)) {
+      this._paddingChar = '';
+    } else {
+      chr = chr + '';
+      if (chr.length != 1) {
+        throw new Error('value is not a charactor.');
+      }
+
+      this._paddingChar = chr;
+    }
   }
 
   encode(src) {
@@ -142,7 +151,7 @@ export class Base64 {
     let idx;
 
     let srcLen = src.length;
-    if (paddingChar !== null || paddingChar !== void(0) || 1 < paddingChar.length) {
+    if (0 < paddingChar.length) {
       while (0 < srcLen) {
         idx = srcLen - 1;
         if (src.charAt(idx) !== paddingChar) {

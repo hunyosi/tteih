@@ -60,7 +60,7 @@ export function toJSONObject(obj, clsMap) {
   } else if (clsName === 'String' || clsName === 'Number' || clsName === 'Boolean') {
     return obj.valueOf();
   } else if (clsName === 'ArrayBuffer' || clsName === 'Uint8Array' || clsName === 'Int8Array' || clsName === 'Uint8ClampedArray' || clsName === 'Int16Array' || clsName === 'Uint16Array' || clsName === 'Int32Array' || clsName === 'Uint32Array' || clsName === 'Float32Array' || clsName === 'Float64Array') {
-    const newObj = utils.arrayBufferToString(obj, true);
+    const newObj = utils.Base64.encode(obj);
     return [clsName, newObj];
   } else if (clsName === 'Array') {
     const newObj = [];
@@ -152,23 +152,23 @@ export function fromJSONObject(obj, clsMap) {
   if (clsName === 'ArrayBuffer') {
     return utils.stringToArrayBuffer(obj[1], true);
   } else if (clsName === 'Uint8Array') {
-    return new Uint8Array(utils.stringToArrayBuffer(obj[1], true));
+    return new Uint8Array(utils.Base64.decode(obj[1]));
   } else if (clsName === 'Uint8ClampedArray') {
-    return new Uint8ClampedArray(utils.stringToArrayBuffer(obj[1], true));
+    return new Uint8ClampedArray(utils.Base64.decode(obj[1]));
   } else if (clsName === 'Int8Array') {
-    return new Int8Array(utils.stringToArrayBuffer(obj[1], true));
+    return new Int8Array(utils.Base64.decode(obj[1]));
   } else if (clsName === 'Uint16Array') {
-    return new Uint16Array(utils.stringToArrayBuffer(obj[1], true));
+    return new Uint16Array(utils.Base64.decode(obj[1]));
   } else if (clsName === 'Int16Array') {
-    return new Int16Array(utils.stringToArrayBuffer(obj[1], true));
+    return new Int16Array(utils.Base64.decode(obj[1]));
   } else if (clsName === 'Uint32Array') {
-    return new Uint32Array(utils.stringToArrayBuffer(obj[1], true));
+    return new Uint32Array(utils.Base64.decode(obj[1]));
   } else if (clsName === 'Int32Array') {
-    return new Int32Array(utils.stringToArrayBuffer(obj[1], true));
+    return new Int32Array(utils.Base64.decode(obj[1]));
   } else if (clsName === 'Float32Array') {
-    return new Float32Array(utils.stringToArrayBuffer(obj[1], true));
+    return new Float32Array(utils.Base64.decode(obj[1]));
   } else if (clsName === 'Float64Array') {
-    return new Float64Array(utils.stringToArrayBuffer(obj[1], true));
+    return new Float64Array(utils.Base64.decode(obj[1]));
   }
 
   const globalKlass = globalObj[clsName];
