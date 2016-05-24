@@ -150,7 +150,7 @@ export function fromJSONObject(obj, clsMap) {
   }
 
   if (clsName === 'ArrayBuffer') {
-    return utils.stringToArrayBuffer(obj[1], true);
+    return utils.Base64.decode(obj[1]);
   } else if (clsName === 'Uint8Array') {
     return new Uint8Array(utils.Base64.decode(obj[1]));
   } else if (clsName === 'Uint8ClampedArray') {
