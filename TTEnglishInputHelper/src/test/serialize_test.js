@@ -78,6 +78,110 @@ describe('serialize', () => {
       var actual = serialize.toJSONObject(ary);
       assert.deepEqual( /*expected*/['Uint8Array', 'eJqxIw=='], actual);
     });
+    it('ArrayBuffer (Uint8ClampedArray)', () => {
+      const obj = new ArrayBuffer(4);
+      const ary = new Uint8Array(obj);
+      ary[0] = 0x78;
+      ary[1] = 0x9A;
+      ary[2] = 0xB1;
+      ary[3] = 0x23;
+      // 0111 1000  1001 1010  1011 0001     0010 0011
+      // 011 110  001 001  101 010  110 001  001 000  11- ---
+      var actual = serialize.toJSONObject(new Uint8ClampedArray(obj));
+      assert.deepEqual( /*expected*/['Uint8ClampedArray', 'eJqxIw=='], actual);
+    });
+    it('ArrayBuffer (Int8Array)', () => {
+      const obj = new ArrayBuffer(4);
+      const ary = new Uint8Array(obj);
+      ary[0] = 0x78;
+      ary[1] = 0x9A;
+      ary[2] = 0xB1;
+      ary[3] = 0x23;
+      // 0111 1000  1001 1010  1011 0001     0010 0011
+      // 011 110  001 001  101 010  110 001  001 000  11- ---
+      var actual = serialize.toJSONObject(new Int8Array(obj));
+      assert.deepEqual( /*expected*/['Int8Array', 'eJqxIw=='], actual);
+    });
+    it('ArrayBuffer (Uint16Array)', () => {
+      const obj = new ArrayBuffer(4);
+      const ary = new Uint8Array(obj);
+      ary[0] = 0x78;
+      ary[1] = 0x9A;
+      ary[2] = 0xB1;
+      ary[3] = 0x23;
+      // 0111 1000  1001 1010  1011 0001     0010 0011
+      // 011 110  001 001  101 010  110 001  001 000  11- ---
+      var actual = serialize.toJSONObject(new Uint16Array(obj));
+      assert.deepEqual( /*expected*/['Uint16Array', 'eJqxIw=='], actual);
+    });
+    it('ArrayBuffer (Int16Array)', () => {
+      const obj = new ArrayBuffer(4);
+      const ary = new Uint8Array(obj);
+      ary[0] = 0x78;
+      ary[1] = 0x9A;
+      ary[2] = 0xB1;
+      ary[3] = 0x23;
+      // 0111 1000  1001 1010  1011 0001     0010 0011
+      // 011 110  001 001  101 010  110 001  001 000  11- ---
+      var actual = serialize.toJSONObject(new Int16Array(obj));
+      assert.deepEqual( /*expected*/['Int16Array', 'eJqxIw=='], actual);
+    });
+    it('ArrayBuffer (Uint32Array)', () => {
+      const obj = new ArrayBuffer(4);
+      const ary = new Uint8Array(obj);
+      ary[0] = 0x78;
+      ary[1] = 0x9A;
+      ary[2] = 0xB1;
+      ary[3] = 0x23;
+      // 0111 1000  1001 1010  1011 0001     0010 0011
+      // 011 110  001 001  101 010  110 001  001 000  11- ---
+      var actual = serialize.toJSONObject(new Uint32Array(obj));
+      assert.deepEqual( /*expected*/['Uint32Array', 'eJqxIw=='], actual);
+    });
+    it('ArrayBuffer (Int32Array)', () => {
+      const obj = new ArrayBuffer(4);
+      const ary = new Uint8Array(obj);
+      ary[0] = 0x78;
+      ary[1] = 0x9A;
+      ary[2] = 0xB1;
+      ary[3] = 0x23;
+      // 0111 1000  1001 1010  1011 0001     0010 0011
+      // 011 110  001 001  101 010  110 001  001 000  11- ---
+      var actual = serialize.toJSONObject(new Int32Array(obj));
+      assert.deepEqual( /*expected*/['Int32Array', 'eJqxIw=='], actual);
+    });
+    it('ArrayBuffer (Float32Array)', () => {
+      const obj = new ArrayBuffer(4);
+      const ary = new Uint8Array(obj);
+      ary[0] = 0x78;
+      ary[1] = 0x9A;
+      ary[2] = 0xB1;
+      ary[3] = 0x23;
+      // 0111 1000  1001 1010  1011 0001     0010 0011
+      // 011 110  001 001  101 010  110 001  001 000  11- ---
+      var actual = serialize.toJSONObject(new Float32Array(obj));
+      assert.deepEqual( /*expected*/['Float32Array', 'eJqxIw=='], actual);
+    });
+    it('ArrayBuffer (Float64Array)', () => {
+      const obj = new ArrayBuffer(8);
+      const ary = new Uint8Array(obj);
+      ary[0] = 0x78;
+      ary[1] = 0x9A;
+      ary[2] = 0xB1;
+      ary[3] = 0x23;
+      ary[4] = 0xC4;
+      ary[5] = 0x5D;
+      ary[6] = 0xE6;
+      ary[7] = 0x7F;
+      // 0111 1000  1001 1010  1011 0001
+      // 011 110  001 001  101 010  110 001
+      // 0010 0011  1100 0100  0101 1101
+      // 001 000  111 100  010 001  011 101
+      // 1110 0110  0111 1111
+      // 111 001 100 111  111 1--
+      var actual = serialize.toJSONObject(new Float64Array(obj));
+      assert.deepEqual( /*expected*/['Float64Array', 'eJqxI8Rd5n8='], actual);
+    });
     it('toJSON() instance method', () => {
       class Ghi {
         constructor(v) {
@@ -206,20 +310,6 @@ describe('serialize', () => {
       var actual = serialize.fromJSONObject({});
       assert.deepEqual( /*expected*/{}, actual);
     });
-    // it('ArrayBuffer (Uint16Array) illegal surrogate pair', () => {
-    //   const obj = ['Uint16Array', String.fromCharCode(
-    //     (utils.isLittleEndian() ? 0xF202 : 0x02F2),
-    //     0xDC12,
-    //     0xD834,
-    //     0xFFFE
-    //   )];
-    //   var actual = serialize.fromJSONObject(obj);
-    //   assert.strictEqual( /*expected*/Uint16Array, actual.constructor);
-    //   assert.strictEqual( /*expected*/3, actual.length);
-    //   assert.strictEqual( /*expected*/0xDC12, actual[0]);
-    //   assert.strictEqual( /*expected*/0xD834, actual[1]);
-    //   assert.strictEqual( /*expected*/0xFFFE, actual[2]);
-    // });
     it('ArrayBuffer', () => {
       const obj = new ArrayBuffer(4);
       const ary = new Uint8Array(obj);
