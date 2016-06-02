@@ -120,10 +120,10 @@ export function parseWindowsPath(pathStr) {
     }
   }
 
-  const topChar = pathStr.charAt(0);
+  const topChar = pathBody.charAt(0);
   const isAbsolute = (topChar === '\\' || topChar === '/');
   if (isAbsolute) {
-    pathBody = pathStr.substring(1);
+    pathBody = pathBody.substring(1);
   }
   const route = [];
   for (let elm of pathBody.split(/[\\\/]/)) {
@@ -139,7 +139,7 @@ export function parseWindowsPath(pathStr) {
 
   let adsName = null;
   if (0 < route.length && route[route.length - 1].isNormal) {
-    const parts = route[route.length - 1].split(/:/);
+    const parts = route[route.length - 1].name.split(/:/);
     if (parts.length > 1) {
       route[route.length - 1] = new RouteElement({name:parts[0]});
       adsName = parts[parts.length - 1];
