@@ -512,5 +512,102 @@ describe('MsgComm', function() {
         .then(() => instanceOfClsA.getCount())
         .then((actual) => assert.strictEqual( /*expected*/ 12, actual))
     });
+    it('MsgCommClient invoke method and return value object', function() {
+      class Param {
+        constructor({
+          a,
+          b,
+          c
+        }={}) {
+          this.a = a;
+          this.b = b;
+          this.c = c;
+        }
+        add() {
+          this.c = this.a + this.b;
+        }
+      }
+
+      class ClsA {
+        constructor() {
+          this.val = new Param({
+            a: 1,
+            b: 2,
+            c: 0
+          });
+        }
+        getVal() {
+          this.val.add();
+          return this.val;
+        }
+      }
+
+      const cs = new MsgComm.CommunicatorStub();
+
+      const mcs = new MsgComm.MsgCommServer(cs, [ClsA], [Param]);
+
+      let instanceOfClsA;
+      const mcc = new MsgComm.MsgCommClient(cs, [Param]);
+      return mcc.fetchClass()
+        .then(() => mcc.getInstance('ClsA'))
+        .then((instance) => {
+          instanceOfClsA = instance;
+          return instanceOfClsA.getVal();
+        })
+        .then((actual) => {
+          assert.strictEqual( /*expected*/ Param, actual.constructor);
+          assert.deepEqual( /*expected*/ {
+            a: 1,
+            b: 2,
+            c: 3
+          }, actual);
+        });
+    });
+    it('MsgCommClient invoke method with value object', function() {
+      class Param {
+        constructor({
+          a,
+          b,
+          c
+        }={}) {
+          this.a = a;
+          this.b = b;
+          this.c = c;
+        }
+        add() {
+          this.c = this.a + this.b;
+        }
+      }
+
+      class ClsA {
+        constructor() {
+          this.a = 0;
+        }
+        setA(val) {
+          this.a = val;
+        }
+        addVal(param) {
+          param.add();
+          return this.a + param.c;
+        }
+      }
+
+      const cs = new MsgComm.CommunicatorStub();
+
+      const mcs = new MsgComm.MsgCommServer(cs, [ClsA], [Param]);
+
+      let instanceOfClsA;
+      const mcc = new MsgComm.MsgCommClient(cs, [Param]);
+      return mcc.fetchClass()
+        .then(() => mcc.getInstance('ClsA'))
+        .then((instance) => {
+          instanceOfClsA = instance;
+          return instanceOfClsA.setA(10);
+        })
+        .then(() => instanceOfClsA.addVal(new Param({a:1, b:2, c:123})))
+        .then((actual) => {
+          assert.strictEqual( /*expected*/ 13, actual);
+        });
+    });
   });
 });

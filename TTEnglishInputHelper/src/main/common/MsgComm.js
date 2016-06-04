@@ -128,14 +128,16 @@ export const MsgCommServer = (() => {
   const _instances = Symbol();
   const _sequenceNumbers = Symbol();
   const _fromJsonClasses = Symbol();
+  const _toJsonClasses = Symbol();
 
   return class MsgCommServer {
-    constructor(communicator, classes) {
+    constructor(communicator, classes, valueClasses) {
       this[_communicator] = communicator;
       this[_classes] = new Map();
       this[_instances] = new Map();
       this[_sequenceNumbers] = new Map();
       this[_fromJsonClasses] = new Map();
+      this[_toJsonClasses] = new Map();
 
       if (typeof classes === 'object') {
         if (classes.constructor === Object) {
@@ -149,6 +151,22 @@ export const MsgCommServer = (() => {
         } else {
           for (let cls of classes) {
             this.addClass(cls);
+          }
+        }
+      }
+
+      if (typeof valueClasses === 'object') {
+        if (valueClasses.constructor === Object) {
+          for (let key of Object.keys(valueClasses)) {
+            this.addValueClassWithName(key, valueClasses[key]);
+          }
+        } else if (valueClasses instanceof Map) {
+          for (let pair of valueClasses) {
+            this.addValueClassWithName(pair[0], pair[1]);
+          }
+        } else {
+          for (let cls of valueClasses) {
+            this.addValueClass(cls);
           }
         }
       }
@@ -174,6 +192,16 @@ export const MsgCommServer = (() => {
         }
       };
       this[_fromJsonClasses].set(name, fromJsonClass);
+    }
+
+    addValueClass(cls) {
+      const name = utils.getName(cls);
+      this.addValueClassWithName(name, cls);
+    }
+
+    addValueClassWithName(name, cls) {
+      this[_fromJsonClasses].set(name, cls);
+      this[_toJsonClasses].set(name, cls);
     }
 
     getClassInfo() {
@@ -266,7 +294,7 @@ export const MsgCommServer = (() => {
               ok: true,
               data: result
             };
-            const serializedMessage = serializeMessage(res);
+            const serializedMessage = serializeMessage(res, this[_toJsonClasses]);
             this[_communicator].response(resObj, serializedMessage);
           })
           .catch((result) => {
@@ -276,7 +304,7 @@ export const MsgCommServer = (() => {
               ok: false,
               data: result
             };
-            const serializedMessage = serializeMessage(res);
+            const serializedMessage = serializeMessage(res, this[_toJsonClasses]);
             this[_communicator].response(resObj, serializedMessage);
           });
 
@@ -287,7 +315,7 @@ export const MsgCommServer = (() => {
           ok,
           data
         };
-        const serializedMessage = serializeMessage(res);
+        const serializedMessage = serializeMessage(res, this[_toJsonClasses]);
         this[_communicator].response(resObj, serializedMessage);
       }
     }
@@ -300,15 +328,34 @@ export const MsgCommClient = (() => {
   const _stubClasses = Symbol();
   const _stubInstances = Symbol();
   const _responseCallbackes = Symbol();
+  const _serializeClasses = Symbol();
 
   const _seqNo = Symbol()
 
   return class MsgCommClient {
-    constructor(communicator) {
+    constructor(communicator, valueClasses) {
       this[_communicator] = communicator;
       this[_stubClasses] = new Map();
       this[_stubInstances] = new Map();
       this[_responseCallbackes] = [];
+      this[_stubInstances] = new Map();
+      this[_serializeClasses] = new Map();
+
+      if (typeof valueClasses === 'object') {
+        if (valueClasses.constructor === Object) {
+          for (let key of Object.keys(valueClasses)) {
+            this.addValueClassWithName(key, valueClasses[key]);
+          }
+        } else if (valueClasses instanceof Map) {
+          for (let pair of valueClasses) {
+            this.addValueClassWithName(pair[0], pair[1]);
+          }
+        } else {
+          for (let cls of valueClasses) {
+            this.addValueClass(cls);
+          }
+        }
+      }
 
       this[_communicator].onResponse = (
         (data) => this.onReceiveResponce(data));
@@ -370,6 +417,16 @@ export const MsgCommClient = (() => {
 
       this[_stubClasses].set(clsName, stubCls);
       this[_stubInstances].set(clsName, new Map());
+      this[_serializeClasses].set(clsName, stubCls);
+    }
+
+    addValueClass(cls) {
+      const name = utils.getName(cls);
+      this.addValueClassWithName(name, cls);
+    }
+
+    addValueClassWithName(name, cls) {
+      this[_serializeClasses].set(name, cls);
     }
 
     send(msg, params) {
@@ -380,13 +437,13 @@ export const MsgCommClient = (() => {
           msg: msg,
           data: params
         };
-        const str = serializeMessage(obj, this[_stubClasses]);
+        const str = serializeMessage(obj, this[_serializeClasses]);
         this[_communicator].send(str);
       });
     }
 
     onReceiveResponce(msgStr) {
-      const obj = deserializeMessage(msgStr, this[_stubClasses]);
+      const obj = deserializeMessage(msgStr, this[_serializeClasses]);
       const id = obj.id;
       const ok = obj.ok;
       const data = obj.data;
