@@ -1,10 +1,36 @@
 'use strict';
 
-import * as path from '../common/path.js';
+import * as pathUtils from '../common/path.js';
 
 const fs = require('fs');
+const process = require('process');
+const os = require('os');
 
-extern class FileSystem {
+
+function parsePathForCurOs(pathStr) {
+  const osType = os.platform();
+  if (osType === 'win32') {
+    return pathUtils.parseWindowsPath(pathStr);
+  } else {
+    return pathUtils.parseUnixPath(pathStr);
+  }
+}
+
+function buildPathForCurOs(pathStr) {
+  const osType = os.platform();
+  if (osType === 'win32') {
+    return pathUtils.buildWindowsPath(pathStr);
+  } else {
+    return pathUtils.buildUnixPath(pathStr);
+  }
+}
+
+
+export class FileSystem {
+  constructor() {
+    this._curPath = parsePathForCurOs(process.cwd());
+  }
+
   readFile(srcPath) {
     return new Promise((resolve, reject)=>{
       fs.readFile(path.buildUnixPath(srcPath), (err, data)=>{

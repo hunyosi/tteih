@@ -21,9 +21,9 @@ module.exports = {
   entry: testEntries('./src/test/', /_test\.js$/),
   output: {
     path: './built/test',
-    filename: '[name].js'
+    filename: '[name].js',
   },
-  devtool:'#inline-source-map',
+  devtool:'#inline-source-map'
   module: {
     loaders: [
       {test: /\.js$/, exclude: /node_modules/, loader: 'babel-loader'}
