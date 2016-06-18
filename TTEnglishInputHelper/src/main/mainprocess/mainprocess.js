@@ -23,5 +23,5 @@ electron.app.on('ready', () => {
   mainWnd.on('closed', () => {
     mainWnd = null;
   });
-  mainWnd.loadUrl('file://' + __dirname + '/../index.html');
+  mainWnd.loadURL('file://' + __dirname + '/../index.html');
 });

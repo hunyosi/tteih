@@ -29,7 +29,7 @@ export const MainCommunicatorServer = (() => {
 
 
 export const MainCommunicatorClient = (() => {
-  const _onReceive = Symbol();
+  const _onResponse = Symbol();
   const _name = Symbol();
   const _target = Symbol();
 

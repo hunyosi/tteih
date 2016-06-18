@@ -29,12 +29,12 @@ export const RendererCommunicatorServer = (() => {
 
 
 export const RendererCommunicatorClient = (() => {
-  const _onReceive = Symbol();
+  const _onResponse = Symbol();
   const _name = Symbol();
 
   return class RendererCommunicatorClient {
     constructor(name) {
-      this[_onResponse] = name;
+      this[_onResponse] = null;
       this[_name] = name;
       ipcRenderer.on(this[_name], (ev, msg)=>{
         if (this[_onResponse]) {
