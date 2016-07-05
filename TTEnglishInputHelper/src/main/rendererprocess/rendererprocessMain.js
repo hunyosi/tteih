@@ -8,8 +8,15 @@ const commClient = new renderercomm.RendererCommunicatorClient('msgcomm');
 const rdrMsgComm = new msgcomm.MsgCommClient(commClient, [pathutils.Path]);
 
 document.addEventListener('DOMContentLoaded', ()=>{
-  document.body.appendChild(document.createElement('p').appendChild(document.createTextNode('hello, world')));
+  putp("hello, world");
   rdrMsgComm.fetchClass().then(()=>{
-    document.body.appendChild(document.createElement('p').appendChild(document.createTextNode('hello, world2')));
+    putp("hello, world 2");
   });
 });
+
+function putp(str) {
+  const textNode = document.createTextNode(str);
+  const p = document.createElement('p');
+  p.appendChild(textNode);
+  document.body.appendChild(p);
+}
