@@ -31,6 +31,10 @@ export class FileSystem {
     this._curPath = parsePathForCurOs(process.cwd());
   }
 
+  getCurPath() {
+    return this._curPath;
+  }
+
   readFile(srcPath) {
     return new Promise((resolve, reject)=>{
       fs.readFile(path.buildUnixPath(srcPath), (err, data)=>{

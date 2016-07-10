@@ -7,7 +7,7 @@ import * as pathutils from '../common/path.js';
 const electron = require('electron');
 
 const commSvr = new maincomm.MainCommunicatorServer('msgcomm');
-const msgCommSvr = new msgcomm.MsgCommServer(commSvr, [filesystem.FileSystem], [pathutils.Path]);
+const msgCommSvr = new msgcomm.MsgCommServer(commSvr, [filesystem.FileSystem], [pathutils.Path, pathutils.RouteElement]);
 
 var mainWnd;
 

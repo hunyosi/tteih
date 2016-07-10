@@ -14,7 +14,7 @@ export class RouteElement {
 
 
 export class Path {
-  constructor({route = [], isAbsolute, drive, adsName, deviceName, scheme, user, password, host, port, query, label}) {
+  constructor({route = [], isAbsolute, drive, adsName, deviceName, scheme, user, password, host, port, query, label}={}) {
     this.route = [];
     for (let elm of route) {
       this.route.push(new RouteElement(elm));
