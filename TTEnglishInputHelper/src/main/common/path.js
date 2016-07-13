@@ -1,10 +1,16 @@
 'use strict';
 
 export class RouteElement {
-  constructor({name, isCurrent, isParent}) {
-    this.name = name || '';
-    this.isCurrent = !!isCurrent;
-    this.isParent = !!isParent;
+  constructor(params) {
+    this.name = '';
+    this.isCurrent = false;
+    this.isParent = false;
+    if (typeof params === 'object') {
+      let {name, isCurrent, isParent} = params;
+      this.name = name || '';
+      this.isCurrent = !!isCurrent;
+      this.isParent = !!isParent;
+    }
   }
 
   get isNormal() {

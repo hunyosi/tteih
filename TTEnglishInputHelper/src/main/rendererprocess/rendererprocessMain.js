@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     fs = instance;
     return fs.getCurPath();
   }).then((curPath)=>{
-    putp("curPath: " + curPath);
+    putp("curPath: " + pathutils.buildUnixPath(curPath));
   }).catch((err)=>{
     putp("error: " + err);
   });
