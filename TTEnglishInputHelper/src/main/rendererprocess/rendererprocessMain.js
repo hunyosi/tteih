@@ -9,18 +9,21 @@ const rdrMsgComm = new msgcomm.MsgCommClient(commClient, [pathutils.Path, pathut
 
 document.addEventListener('DOMContentLoaded', ()=>{
   let fs;
-  putp("hello, world");
+  putp('hello, world');
   rdrMsgComm.fetchClass().then(()=>{
-    putp("hello, world 2");
+    putp('hello, world 2');
     return rdrMsgComm.getInstance('FileSystem');
   }).then((instance)=>{
-    putp("hello, world 3: " + instance);
+    putp('hello, world 3: ' + instance);
     fs = instance;
     return fs.getCurPath();
   }).then((curPath)=>{
-    putp("curPath: " + pathutils.buildUnixPath(curPath));
+    putp('curPath: ' + pathutils.buildUnixPath(curPath));
+    return fs.readFile(new pathutils.parseWindowsPath('D:\\home\\hunyosi\\prog\\git\\tteih\\TTEnglishInputHelper\\package.json'));
+  }).then((data)=>{
+    putp('rrad: ' + data);
   }).catch((err)=>{
-    putp("error: " + err);
+    putp('error: ' + err);
   });
 });
 

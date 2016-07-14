@@ -1,5 +1,4 @@
 'use strict';
-import globalObj from './globalObj.js';
 import * as utils from './utils.js';
 
 const getKeys = Function.prototype.call.bind(
@@ -77,10 +76,16 @@ export function toJSONObject(obj, clsMap) {
     return newObj;
   } else {
     const newObj = {};
+    let empty = true;
     for (let key of Object.keys(obj)) {
       newObj[key] = toJSONObject(obj[key], clsMap);
+      empty = false;
     }
-    return [clsName, newObj];
+    if (empty) {
+      return [clsName, newObj, obj + ''];
+    } else {
+      return [clsName, newObj];
+    }
   }
 }
 
@@ -110,6 +115,27 @@ function createInstanceFromJSONObject(cls, jsonObj, clsMap) {
   }
 }
 
+export class UnknownClassObject {
+  constructor(clsName, obj, str, clsMap) {
+    this.className = clsName;
+    this.values = {};
+    for (let key of Object.keys(obj)) {
+      this.values[key] = fromJSONObject(obj[key], clsMap);
+    }
+    this.string = str;
+  }
+
+  toString() {
+    let str = '[UnknownClassObject className=' + this.className + ', values={';
+    let sep = '';
+    for (let key of Object.keys(this.values)) {
+      str += sep + key + ':' + this.values[key].toString();
+      sep = ', ';
+    }
+    str += '}, string=' + this.string + ']';
+    return str;
+  }
+}
 
 export function fromJSONObject(obj, clsMap) {
   if (obj === null) {
@@ -139,7 +165,7 @@ export function fromJSONObject(obj, clsMap) {
       newObj.push(fromJSONObject(elm, clsMap));
     }
     return newObj;
-  } else if (obj.length !== 2 || typeof head !== 'string') {
+  } else if ((obj.length !== 2 && obj.length !== 3) || typeof head !== 'string') {
     return obj;
   }
 
@@ -171,12 +197,7 @@ export function fromJSONObject(obj, clsMap) {
     return new Float64Array(utils.Base64.decode(obj[1]));
   }
 
-  const globalKlass = globalObj[clsName];
-  if (typeof globalKlass === 'function') {
-    return createInstanceFromJSONObject(globalKlass, obj[1], clsMap);
-  }
-
-  throw new Exception('Unknown class: ' + cls);
+  return new UnknownClassObject(clsName, obj[1], obj[2], clsMap);
 }
 
 
