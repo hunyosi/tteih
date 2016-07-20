@@ -74,6 +74,14 @@ export function toJSONObject(obj, clsMap) {
       newObj[key] = toJSONObject(obj[key], clsMap);
     }
     return newObj;
+  } else if (obj instanceof Error) {
+    return [clsName, {
+      message: obj.message,
+      name: obj.name,
+      stack: obj.stack,
+      fileName: obj.fileName,
+      lineNumber: obj.lineNumber
+    }];
   } else {
     const newObj = {};
     let empty = true;
@@ -138,8 +146,8 @@ export class UnknownClassObject {
     } else {
       str += '{';
       let sep = '';
-      for (let key of Object.keys(this.value)) {
-        str += sep + key + ':' + this.value[key].toString();
+      for (let key of Object.keys(this.properties)) {
+        str += sep + key + ':' + this.properties[key].toString();
         sep = ', ';
       }
       str += '}';
