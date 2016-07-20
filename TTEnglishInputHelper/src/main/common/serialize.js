@@ -82,7 +82,7 @@ export function toJSONObject(obj, clsMap) {
       empty = false;
     }
     if (empty) {
-      return [clsName, newObj, obj + ''];
+      return [clsName, obj + ''];
     } else {
       return [clsName, newObj];
     }
@@ -116,23 +116,35 @@ function createInstanceFromJSONObject(cls, jsonObj, clsMap) {
 }
 
 export class UnknownClassObject {
-  constructor(clsName, obj, str, clsMap) {
+  constructor(clsName, obj, clsMap) {
     this.className = clsName;
-    this.values = {};
-    for (let key of Object.keys(obj)) {
-      this.values[key] = fromJSONObject(obj[key], clsMap);
+    this.value = null;
+    this.properties = null;
+
+    if (typeof obj === 'string') {
+      this.value = obj;
+    } else {
+      this.properties = {};
+      for (let key of Object.keys(obj)) {
+        this.properties[key] = fromJSONObject(obj[key], clsMap);
+      }
     }
-    this.string = str;
   }
 
   toString() {
-    let str = '[UnknownClassObject className=' + this.className + ', values={';
-    let sep = '';
-    for (let key of Object.keys(this.values)) {
-      str += sep + key + ':' + this.values[key].toString();
-      sep = ', ';
+    let str = '[UnknownClassObject className=' + this.className + ', value=' + this.value + ', properties='
+    if (this.properties == null) {
+      str += 'null';
+    } else {
+      str += '{';
+      let sep = '';
+      for (let key of Object.keys(this.value)) {
+        str += sep + key + ':' + this.value[key].toString();
+        sep = ', ';
+      }
+      str += '}';
     }
-    str += '}, string=' + this.string + ']';
+    str += ']';
     return str;
   }
 }
@@ -165,7 +177,7 @@ export function fromJSONObject(obj, clsMap) {
       newObj.push(fromJSONObject(elm, clsMap));
     }
     return newObj;
-  } else if ((obj.length !== 2 && obj.length !== 3) || typeof head !== 'string') {
+  } else if (obj.length !== 2 || typeof head !== 'string') {
     return obj;
   }
 
@@ -197,7 +209,7 @@ export function fromJSONObject(obj, clsMap) {
     return new Float64Array(utils.Base64.decode(obj[1]));
   }
 
-  return new UnknownClassObject(clsName, obj[1], obj[2], clsMap);
+  return new UnknownClassObject(clsName, obj[1], clsMap);
 }
 
 
