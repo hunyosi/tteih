@@ -19,9 +19,10 @@ document.addEventListener('DOMContentLoaded', ()=>{
     return fs.getCurPath();
   }).then((curPath)=>{
     putp('curPath: ' + pathutils.buildUnixPath(curPath));
-    return fs.readFile(new pathutils.parseWindowsPath('D:\\home\\hunyosi\\prog\\git\\tteih\\TTEnglishInputHelper\\package.json'));
+//    return fs.readFile(new pathutils.parseWindowsPath('D:\\home\\hunyosi\\prog\\git\\tteih\\TTEnglishInputHelper\\package.json'));
+    return fs.readFile(new pathutils.parseUnixPath('/Users/hunyosi/Documents/prog/git/tteih/TTEnglishInputHelper/package.json'));
   }).then((data)=>{
-    putp('rrad: ' + data);
+    putp('read: ' + data);
   }).catch((err)=>{
     putp('error: ' + err);
   });

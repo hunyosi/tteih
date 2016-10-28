@@ -37,7 +37,7 @@ export class FileSystem {
 
   readFile(srcPath) {
     return new Promise((resolve, reject)=>{
-      fs.readFile(path.buildUnixPath(srcPath), (err, data)=>{
+      fs.readFile(pathUtils.buildUnixPath(srcPath), (err, data)=>{
         if (err) {
           reject(err);
         } else {
