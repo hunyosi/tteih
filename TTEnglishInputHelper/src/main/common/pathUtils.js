@@ -63,6 +63,18 @@ export class Path {
 
     return newPath;
   }
+
+  add(param) {
+    var elm;
+    if (typeof param === 'string' || param instanceof String) {
+      elm = new RouteElement({name: param});
+    } else {
+      throw new TypeError('Unsupported data type: ' + param);
+    }
+    const newPath = new Path(this);
+    newPath.route.push(elm);
+    return newPath;
+  }
 }
 
 

@@ -2,7 +2,7 @@
 
 import * as renderercomm from '../electron/renderercomm.js';
 import * as msgcomm from '../common/MsgComm.js';
-import * as pathutils from '../common/path.js';
+import * as pathutils from '../common/pathUtils.js';
 
 const commClient = new renderercomm.RendererCommunicatorClient('msgcomm');
 const rdrMsgComm = new msgcomm.MsgCommClient(commClient, [pathutils.Path, pathutils.RouteElement]);
@@ -16,11 +16,10 @@ document.addEventListener('DOMContentLoaded', ()=>{
   }).then((instance)=>{
     putp('hello, world 3: ' + instance);
     fs = instance;
-    return fs.getCurPath();
-  }).then((curPath)=>{
-    putp('curPath: ' + pathutils.buildUnixPath(curPath));
-//    return fs.readFile(new pathutils.parseWindowsPath('D:\\home\\hunyosi\\prog\\git\\tteih\\TTEnglishInputHelper\\package.json'));
-    return fs.readFile(new pathutils.parseUnixPath('/Users/hunyosi/Documents/prog/git/tteih/TTEnglishInputHelper/package.json'));
+    return fs.getPath('app');
+  }).then((appPath)=>{
+    putp('appPath: ' + pathutils.buildUnixPath(appPath));
+    return fs.readFile(appPath.add('package.json'));
   }).then((data)=>{
     putp('read: ' + data);
   }).catch((err)=>{

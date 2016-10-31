@@ -1,7 +1,8 @@
 'use strict';
 
-import * as pathUtils from '../common/path.js';
+import * as pathUtils from '../common/pathUtils.js';
 
+const electron = require('electron');
 const fs = require('fs');
 const process = require('process');
 const os = require('os');
@@ -33,6 +34,17 @@ export class FileSystem {
 
   getCurPath() {
     return this._curPath;
+  }
+
+  getPath(kind) {
+    kind = kind + '';
+    let p;
+    if (kind === 'app') {
+      p = electron.app.getAppPath();
+    } else {
+      p = electron.app.getPath(kind);
+    }
+    return parsePathForCurOs(p);
   }
 
   readFile(srcPath) {

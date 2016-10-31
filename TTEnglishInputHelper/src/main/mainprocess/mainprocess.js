@@ -3,7 +3,7 @@
 import * as maincomm from '../electron/maincomm.js';
 import * as filesystem from './filesystem.js';
 import * as msgcomm from '../common/MsgComm.js';
-import * as pathutils from '../common/path.js';
+import * as pathutils from '../common/pathUtils.js';
 const electron = require('electron');
 
 const commSvr = new maincomm.MainCommunicatorServer('msgcomm');
