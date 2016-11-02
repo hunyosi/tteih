@@ -21,7 +21,29 @@ document.addEventListener('DOMContentLoaded', ()=>{
     putp('appPath: ' + pathutils.buildUnixPath(appPath));
     return fs.readFile(appPath.add('package.json'));
   }).then((data)=>{
-    putp('read: ' + data);
+    return new Promise((resolve, reject)=>{
+      putp('read: ' + data);
+      const blob = new Blob([data], {type: 'text/plain'});
+      const url = URL.createObjectURL(blob);
+      putp('blob url: ' + url);
+      const xhr = new XMLHttpRequest();
+      xhr.responseType = 'text';
+      xhr.onreadystatechange = ()=>{
+        putp('xhr state: ' + xhr.readyState);
+        if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+            const res = xhr.response;
+            resolve(res);
+          } else {
+            reject({status: xhr.status, statusText: xhr.stausText});
+          }
+        }
+      };
+      xhr.open('GET', url, true);
+      xhr.send();
+    });
+  }).then((data)=>{
+    putp('date: ' + data);
   }).catch((err)=>{
     putp('error: ' + err);
   });

@@ -1,11 +1,12 @@
 'use strict';
 
 import * as pathUtils from '../common/pathUtils.js';
+import * as nodeUtils from './nodeUtils.js';
 
-const electron = require('electron');
 const fs = require('fs');
 const process = require('process');
 const os = require('os');
+const electron = require('electron');
 
 
 function parsePathForCurOs(pathStr) {
@@ -53,7 +54,8 @@ export class FileSystem {
         if (err) {
           reject(err);
         } else {
-          resolve(data);
+          const aryBuf = nodeUtils.toArrayBuffer(data);
+          resolve(aryBuf);
         }
       })
     });
