@@ -77,6 +77,25 @@ export class Path {
   }
 }
 
+export function parsePath(pathStr, osType) {
+  if (osType === 'win32') {
+    return parseWindowsPath(pathStr);
+  } else {
+    if (0 <= pathStr.indexOf('\\')) {
+      return parseWindowsPath(pathStr);
+    } else {
+      return parseUnixPath(pathStr);
+    }
+  }
+}
+
+export function buildPath(pathStr, osType) {
+  if (osType === 'win32') {
+    return buildWindowsPath(pathStr);
+  } else {
+    return buildUnixPath(pathStr);
+  }
+}
 
 export function parseUnixPath(pathStr) {
   const isAbsolute = (pathStr.charAt(0) == '/');

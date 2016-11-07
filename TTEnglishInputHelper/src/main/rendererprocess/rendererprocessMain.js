@@ -9,6 +9,7 @@ const rdrMsgComm = new msgcomm.MsgCommClient(commClient, [pathutils.Path, pathut
 
 document.addEventListener('DOMContentLoaded', ()=>{
   let fs;
+  let appEnv;
   putp('hello, world');
   rdrMsgComm.fetchClass().then(()=>{
     putp('hello, world 2');
@@ -16,7 +17,11 @@ document.addEventListener('DOMContentLoaded', ()=>{
   }).then((instance)=>{
     putp('hello, world 3: ' + instance);
     fs = instance;
-    return fs.getPath('app');
+    return rdrMsgComm.getInstance('AppEnv');
+  }).then((instance)=>{
+    putp('hello, world 3: ' + instance);
+    appEnv = instance;
+    return appEnv.getPath('app');
   }).then((appPath)=>{
     putp('appPath: ' + pathutils.buildUnixPath(appPath));
     return fs.readFile(appPath.add('package.json'));
