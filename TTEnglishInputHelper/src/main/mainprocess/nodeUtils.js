@@ -1,7 +1,7 @@
 'use strict';
 
 
-export function toArrayBuffer(buffer) {
+export function bufferToArrayBuffer(buffer) {
   const len = buffer.length;
   const aryBuf = new ArrayBuffer(len);
   const u8ary = new Uint8Array(aryBuf);

@@ -5,6 +5,7 @@ import * as pathutils from '../common/pathUtils.js';
 const process = require('process');
 const electron = require('electron');
 
+let argv = null;
 
 export class AppEnv {
   getArch() {
@@ -20,7 +21,15 @@ export class AppEnv {
   }
 
   getArgv() {
-    return process.argv;
+    if (argv == null) {
+      const execPath = pathutils.parsePath(process.argv[0]);
+      let startIdx = 0;
+      if (execPath.baseName === 'electron') {
+        startIdx = 1;
+      }
+      argv = Array.prototype.slice.call(process.argv, startIdx);
+    }
+    return argv;
   }
 
   getCwd() {

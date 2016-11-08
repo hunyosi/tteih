@@ -3,13 +3,19 @@
 export class RouteElement {
   constructor(params) {
     this.name = '';
+    this.baseName = '';
+    this.extension = null;
     this.isCurrent = false;
     this.isParent = false;
+    this.hidden = false;
     if (typeof params === 'object') {
-      let {name, isCurrent, isParent} = params;
+      let {name, baseName, extension, isCurrent, isParent, isHidden} = params;
       this.name = name || '';
+      this.baseName = baseName || this.name;
+      this.extension = extension || null;
       this.isCurrent = !!isCurrent;
       this.isParent = !!isParent;
+      this.isHidden = !!isHidden;
     }
   }
 
@@ -39,6 +45,36 @@ export class Path {
     this.port = port;
     this.query = query;
     this.label = label;
+  }
+
+  get name() {
+    const route = this.route;
+    const len = route.length;
+    if (0 < len) {
+      return route[len - 1].name;
+    } else {
+      return null;
+    }
+  }
+
+  get baseName() {
+    const route = this.route;
+    const len = route.length;
+    if (0 < len) {
+      return route[len - 1].baseName;
+    } else {
+      return null;
+    }
+  }
+
+  get extension() {
+    const route = this.route;
+    const len = route.length;
+    if (0 < len) {
+      return route[len - 1].extension;
+    } else {
+      return null;
+    }
   }
 
   parent() {
@@ -97,6 +133,27 @@ export function buildPath(pathStr, osType) {
   }
 }
 
+
+export function parseUnixName(name) {
+  if (name.length < 1) {
+    return new RouteElement({isCurrent:true});
+  } else if (name === '.') {
+    return new RouteElement({name, isCurrent:true});
+  } else if (name === '..') {
+    return new RouteElement({name, isParent:true});
+  } else {
+    const isHidden = name.charAt(0) === '.';
+    const extIdx = name.indexOf('.');
+    let baseName = name;
+    let extension = null;
+    if (0 < extIdx) {
+      baseName = name.substring(0, extIdx);
+      extension = name.substring(extIdx + 1);
+    }
+    return new RouteElement({name, baseName, extension, isHidden});
+  }
+}
+
 export function parseUnixPath(pathStr) {
   const isAbsolute = (pathStr.charAt(0) == '/');
   if (isAbsolute) {
@@ -104,13 +161,8 @@ export function parseUnixPath(pathStr) {
   }
   const route = [];
   for (let elm of pathStr.split(/\//)) {
-    if (elm.length < 1) {
-    } else if (elm === '.') {
-      route.push(new RouteElement({isCurrent:true}));
-    } else if (elm === '..') {
-      route.push(new RouteElement({isParent:true}));
-    } else {
-      route.push(new RouteElement({name:elm}));
+    if (0 < elm.length) {
+      route.push(parseUnixName(elm));
     }
   }
 
@@ -164,13 +216,8 @@ export function parseWindowsPath(pathStr) {
   }
   const route = [];
   for (let elm of pathBody.split(/[\\\/]/)) {
-    if (elm.length < 1) {
-    } else if (elm === '.') {
-      route.push(new RouteElement({isCurrent:true}));
-    } else if (elm === '..') {
-      route.push(new RouteElement({isParent:true}));
-    } else {
-      route.push(new RouteElement({name:elm}));
+    if (0 < elm.length) {
+      route.push(parseUnixName(elm));
     }
   }
 
@@ -178,7 +225,7 @@ export function parseWindowsPath(pathStr) {
   if (0 < route.length && route[route.length - 1].isNormal) {
     const parts = route[route.length - 1].name.split(/:/);
     if (parts.length > 1) {
-      route[route.length - 1] = new RouteElement({name:parts[0]});
+      route[route.length - 1] = parseUnixName(parts[0]);
       adsName = parts[parts.length - 1];
     }
   }

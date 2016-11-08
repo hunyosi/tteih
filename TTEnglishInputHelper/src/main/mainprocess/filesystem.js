@@ -22,7 +22,7 @@ export class FileSystem {
         if (err) {
           reject(err);
         } else {
-          const aryBuf = nodeUtils.toArrayBuffer(data);
+          const aryBuf = nodeUtils.bufferToArrayBuffer(data);
           resolve(aryBuf);
         }
       })
