@@ -1,6 +1,6 @@
-import tt from './tt.js';
-import Progress from './Progress.js';
-const progressObj = Progress.getInstanse();
+import * as tt from './tt.js';
+import {Progress} from './Progress.js';
+const progressObj = Progress.getInstance();
 
 function VoiceMapRule(
   lookbehind, patternBody, lookahead, voElmsToRepl) {
@@ -32,7 +32,7 @@ VoiceMapRule.prototype.toString = function() {
 };
 
 
-export default function VoiceMap() {
+export function VoiceMap() {
   this.rules = {};
   this.warns = [];
 }

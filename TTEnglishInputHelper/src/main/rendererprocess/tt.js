@@ -365,8 +365,6 @@ export class PrintWriter {
 
 const defaultPrintWriter = new PrintWriter(document);
 
-export default class tt {
-  static pp(...args) {
-    PrintWriter.prototype.pp.apply(defaultPrintWriter, args);
-  }
+export function pp(...args) {
+  PrintWriter.prototype.pp.apply(defaultPrintWriter, args);
 }

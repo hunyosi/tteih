@@ -1,7 +1,7 @@
 import * as ConvUnknownWord from './ConvUnknownWord.js';
-import tt from './tt.js';
-import Progress from './Progress.js';
-const progressObj = Progress.getInstanse();
+import * as tt from './tt.js';
+import {Progress} from './Progress.js';
+const progressObj = Progress.getInstance();
 
 
 export function transFromText(ust, txt, dict, voMap) {

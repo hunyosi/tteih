@@ -3,6 +3,7 @@
 import * as renderercomm from '../electron/renderercomm.js';
 import * as msgcomm from '../common/MsgComm.js';
 import * as pathutils from '../common/pathUtils.js';
+import {TTEnglishInputHelper} from './rendererprocess.js';
 
 const commClient = new renderercomm.RendererCommunicatorClient('msgcomm');
 const rdrMsgComm = new msgcomm.MsgCommClient(commClient, [pathutils.Path, pathutils.RouteElement]);
@@ -58,14 +59,19 @@ document.addEventListener('DOMContentLoaded', ()=>{
     });
   }).then((data)=>{
     putp('date: ' + data);
+    const tteih = new TTEnglishInputHelper(appEnv, fs);
+    tteih.init();
   }).catch((err)=>{
     putp('error: ' + err);
   });
 });
 
 function putp(str) {
+  console.log(str);
+/*
   const textNode = document.createTextNode(str);
   const p = document.createElement('p');
   p.appendChild(textNode);
   document.body.appendChild(p);
+*/
 }

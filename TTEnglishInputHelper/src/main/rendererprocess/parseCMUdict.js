@@ -1,4 +1,4 @@
-import tt from './tt.js';
+import * as tt from './tt.js';
 
 export function parseCMUdict(str) {
   tt.pp("parseCMUdict");

@@ -1,4 +1,3 @@
-'use strict';
 /*
 # [COPYING]
 #     TTEnglishInputHelper
@@ -10,9 +9,11 @@
 #     You can obtain one at http://mozilla.org/MPL/2.0/.
 # [/COPYING]
 */
-import tt from './tt.js';
+'use strict';
 
- function USTElement(parent) {
+import * as tt from './tt.js';
+
+export function USTElement(parent) {
   this.parent = parent;
   this.items = {};
   this.setLength(null);
@@ -111,7 +112,7 @@ import tt from './tt.js';
  };
 
 
- function USTDocument() {
+export function USTDocument() {
   this.enableElms = [];
   this.allElms = [];
   this.nameElmMap = {};
@@ -281,9 +282,6 @@ tt.pp("USTDocument.prototype.each: end");
   return new USTElement(this);
  };
 
-export default function ust() {
- }
- ust.prototype = USTDocument;
- ust.USTDocument = USTDocument;
- ust.USTElement = USTElement;
- ust.parse = USTDocument.parse
+export function parse(src) {
+  return USTDocument.parse(src);
+}

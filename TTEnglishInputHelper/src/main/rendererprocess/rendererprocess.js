@@ -10,25 +10,19 @@
 #     You can obtain one at http://mozilla.org/MPL/2.0/.
 # [/COPYING]
 */
-import tt from './tt.js';
-import ttUst from './tt.ust.js';
-import ttXul from './tt.xul.js';
-import Progress from './Progress.js';
+import * as tt from './tt.js';
+import * as ttUst from './tt.ust.js';
+import * as ttXul from './tt.xul.js';
+import {Progress} from './Progress.js';
 import {parseCMUdict} from './parseCMUdict.js';
 import {transFromText} from './transFromText.js';
-import VoiceMap from './VoiceMap.js';
+import {VoiceMap} from './VoiceMap.js';
 import {convUnknownEnglishWord} from './ConvUnknownWord.js';
 
-
-function getCmdLineArgs() {
-  return new Promise((resolve, reject) => {
-    resolve([]);
-  });
-}
-
-
-class TTEnglishInputHelper {
-  constructor() {
+export class TTEnglishInputHelper {
+  constructor(appEnv, fs) {
+    this._appEnv = appEnv;
+    this._fs = fs;
     this._progressObj = Progress.getInstance();
     this._cmdLineOps = new Map();
     this._cmdLineArgs = [];
@@ -102,14 +96,14 @@ class TTEnglishInputHelper {
 
   fetchCmdLineArgs() {
     return new Promise((resolve, reject) => {
-      getCmdLineArgs().then((cmdLine) => {
+      this._appEnv.getArgv().then((cmdLine) => {
         var data;
         var i1, z1, arg, skip = false,
           args = [];
         tt.printLn("cmdLine.length: " + cmdLine.length);
 
         z1 = cmdLine.length;
-        for (i1 = 0; i1 < z1; ++i1) {
+        for (i1 = 1; i1 < z1; ++i1) {
           tt.pp("cmdLine[" + i1 + "]: " + cmdLine[i1]);
           arg = cmdLine[i1];
           if (skip) {
