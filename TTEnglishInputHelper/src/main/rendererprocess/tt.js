@@ -334,16 +334,19 @@ export class PrintWriter {
     var i1, z1 = arguments.length,
       elm;
     var f = true;
+    var buf = '';
     for (i1 = 0; i1 < z1; ++i1) {
       elm = arguments[i1];
       if (f && getType(elm) === "String") {
-        this.print(elm);
+        buf += elm;
         f = false;
       } else {
-        this.print(getDump(elm));
+        buf += getDump(elm);
         f = true;
       }
     }
+    console.log(buf);
+    this.print(buf);
     this.putnl();
   }
 

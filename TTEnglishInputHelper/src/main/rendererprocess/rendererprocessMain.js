@@ -3,6 +3,7 @@
 import * as renderercomm from '../electron/renderercomm.js';
 import * as msgcomm from '../common/MsgComm.js';
 import * as pathutils from '../common/pathUtils.js';
+import {FileUtils} from './fileutils.js';
 import {TTEnglishInputHelper} from './rendererprocess.js';
 
 const commClient = new renderercomm.RendererCommunicatorClient('msgcomm');
@@ -23,6 +24,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   }).then((instance)=>{
     putp('hello, world 4: ' + instance);
     appEnv = instance;
+/*
     return appEnv.getPath('app');
   }).then((appPath)=>{
     putp('appPath: ' + pathutils.buildUnixPath(appPath));
@@ -59,15 +61,29 @@ document.addEventListener('DOMContentLoaded', ()=>{
     });
   }).then((data)=>{
     putp('date: ' + data);
-    const tteih = new TTEnglishInputHelper(appEnv, fs);
-    tteih.init();
+*/
+    const fileUtils = new FileUtils(fs, appEnv);
+    const tteih = new TTEnglishInputHelper(appEnv, fs, fileUtils);
+    return tteih.init();
+  }).then((data)=>{
+    putp('ready');
+    putp(data);
   }).catch((err)=>{
-    putp('error: ' + err);
+    putp('error: ');
+    putp(err);
   });
 });
 
 function putp(str) {
-  console.log(str);
+  if (str instanceof Error) {
+    if (str.stack) {
+      console.log(str.stack);
+    } else {
+      console.error(str);
+    }
+  } else {
+    console.log(str);
+  }
 /*
   const textNode = document.createTextNode(str);
   const p = document.createElement('p');

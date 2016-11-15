@@ -20,9 +20,10 @@ import {VoiceMap} from './VoiceMap.js';
 import {convUnknownEnglishWord} from './ConvUnknownWord.js';
 
 export class TTEnglishInputHelper {
-  constructor(appEnv, fs) {
+  constructor(appEnv, fs, fileUtils) {
     this._appEnv = appEnv;
     this._fs = fs;
+    this._fileUtils = fileUtils;
     this._progressObj = Progress.getInstance();
     this._cmdLineOps = new Map();
     this._cmdLineArgs = [];
@@ -40,9 +41,11 @@ export class TTEnglishInputHelper {
   }
 
   init() {
+    console.log("TTEnglishInputHelper.init()");
+    tt.pp("TTEnglishInputHelper.init()");
     return this.initUi()
       .then(() => this.fetchCmdLineArgs())
-      .then(() => this.loadConfig())
+      .then(() => this.loadConfigFile())
       .then(() => this.configure())
       .then(() => this.loadFileSet())
       .then(() => this.initUiAfter())
@@ -51,56 +54,55 @@ export class TTEnglishInputHelper {
   }
 
   initUi() {
-    return new Promise((reaolve, reject) => {
-      dosument.addEventListener('DOMContentLoaded', () => {
-        tt.pp("start EnglishInputPlugin");
+    return new Promise((resolve, reject) => {
+      tt.pp("start EnglishInputPlugin");
 
-        progressObj.setDomElement(document.querySelector("#progressPage .progressBar"));
+      this._progressObj.setDomElement(document.querySelector("#progressPage .progressBar"));
 
-        var btnExec = document.getElementById("btnTranslate");
-        btnExec.addEventListener("click", () => this.doTranslate(), false);
-        tt.pp("btnExec.addEventListener(\"click\")");
+      var btnExec = document.getElementById("btnTranslate");
+      btnExec.addEventListener("click", () => this.doTranslate(), false);
+      tt.pp("btnExec.addEventListener(\"click\")");
 
-        var btnCancel = document.getElementById("btnCancel");
-        btnCancel.addEventListener("click", () => this.doCancel(), false);
-        tt.pp("btnCancel.addEventListener(\"click\")");
+      var btnCancel = document.getElementById("btnCancel");
+      btnCancel.addEventListener("click", () => this.doCancel(), false);
+      tt.pp("btnCancel.addEventListener(\"click\")");
 
-        var btnSave = document.getElementById("btnSave");
-        btnSave.addEventListener("click", () => this.doSave(), false);
+      var btnSave = document.getElementById("btnSave");
+      btnSave.addEventListener("click", () => this.doSave(), false);
 
-        var btnBack = document.getElementById("btnBack");
-        btnBack.addEventListener("click", () => this.doBack(), false);
+      var btnBack = document.getElementById("btnBack");
+      btnBack.addEventListener("click", () => this.doBack(), false);
 
-        var btnForPresamp = document.getElementById("btnForPresamp");
-        btnForPresamp.addEventListener("click", () => this.doForPresamp(), false);
+      var btnForPresamp = document.getElementById("btnForPresamp");
+      btnForPresamp.addEventListener("click", () => this.doForPresamp(), false);
 
-        var btnSaveForPresamp = document.getElementById("btnSaveForPresamp");
-        btnSaveForPresamp.addEventListener("click", () => this.doSaveForPresamp(), false);
+      var btnSaveForPresamp = document.getElementById("btnSaveForPresamp");
+      btnSaveForPresamp.addEventListener("click", () => this.doSaveForPresamp(), false);
 
-        var btnCancelForPresamp = document.getElementById("btnCancelForPresamp");
-        btnCancelForPresamp.addEventListener("click", () => this.doCancelForPresamp(), false);
+      var btnCancelForPresamp = document.getElementById("btnCancelForPresamp");
+      btnCancelForPresamp.addEventListener("click", () => this.doCancelForPresamp(), false);
 
-        var btnProgressCancel = document.getElementById("btnProgressCancel");
-        btnProgressCancel.addEventListener("click", () => this.doProgressCancel(), false);
+      var btnProgressCancel = document.getElementById("btnProgressCancel");
+      btnProgressCancel.addEventListener("click", () => this.doProgressCancel(), false);
 
-        var btnOpenLicense = document.getElementById("btnOpenLicense");
-        btnOpenLicense.addEventListener("click", () => this.doOpenLicense(), false);
+      var btnOpenLicense = document.getElementById("btnOpenLicense");
+      btnOpenLicense.addEventListener("click", () => this.doOpenLicense(), false);
 
-        var btnLicenseOk = document.getElementById("btnLicenseOk");
-        btnLicenseOk.addEventListener("click", () => this.doLicenseOk(), false);
+      var btnLicenseOk = document.getElementById("btnLicenseOk");
+      btnLicenseOk.addEventListener("click", () => this.doLicenseOk(), false);
 
-        resolve();
-      });
+      resolve();
     });
   }
 
   fetchCmdLineArgs() {
-    return new Promise((resolve, reject) => {
-      this._appEnv.getArgv().then((cmdLine) => {
+    tt.pp("fetchCmdLineArgs");
+    return this._appEnv.getArgv().then((cmdLine) => {
+      return new Promise((resolve, reject) => {
         var data;
         var i1, z1, arg, skip = false,
           args = [];
-        tt.printLn("cmdLine.length: " + cmdLine.length);
+        tt.pp("cmdLine.length: " + cmdLine.length);
 
         z1 = cmdLine.length;
         for (i1 = 1; i1 < z1; ++i1) {
@@ -121,14 +123,13 @@ export class TTEnglishInputHelper {
   }
 
   loadConfigFile() {
-    return new Promise((resolve, reject) => {
-      tt.loadFile("data/config.json", "json", "", {
-        success: function(data) {
-          this._cfg = data;
+    return this._fileUtils.readTextResource("data/config.json", "UTF-8")
+      .then((data)=>{
+        return new Promise((resolve, reject)=>{
+          this._cfg = JSON.parse(data);
           resolve();
-        }
+        });
       });
-    });
   }
 
   configure() {
@@ -145,9 +146,9 @@ export class TTEnglishInputHelper {
   }
 
   loadFileSet() {
-    return new Process((resolve, reect) => {
-      tt.loadFiles(this._cfg.files, {
-        success: (dataSet) => {
+    return this._fileUtils.readResources(this._cfg.files)
+      .then((dataSet)=>{
+        return new Promise((resolve, reect) => {
           tt.pp("load dict success");
 
           this._dictEn = parseCMUdict(dataSet["cmudict"]);
@@ -161,13 +162,12 @@ export class TTEnglishInputHelper {
           }
 
           resolve();
-        }
+        });
       });
-    });
   }
 
   initUiAfter() {
-    return new Promise((reaolve, reject) => {
+    return new Promise((resolve, reject) => {
       setVoiceMaps(this._voicemaps);
       resolve();
     });

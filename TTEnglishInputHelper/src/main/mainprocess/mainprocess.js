@@ -24,8 +24,8 @@ electron.app.on('window-all-closed', () => {
 
 electron.app.on('ready', () => {
   mainWnd = new electron.BrowserWindow({
-    width: 320,
-    height: 200
+    width: 800,
+    height: 600
   });
   mainWnd.on('closed', () => {
     mainWnd = null;

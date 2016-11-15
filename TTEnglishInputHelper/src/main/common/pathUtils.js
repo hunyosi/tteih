@@ -100,15 +100,33 @@ export class Path {
     return newPath;
   }
 
-  add(param) {
-    var elm;
-    if (typeof param === 'string' || param instanceof String) {
-      elm = new RouteElement({name: param});
+  add(path) {
+    let pathObj;
+    if (typeof path === 'string' || path instanceof String) {
+      pathObj = parsePath(path);
+    } else if (path instanceof Path) {
+      pathObj = new Path(path);
+    } else if (path instanceof RouteElement) {
+      pathObj = new Path({route:[path]});
     } else {
       throw new TypeError('Unsupported data type: ' + param);
     }
-    const newPath = new Path(this);
-    newPath.route.push(elm);
+
+    if (pathObj.isAbsolute) {
+      throw new Error('Can\'t add absolute path.');
+    }
+
+    let newPath = new Path(this);
+    for (let elm of pathObj.route) {
+      if (elm.isCurrent) {
+        continue;
+      } else if (elm.isParent) {
+        newPath = newPath.parent();
+      } else {
+        newPath.route.push(elm);
+      }
+    }
+
     return newPath;
   }
 }
