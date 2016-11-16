@@ -154,7 +154,7 @@ export class TTEnglishInputHelper {
           this._dictEn = parseCMUdict(dataSet["cmudict"]);
 
           this._voMapSet = new Map();
-          for (voicemap of this._voicemaps) {
+          for (let voicemap of this._voicemaps) {
             const voicemapFile = voicemap.file;
             const voMap = VoiceMap.parse(dataSet[voicemapFile]);
             this._voMapSet.set(voicemapFile, voMap);
@@ -168,7 +168,7 @@ export class TTEnglishInputHelper {
 
   initUiAfter() {
     return new Promise((resolve, reject) => {
-      setVoiceMaps(this._voicemaps);
+      this.setVoiceMaps(this._voicemaps);
       resolve();
     });
   }

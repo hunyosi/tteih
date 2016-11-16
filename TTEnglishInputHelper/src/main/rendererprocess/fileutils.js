@@ -37,12 +37,12 @@ export class FileUtils {
     let keyIdx = 0;
     function readResourceImpl() {
       if (keys.length <= keyIdx) {
-        return;
+        return resultSet;
       }
       const key = keys[keyIdx];
       const fileInfo = fileInfoMap[key];
       const path = fileInfo.path;
-      const chatset = fileInfo.encoding;
+      const charset = fileInfo.encoding;
       return fs.readFile(appPath.add(path))
         .then((data)=>{
           return encoding.decode(data, charset);
