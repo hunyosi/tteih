@@ -174,15 +174,14 @@ export class TTEnglishInputHelper {
   }
 
   loadInputFile() {
-    return new Promise((resolve, reject) => {
-      if (this._ustFileName != null) {
-        tt.pp("ustFileName=", this._ustFileName);
-        const data = ttXul.loadText(this._ustFileName, "Shift_JIS");
-        tt.pp("data.length=", data.length);
-        this._ust = ttUst.parse(data);
-      }
-      resolve();
-    });
+    if (this._ustFileName != null) {
+      tt.pp("ustFileName=", this._ustFileName);
+      return this._fileUtils.readTextFile(this._ustFileName, "Shift_JIS")
+        .then((data) => {
+          tt.pp("data.length=", data.length);
+          this._ust = ttUst.parse(data);
+        });
+    }
   }
 
   setVoiceMaps(voicemaps) {
@@ -225,9 +224,13 @@ export class TTEnglishInputHelper {
 
     var txt = document.getElementById("txtInput").value;
 
+    const ust = this._ust;
+    const dictEn = this._dictEn;
+    const voMap = this._voMapSet.get(this._voicemaps[0].file);
+
     transFromText(ust, txt, dictEn, voMap)
       .then(
-        function(translated) {
+        (translated) => {
           this._pronunciation = translated;
 
           var tbody = document.querySelector(
@@ -324,20 +327,16 @@ export class TTEnglishInputHelper {
           //     document.querySelector("#tablePage").style.display = "block";
           document.querySelector("#progressPage").style.display = "none";
           this._progressObj.clear();
-          var console = tt.setCurPrintElement(null);
-          while (console.lastChild) {
-            console.removeChild(console.lastChild);
-          }
+          tt.clear();
+          tt.setCurPrintElement(null);
         },
 
-        function(ex) {
+        (ex) => {
           if (this._progressObj.cancelFlag) {
             //      document.querySelector("#textPage").style.display = "block";
             document.querySelector("#progressPage").style.display = "none";
-            var console = tt.setCurPrintElement(null);
-            while (console.lastChild) {
-              console.removeChild(console.lastChild);
-            }
+            tt.clear();
+            tt.setCurPrintElement(null);
             return;
           }
 
@@ -377,7 +376,7 @@ export class TTEnglishInputHelper {
       }
 
       if (this._convNote || this._insertTextMode === 3) {
-        ust.each(function(elm) {
+        ust.each((elm) => {
           if (/^#\d+$/.test(elm.name)) {
             elm.name = "#DELETE";
           }
@@ -445,7 +444,7 @@ export class TTEnglishInputHelper {
         tt.pp(ust.toString());
         /*
            btnProgressCancel.disabled = false;
-           btnProgressCancel.onclick = function() {
+           btnProgressCancel.onclick = () => {
         */
         ttXul.saveText(ustFileName, "Shift_JIS", ust.toString());
         window.close();
@@ -600,7 +599,7 @@ export class TTEnglishInputHelper {
       }
 
       if (this._convNote || this._insertTextMode === 3) {
-        ust.each(function(elm) {
+        ust.each((elm) => {
           if (/^#\d+$/.test(elm.name)) {
             elm.name = "#DELETE";
           }
@@ -663,7 +662,7 @@ export class TTEnglishInputHelper {
         tt.pp(ust.toString());
         /*
            btnProgressCancel.disabled = false;
-           btnProgressCancel.onclick = function() {
+           btnProgressCancel.onclick = () => {
         */
         ttXul.saveText(ustFileName, "Shift_JIS", ust.toString());
         window.close();

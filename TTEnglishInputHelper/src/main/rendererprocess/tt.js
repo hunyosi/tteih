@@ -273,12 +273,12 @@ export class PrintWriter {
   }
 
   setCurPrintElement(elm) {
-    var oldPrintElement = curPrintElement;
-    curPrintElement = elm;
+    var oldPrintElement = this._curPrintElement;
+    this._curPrintElement = elm;
     return oldPrintElement;
   }
 
-  newCurPrintElement(elm) {
+  newCurPrintElement() {
     var oldPrintElement = this._curPrintElement;
     var body = this._document.getElementsByTagName("body").item(0);
     var div = this._document.createElement("div");
@@ -289,6 +289,15 @@ export class PrintWriter {
 
   getCurPrintElement() {
     return this._curPrintElement;
+  }
+
+  clear() {
+    const con = this._curPrintElement;
+    if (con) {
+      while (con.lastChild) {
+        con.removeChild(con.lastChild);
+      }
+    }
   }
 
   printLn(str) {
@@ -370,4 +379,12 @@ const defaultPrintWriter = new PrintWriter(document);
 
 export function pp(...args) {
   PrintWriter.prototype.pp.apply(defaultPrintWriter, args);
+}
+
+export function setCurPrintElement(...args) {
+  return PrintWriter.prototype.setCurPrintElement.apply(defaultPrintWriter, args);
+}
+
+export function clear(...args) {
+  PrintWriter.prototype.clear.apply(defaultPrintWriter, args);
 }
