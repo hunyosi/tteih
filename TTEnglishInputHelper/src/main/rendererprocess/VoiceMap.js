@@ -1,3 +1,5 @@
+'use strict';
+
 import * as tt from './tt.js';
 import {Progress} from './Progress.js';
 const progressObj = Progress.getInstance();

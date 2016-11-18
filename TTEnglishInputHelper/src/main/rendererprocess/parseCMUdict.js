@@ -1,3 +1,5 @@
+'use strict';
+
 import * as tt from './tt.js';
 
 export function parseCMUdict(str) {

@@ -18,6 +18,7 @@ import {parseCMUdict} from './parseCMUdict.js';
 import {transFromText} from './transFromText.js';
 import {VoiceMap} from './VoiceMap.js';
 import {convUnknownEnglishWord} from './ConvUnknownWord.js';
+import {convForPresamp} from './convForPresamp.js';
 
 export class TTEnglishInputHelper {
   constructor(appEnv, fs, fileUtils) {
@@ -500,79 +501,7 @@ export class TTEnglishInputHelper {
 
   doForPresamp() {
     try {
-      var i1, z1, p, lyric, presampText = "";
-      var s, prevIdx = null,
-        pht, prevPHT = null;
-      z1 = this._pronunciation.length;
-      for (i1 = 0; i1 < z1; ++i1) {
-        p = this._pronunciation[i1];
-        s = p.src[p.src.length - 1];
-        if (prevIdx !== s.src.idx) {
-          prevIdx = s.src.idx;
-          presampText += " ";
-        }
-
-        lyric = p.val.voName;
-        pht = getHeadTailPron(lyric);
-        if (prevPHT) {
-          if (pht.head && prevPHT.tail === pht.head) {
-            lyric = lyric.substring(pht.head.length);
-          }
-        }
-
-        prevPHT = pht;
-
-        presampText += lyric.replace(/[ -]+/g, "");
-      }
-
-      var words = presampText.trim().split(/ /),
-        syllable, syllables = [];
-      var word, ps;
-      var i2, z2, p2, ps2, vt;
-      var i3, z3, p3, ps3;
-      for (i1 = 0, z1 = words.length; i1 < z1; ++i1) {
-        word = words[i1];
-        ps = getProns(word);
-        if (cntVowels(ps) < 2) {
-          syllables.push(word);
-          continue;
-        }
-
-        ps2 = [];
-        for (i2 = 0, z2 = ps.length; i2 < z2; ++i2) {
-          p2 = ps[i2];
-          if (isVowel(p2)) {
-            if ((2 <= ps2.length) && (vt = findVowel(ps2))) {
-              if (vt.type === 1) { // short vowel
-                if (vt.pos < ps2.length - 1) {
-                  z3 = vt.pos + 1;
-                } else {
-                  z3 = vt.pos;
-                }
-              } else { // long vowel
-                z3 = vt.pos;
-              }
-
-              ps3 = [];
-              for (i3 = 0; i3 <= z3; ++i3) {
-                p3 = ps2.shift();
-                ps3.push(p3);
-              }
-
-              syllable = ps3.join("");
-              syllables.push(syllable);
-            }
-
-            ps2.push(p2);
-
-          } else {
-            ps2.push(p2);
-          }
-        }
-
-        syllable = ps2.join("");
-        syllables.push(syllable);
-      }
+      const syllables = convForPresamp(this._pronunciation);
 
       document.getElementById("txtForPresamp").value = syllables.join(" ");
 
