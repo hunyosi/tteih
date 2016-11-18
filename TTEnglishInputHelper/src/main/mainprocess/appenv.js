@@ -24,7 +24,7 @@ export class AppEnv {
     if (argv == null) {
       const execPath = pathutils.parsePath(process.argv[0]);
       let startIdx = 0;
-      if (execPath.baseName === 'electron') {
+      if (execPath.baseName.toLowerCase() === 'electron') {
         startIdx = 1;
       }
       argv = Array.prototype.slice.call(process.argv, startIdx);

@@ -1,11 +1,13 @@
+'use strict';
+
 import * as ConvUnknownWord from './ConvUnknownWord.js';
 import * as tt from './tt.js';
 import {Progress} from './Progress.js';
 const progressObj = Progress.getInstance();
 
 
-export function transFromText(ust, txt, dict, voMap) {
-  tt.pp("transFromText");
+export function transFromText(ust, txt, dict, voMap, insertTextMode) {
+  tt.pp("transFromText: ust=", ust, ", txt=", txt);
 
   var push = Array.prototype.push;
 
@@ -68,6 +70,10 @@ function parseText(txt) {
 function getWordsFromUst(ust) {
   var words = [];
 
+  if (ust == null) {
+    return words;
+  }
+
   ust.each(function(elm) {
     var word, wordObj;
     word = elm.items["Lyric"];
@@ -104,7 +110,7 @@ function wordsToVoiceNames(words, dict, voMap) {
   var i1, z1;
   var unknown;
 
-  tt.pp("wordsToVoiceNames");
+  tt.pp("wordsToVoiceNames: ", words);
 
   progressObj.init(0, words.length, 0);
 

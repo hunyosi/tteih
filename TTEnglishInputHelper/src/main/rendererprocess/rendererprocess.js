@@ -228,7 +228,7 @@ export class TTEnglishInputHelper {
     const dictEn = this._dictEn;
     const voMap = this._voMapSet.get(this._voicemaps[0].file);
 
-    transFromText(ust, txt, dictEn, voMap)
+    transFromText(ust, txt, dictEn, voMap, this._insertTextMode)
       .then(
         (translated) => {
           this._pronunciation = translated;

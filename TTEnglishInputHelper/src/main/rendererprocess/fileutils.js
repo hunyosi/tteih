@@ -12,9 +12,9 @@ export class FileUtils {
   readTextFile(path, charset) {
     let pathObj = path;
     if (typeof path === 'string' || path instanceof String) {
-      pathObj = psthutils.parsePath(path);
+      pathObj = pathutils.parsePath(path);
     }
-    return this._fs.readFile(path)
+    return this._fs.readFile(pathObj)
       .then((data)=>{
         return encoding.decode(data, charset);
       });

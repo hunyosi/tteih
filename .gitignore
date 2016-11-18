@@ -29,7 +29,10 @@ node_modules
 # editor backup
 *~
 
+# macOS
+.DS_Store
 
+#
 built
 dist
 bundle
