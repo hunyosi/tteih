@@ -1,8 +1,9 @@
 'use strict';
-
+import * as utils from '../common/utils.js';
 import * as renderercomm from '../electron/renderercomm.js';
 import * as msgcomm from '../common/MsgComm.js';
 import * as pathutils from '../common/pathUtils.js';
+import * as encoding from './encoding.js';
 import {FileUtils} from './fileutils.js';
 import {TTEnglishInputHelper} from './rendererprocess.js';
 
@@ -24,44 +25,27 @@ document.addEventListener('DOMContentLoaded', ()=>{
   }).then((instance)=>{
     putp('hello, world 4: ' + instance);
     appEnv = instance;
-/*
-    return appEnv.getPath('app');
-  }).then((appPath)=>{
-    putp('appPath: ' + pathutils.buildUnixPath(appPath));
-    defaultPath = appPath.add('package.json');
-    return appEnv.getArgv();
-  }).then((argv)=>{
-    putp('argv: ' + argv);
-    let loadPath = defaultPath;
-    if (1 < argv.length) {
-      loadPath = pathutils.parsePath(argv[1]);
-    }
-    return fs.readFile(loadPath);
+    return encoding.initCodePointMap();
   }).then((data)=>{
-    return new Promise((resolve, reject)=>{
-      putp('read: ' + data);
-      const blob = new Blob([data], {type: 'text/plain'});
-      const url = URL.createObjectURL(blob);
-      putp('blob url: ' + url);
-      const xhr = new XMLHttpRequest();
-      xhr.responseType = 'text';
-      xhr.onreadystatechange = ()=>{
-        putp('xhr state: ' + xhr.readyState);
-        if (xhr.readyState === 4) {
-          if (xhr.status === 200) {
-            const res = xhr.response;
-            resolve(res);
-          } else {
-            reject({status: xhr.status, statusText: xhr.stausText});
-          }
+    putp('hello, world 5: data.length=' + data.length);
+    const numOfRows = 94;
+    const numOfCells = 94;
+    const curRow = 2;
+    let chrCode = 0, prevChr = 0;
+    let chrIdx = 0;
+    for (let rowIdx = 0; rowIdx < numOfRows; ++rowIdx) {
+      let rowBuf = '';
+      for (let cellIdx = 0; cellIdx < numOfCells; prevChr = chrCode, ++chrIdx) {
+        chrCode = data.charCodeAt(chrIdx);
+        if (prevChr === 0xFFFD && chrCode < 0x80) {
+          continue;
         }
-      };
-      xhr.open('GET', url, true);
-      xhr.send();
-    });
-  }).then((data)=>{
-    putp('date: ' + data);
-*/
+        rowBuf += data.charAt(chrIdx);
+        ++cellIdx;
+      }
+      console.log("row[" + (rowIdx + 1) + "]=" + rowBuf);
+    }
+  }).then(()=>{
     const fileUtils = new FileUtils(fs, appEnv);
     const tteih = new TTEnglishInputHelper(appEnv, fs, fileUtils);
     return tteih.init();

@@ -546,3 +546,35 @@ export function getDump(obj) {
   dumpImpl(obj, 0, null);
   return buf;
 }
+
+export function toHex(val, len) {
+  const tbl = '0123456789ABCDEF';
+  let v = val;
+  let buf = '';
+  do {
+    buf = tbl[v & 0x0F] + buf;
+    v >>= 4;
+  } while (0 < v);
+  if (len) {
+    buf = paddingLeft(buf, len, '0');
+  }
+  return buf;
+}
+
+export function paddingLeft(str, len, chr) {
+  let n = len - str.length;
+  let buf = str;
+  for (; 0 < n; --n) {
+    buf = chr + buf;
+  }
+  return buf;
+}
+
+export function paddingRight(str, len, chr) {
+  let n = len - str.length;
+  let buf = str;
+  for (; 0 < n; --n) {
+    buf = buf + chr;
+  }
+  return buf;
+}
