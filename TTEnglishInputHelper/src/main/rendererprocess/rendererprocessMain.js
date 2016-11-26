@@ -25,25 +25,13 @@ document.addEventListener('DOMContentLoaded', ()=>{
   }).then((instance)=>{
     putp('hello, world 4: ' + instance);
     appEnv = instance;
-    return encoding.initCodePointMap();
+    return encoding.encode('あいうえお', 'Windows-31J');
   }).then((data)=>{
     putp('hello, world 5: data.length=' + data.length);
-    const numOfRows = 94;
-    const numOfCells = 94;
-    const curRow = 2;
-    let chrCode = 0, prevChr = 0;
-    let chrIdx = 0;
-    for (let rowIdx = 0; rowIdx < numOfRows; ++rowIdx) {
-      let rowBuf = '';
-      for (let cellIdx = 0; cellIdx < numOfCells; prevChr = chrCode, ++chrIdx) {
-        chrCode = data.charCodeAt(chrIdx);
-        if (prevChr === 0xFFFD && chrCode < 0x80) {
-          continue;
-        }
-        rowBuf += data.charAt(chrIdx);
-        ++cellIdx;
-      }
-      console.log("row[" + (rowIdx + 1) + "]=" + rowBuf);
+    const datView = new Uint8Array(data);
+    const datLen = datView.length;
+    for (let datIdx = 0; datIdx < datLen; ++datIdx) {
+      putp('hello, world 5: data[' + datIdx + ']=' + utils.toHex(datView[datIdx], 2));
     }
   }).then(()=>{
     const fileUtils = new FileUtils(fs, appEnv);

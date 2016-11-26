@@ -2,7 +2,7 @@
 
 import * as utils from '../common/utils.js';
 
-let Windows31JEncodingMap = {};
+let Windows31JEncodingMap = null;
 
 export function initCodePointMap() {
   const numOfRowsHalf = (0x9F - 0x81 + 1);
@@ -17,14 +17,15 @@ export function initCodePointMap() {
   Windows31JEncodingMap = {};
 
   function initCodePointMapLoop() {
-    let byte1st = rowIdx < numOfRowsHalf ? rowIdx + 0x81 : rowIdx + 0xE0;
-    let byte2nd = cellIdx < numOfCellsHalf ? cellIdx + 0x40 : cellIdx + 0x80;
+    let byte1st = rowIdx < numOfRowsHalf ? rowIdx + 0x81 : (rowIdx - numOfRowsHalf) + 0xE0;
+    let byte2nd = cellIdx < numOfCellsHalf ? cellIdx + 0x40 : (cellIdx - numOfCellsHalf) + 0x80;
     buf[0] = byte1st;
     buf[1] = byte2nd;
     return decode(aryBuf, "Windows-31J").then((data)=>{
       if (data.length === 1 && data.charCodeAt(0) !== 0xFFFD) {
         Windows31JEncodingMap[data.charCodeAt(0)] = (byte1st << 8) | byte2nd;
       }
+
       ++cellIdx;
       if (numOfCells <= cellIdx) {
         cellIdx = 0;
@@ -33,6 +34,7 @@ export function initCodePointMap() {
           return;
         }
       }
+
       return initCodePointMapLoop();
     });
   }
@@ -72,13 +74,13 @@ export function decode(binary, charset) {
 
 
 class Uint8Vector {
-  constructoe(length, reserve, growth) {
+  constructor(length, reserve, growth) {
     this._length = length ? length : 0;
-    const reserve2 = reservedLen ? reservedLen | 0 : this._length;
+    const reserve2 = reserve ? reserve | 0 : 1;
     const reservedLen = reserve2 < this._length ? this._length : reserve2;
     this._buffer = new ArrayBuffer(reservedLen);
-    this._view = new Uint8Array(this._bufder);
-    this._grow = growth ? glowth | 0 : 1024;
+    this._view = new Uint8Array(this._buffer);
+    this._growth = growth ? glowth | 0 : 1024;
   }
 
   get length() {
@@ -97,12 +99,13 @@ class Uint8Vector {
       if (trueIdx < 0 || length < trueIdx) {
         throw new Error('Out of bounds: index=' + trueIdx + ', length=' + length);
       }
+
       if (arguments.length === 2) {
         const oldVal = view[trueIdx];
         view[trueIdx] = val;
         return oldVal;
       } else {
-        return this._view[trueIdx];
+        return view[trueIdx];
       }
     } else {
       throw new Error('Illegal arguments');
@@ -114,17 +117,22 @@ class Uint8Vector {
     if (addLen < 1) {
       return;
     }
+
     const oldLen = this._length;
     const newLen = oldLen + addLen;
-    const view = this._view;
-    const oldBufLen = view.length;
-    if (oldBufLen < newLen) {
-      const newBufLen = oldBufLen + this._growth;
-      this._resize(newBufLen);
+    if (this._view.length < newLen) {
+      const growth = this._growth;
+      const bufLen = this._buffer.byteLength;
+      const reqGrowth = newLen - bufLen;
+      const actualGrowth = (((reqGrowth + growth - 1) / growth) | 0) * growth;
+      this._resize(bufLen + actualGrowth);
     }
+
+    const view = this._view;
     for (let idx = 0; idx < addLen; ++idx) {
       view[oldLen + idx] = elms[idx];
     }
+
     this._length = newLen;
   }
 
@@ -132,15 +140,23 @@ class Uint8Vector {
     this._resize(this._length);
   }
 
-  _resize(newBufSize) {
+  _resize(newBufLen) {
     const oldBuf = this._buffer;
+    const oldBufLen = oldBuf.byteLength;
     const oldView = this._view;
-    const newBuf = new ArrayBuffer(newBufSize);
+    const oldViewLen = oldView.length;
+    if (newBufLen === oldBufLen) {
+      return;
+    }
+
+    const newBuf = new ArrayBuffer(newBufLen);
     const newView = new Uint8Array(newBuf);
-    const copyLen = oldView.length < newView.length ? oldView.length : newView.length;
+    const newViewLen = newView.length;
+    const copyLen = oldViewLen < newViewLen ? oldViewLen : newViewLen;
     for (let copyIdx = 0; copyIdx < copyLen; ++copyIdx) {
       newView[copyIdx] = oldView[copyIdx];
     }
+
     this._buffer = newBuf;
     this._view = newView;
   }
@@ -171,15 +187,15 @@ export function encode(text, charset, unknownCode) {
     }
   }
 
-  const buf = new Uint8Vector(0, test.length);
   const src = text + '';
   const len = src.length;
+  const buf = new Uint8Vector(0, len);
   let idx = 0;
   function encodeLoop() {
     return new Promise((resolve, reject)=>{
       window.setTimeout(()=>{
         try {
-          for (let cnt = 0; cnt < 1024; ++cnt) {
+          for (let cnt = 0; cnt < 1; ++cnt) {
             if (len <= idx) {
               buf.trimToLength();
               resolve(buf.buffer);
@@ -200,12 +216,24 @@ export function encode(text, charset, unknownCode) {
 
             ++idx;
           }
-
-          return encodeLoop();
+          resolve(null);
         } catch (e) {
           reject(e);
         }
       }, 0);
+    }).then((result)=>{
+      if (!result) {
+        return encodeLoop();
+      } else {
+        return result;
+      }
     });
+  }
+
+  if (Windows31JEncodingMap === null) {
+    return initCodePointMap()
+        .then(()=>encodeLoop());
+  } else {
+    return encodeLoop();
   }
 }
