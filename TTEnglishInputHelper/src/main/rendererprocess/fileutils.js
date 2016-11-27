@@ -58,4 +58,15 @@ export class FileUtils {
         return readResourceImpl();
       });
   }
+
+  writeTextFile(path, charset, text) {
+    let pathObj = path;
+    if (typeof path === 'string' || path instanceof String) {
+      pathObj = pathutils.parsePath(path);
+    }
+    return encoding.encode(text, charset)
+      .then((data)=>{
+        return this._fs.writeFile(pathObj, data);
+      });
+  }
 }

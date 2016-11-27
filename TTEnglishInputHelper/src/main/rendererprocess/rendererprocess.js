@@ -12,7 +12,6 @@
 */
 import * as tt from './tt.js';
 import * as ttUst from './tt.ust.js';
-import * as ttXul from './tt.xul.js';
 import {Progress} from './Progress.js';
 import {parseCMUdict} from './parseCMUdict.js';
 import {transFromText} from './transFromText.js';
@@ -447,7 +446,7 @@ export class TTEnglishInputHelper {
            btnProgressCancel.disabled = false;
            btnProgressCancel.onclick = () => {
         */
-        ttXul.saveText(ustFileName, "Shift_JIS", ust.toString());
+        this._fileUtils.writeTextFile(ustFileName, "Shift_JIS", ust.toString());
         window.close();
         /*
            };
@@ -480,7 +479,7 @@ export class TTEnglishInputHelper {
         }
 
         outputFilePath = outfp.file.path;
-        ttXul.saveText(outputFilePath, "Shift_JIS", ust.toString());
+        this._fileUtils.writeTextFile(outputFilePath, "Shift_JIS", ust.toString());
 
         //   alert(ust.toString());
         //   tt.pp(ust.toString());
@@ -593,7 +592,7 @@ export class TTEnglishInputHelper {
            btnProgressCancel.disabled = false;
            btnProgressCancel.onclick = () => {
         */
-        ttXul.saveText(ustFileName, "Shift_JIS", ust.toString());
+        this._fileUtils.writeTextFile(ustFileName, "Shift_JIS", ust.toString());
         window.close();
         /*
            };
@@ -626,7 +625,7 @@ export class TTEnglishInputHelper {
         }
 
         outputFilePath = outfp.file.path;
-        ttXul.saveText(outputFilePath, "Shift_JIS", ust.toString());
+        this._fileUtils.writeTextFile(outputFilePath, "Shift_JIS", ust.toString());
 
         //   alert(ust.toString());
         //   tt.pp(ust.toString());

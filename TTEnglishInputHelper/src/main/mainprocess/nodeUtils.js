@@ -11,3 +11,10 @@ export function bufferToArrayBuffer(buffer) {
   }
   return aryBuf;
 }
+
+
+export function arrayBufferToBuffer(aryBuffer) {
+  const aryBuf = aryBuffer instanceof ArrayBuffer ? aryBuffer : aryBuffer.buffer;
+  const u8ary = new Uint8Array(aryBuf);
+  return new Buffer(u8ary);
+}

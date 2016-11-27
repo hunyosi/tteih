@@ -25,7 +25,20 @@ export class FileSystem {
           const aryBuf = nodeUtils.bufferToArrayBuffer(data);
           resolve(aryBuf);
         }
-      })
+      });
+    });
+  }
+
+  writeFile(srcPath, data) {
+    return new Promise((resolve, reject)=>{
+      const buf = nodeUtils.arrayBufferToBuffer(data);
+      fs.writeFile(pathUtils.buildUnixPath(srcPath), buf, (err)=>{
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
     });
   }
 }

@@ -1,6 +1,7 @@
 'use strict';
 
 import * as utils from '../common/utils.js';
+import * as typedvector from '../common/typedvector.js';
 
 let Windows31JEncodingMap = null;
 
@@ -73,103 +74,356 @@ export function decode(binary, charset) {
 }
 
 
-class Uint8Vector {
-  constructor(length, reserve, growth) {
-    this._length = length ? length : 0;
-    const reserve2 = reserve ? reserve | 0 : 1;
-    const reservedLen = reserve2 < this._length ? this._length : reserve2;
-    this._buffer = new ArrayBuffer(reservedLen);
-    this._view = new Uint8Array(this._buffer);
-    this._growth = growth ? glowth | 0 : 1024;
-  }
-
-  get length() {
-    return this._length;
-  }
-
-  get buffer() {
-    return this._buffer;
-  }
-
-  at(index, val) {
-    if (arguments.length === 1 || arguments.length === 2) {
-      const trueIdx = index | 0;
-      const view = this._view;
-      const length = this._length;
-      if (trueIdx < 0 || length < trueIdx) {
-        throw new Error('Out of bounds: index=' + trueIdx + ', length=' + length);
-      }
-
-      if (arguments.length === 2) {
-        const oldVal = view[trueIdx];
-        view[trueIdx] = val;
-        return oldVal;
-      } else {
-        return view[trueIdx];
-      }
-    } else {
-      throw new Error('Illegal arguments');
-    }
-  }
-
-  add(...elms) {
-    const addLen = elms.length;
-    if (addLen < 1) {
-      return;
-    }
-
-    const oldLen = this._length;
-    const newLen = oldLen + addLen;
-    if (this._view.length < newLen) {
-      const growth = this._growth;
-      const bufLen = this._buffer.byteLength;
-      const reqGrowth = newLen - bufLen;
-      const actualGrowth = (((reqGrowth + growth - 1) / growth) | 0) * growth;
-      this._resize(bufLen + actualGrowth);
-    }
-
-    const view = this._view;
-    for (let idx = 0; idx < addLen; ++idx) {
-      view[oldLen + idx] = elms[idx];
-    }
-
-    this._length = newLen;
-  }
-
-  trimToLength() {
-    this._resize(this._length);
-  }
-
-  _resize(newBufLen) {
-    const oldBuf = this._buffer;
-    const oldBufLen = oldBuf.byteLength;
-    const oldView = this._view;
-    const oldViewLen = oldView.length;
-    if (newBufLen === oldBufLen) {
-      return;
-    }
-
-    const newBuf = new ArrayBuffer(newBufLen);
-    const newView = new Uint8Array(newBuf);
-    const newViewLen = newView.length;
-    const copyLen = oldViewLen < newViewLen ? oldViewLen : newViewLen;
-    for (let copyIdx = 0; copyIdx < copyLen; ++copyIdx) {
-      newView[copyIdx] = oldView[copyIdx];
-    }
-
-    this._buffer = newBuf;
-    this._view = newView;
-  }
-}
-
-
 export function encode(text, charset, unknownCode) {
-  if (charset !== 'Windows-31J' && charset !== 'Shift_JIS') {
+  const lcCharSet = (charset + '').toLowerCase().trim();
+  if (lcCharSet === 'utf-32'
+      || lcCharSet === 'utf32'
+      || lcCharSet === 'utf-32be'
+      || lcCharSet === 'utf32be'
+      || lcCharSet === 'iso-10646-ucs-4'
+      || lcCharSet === 'ucs-4'
+      || lcCharSet === 'ucs4') {
+    return encode_UTF_32BE(text);
+  } else if (lcCharSet === 'utf-32le' || lcCharSet === 'utf32le') {
+    return encode_UTF_32LE(text);
+  } else if (lcCharSet === 'utf-16'
+      || lcCharSet === 'utf-16be'
+      || lcCharSet === 'utf16'
+      || lcCharSet === 'utf16be'
+      || lcCharSet === 'iso-10646-ucs-2'
+      || lcCharSet === 'ucs-2'
+      || lcCharSet === 'ucs2') {
+    return encode_UTF_16BE(text);
+  } else if (lcCharSet === 'utf-16le' || lcCharSet === 'utf16le') {
+    return encode_UTF_16LE(text);
+  } else if (lcCharSet === 'utf-8' || lcCharSet === 'utf8') {
+    return encode_UTF_8(text);
+  } else if (lcCharSet === 'windows-31j'
+      || lcCharSet === 'shift_jis'
+      || lcCharSet === 'sjis'
+      || lcCharSet === 'x-sjis'
+      || lcCharSet === 'ms932') {
+    return encode_Windows_31J(text, unknownCode);
+  } else {
     return new Promise(()=>{
       throw Error('Unsupported charset: ' + charset);
     });
   }
 
+}
+
+
+function encode_UTF_16BE(text) {
+  const src = text + '';
+  const srcLen = src.length;
+  let srcIdx = 0;
+  const dst = new typedvector.Uint8Vector(0, srcLen);
+  function encodeLoop() {
+    return new Promise((resolve, reject)=>{
+      window.setTimeout(()=>{
+        try {
+          for (let loopCnt = 0; loopCnt < 1; ++ loopCnt) {
+            if (srcLen <= srcIdx) {
+              dst.trimToLength();
+              resolve(dst.buffer);
+              return;
+            }
+
+            let chr = src.charCodeAt(srcIdx);
+            dst.add(chr >> 8, chr & 0xFF);
+
+            ++srcIdx;
+          }
+          resolve();
+        } catch (e) {
+          reject(e);
+        }
+      }, 0);
+    }).then((result)=>{
+      if (!result) {
+        return encodeLoop();
+      } else {
+        return result;
+      }
+    });
+  }
+
+  return encodeLoop();
+}
+
+
+function encode_UTF_16LE(text) {
+  const src = text + '';
+  const srcLen = src.length;
+  let srcIdx = 0;
+  const dst = new typedvector.Uint8Vector(0, srcLen);
+  function encodeLoop() {
+    return new Promise((resolve, reject)=>{
+      window.setTimeout(()=>{
+        try {
+          for (let loopCnt = 0; loopCnt < 1; ++ loopCnt) {
+            if (srcLen <= srcIdx) {
+              dst.trimToLength();
+              resolve(dst.buffer);
+              return;
+            }
+
+            let chr = src.charCodeAt(srcIdx);
+            dst.add(chr & 0xFF, chr >> 8);
+
+            ++srcIdx;
+          }
+          resolve();
+        } catch (e) {
+          reject(e);
+        }
+      }, 0);
+    }).then((result)=>{
+      if (!result) {
+        return encodeLoop();
+      } else {
+        return result;
+      }
+    });
+  }
+
+  return encodeLoop();
+}
+
+function surrogatePairToCodePoint(high, low) {
+  return (((high & 0x03FF) + 0x40) << 10) | (low & 0x03FF);
+}
+
+function encode_UTF_32BE(text) {
+  const src = text + '';
+  const srcLen = src.length;
+  let srcIdx = 0;
+  const dst = new typedvector.Uint8Vector(0, srcLen);
+  let prevChr = 0;
+  function encodeLoop() {
+    return new Promise((resolve, reject)=>{
+      window.setTimeout(()=>{
+        try {
+          for (let loopCnt = 0; loopCnt < 1; ++ loopCnt) {
+            if (srcLen <= srcIdx) {
+              if (prevChr !== 0) {
+                dst.add(0, 0, prevChr >> 8, prevChr & 0xFF);
+              }
+              dst.trimToLength();
+              resolve(dst.buffer);
+              return;
+            }
+
+            let chr = src.charCodeAt(srcIdx);
+            if (chr < 0xD800 || 0xDFFF < chr) {
+              dst.add(0, 0, chr >> 8, chr & 0xFF);
+              prevChr = 0;
+            } else if (chr < 0xDC00) {
+              if (prevChr !== 0) {
+                dst.add(0, 0, prevChr >> 8, prevChr & 0xFF);
+              }
+              prevChr = chr;
+            } else {
+              if (prevChr === 0) {
+                dst.add(0, 0, chr >> 8, chr & 0xFF);
+              } else {
+                let codePoint = surrogatePairToCodePoint(prevChr, chr);
+                dst.add(codePoint >> 24, (codePoint >> 16) & 0xFF, (codePoint >> 8) & 0xFF, codePoint & 0xFF);
+                prevChr = 0;
+              }
+            }
+
+            ++srcIdx;
+          }
+          resolve();
+        } catch (e) {
+          reject(e);
+        }
+      }, 0);
+    }).then((result)=>{
+      if (!result) {
+        return encodeLoop();
+      } else {
+        return result;
+      }
+    });
+  }
+
+  return encodeLoop();
+}
+
+
+function encode_UTF_32LE(text) {
+  const src = text + '';
+  const srcLen = src.length;
+  let srcIdx = 0;
+  const dst = new typedvector.Uint8Vector(0, srcLen);
+  let prevChr = 0;
+  function encodeLoop() {
+    return new Promise((resolve, reject)=>{
+      window.setTimeout(()=>{
+        try {
+          for (let loopCnt = 0; loopCnt < 1; ++ loopCnt) {
+            if (srcLen <= srcIdx) {
+              if (prevChr !== 0) {
+                dst.add(prevChr & 0xFF, prevChr >> 8, 0, 0);
+              }
+              dst.trimToLength();
+              resolve(dst.buffer);
+              return;
+            }
+
+            let chr = src.charCodeAt(srcIdx);
+            if (chr < 0xD800 || 0xDFFF < chr) {
+              dst.add(chr & 0xFF, chr >> 8, 0, 0);
+              prevChr = 0;
+            } else if (chr < 0xDC00) {
+              if (prevChr !== 0) {
+                dst.add(prevChr & 0xFF, prevChr >> 8, 0, 0);
+              }
+              prevChr = chr;
+            } else {
+              if (prevChr === 0) {
+                dst.add(chr & 0xFF, chr >> 8, 0, 0);
+              } else {
+                let codePoint = surrogatePairToCodePoint(prevChr, chr);
+                dst.add(codePoint & 0xFF, (codePoint >> 8) & 0xFF, (codePoint >> 16) & 0xFF, codePoint >> 24);
+                prevChr = 0;
+              }
+            }
+
+            ++srcIdx;
+          }
+          resolve();
+        } catch (e) {
+          reject(e);
+        }
+      }, 0);
+    }).then((result)=>{
+      if (!result) {
+        return encodeLoop();
+      } else {
+        return result;
+      }
+    });
+  }
+
+  return encodeLoop();
+}
+
+
+function addUtf8(dst, codePoint) {
+  if (codePoint <= 0x7F) {
+    dst.add(codePoint);
+  } else if (codePoint <= 0x7FF) {
+    dst.add(
+      ((codePoint >> 6) & 0x1F) | 0xC0,
+      (codePoint & 0x3F) | 0x80
+    );
+  } else if (codePoint <= 0xFFFF) {
+    dst.add(
+      ((codePoint >> 12) & 0x0F) | 0xE0,
+      ((codePoint >> 6) & 0x3F) | 0x80,
+      (codePoint & 0x3F) | 0x80
+    );
+  } else if (codePoint <= 0x1FFFFF) {
+    dst.add(
+      ((codePoint >> 18) & 0x07) | 0xF0,
+      ((codePoint >> 12) & 0x3F) | 0x80,
+      ((codePoint >> 6) & 0x3F) | 0x80,
+      (codePoint & 0x3F) | 0x80
+    );
+  } else if (codePoint <= 0x3FFFFFF) {
+    dst.add(
+      ((codePoint >> 24) & 0x03) | 0xF8,
+      ((codePoint >> 18) & 0x3F) | 0x80,
+      ((codePoint >> 12) & 0x3F) | 0x80,
+      ((codePoint >> 6) & 0x3F) | 0x80,
+      (codePoint & 0x3F) | 0x80
+    );
+  } else if (codePoint <= 0x7FFFFFFF) {
+    dst.add(
+      ((codePoint >> 30) & 0x01) | 0xFC,
+      ((codePoint >> 24) & 0x3F) | 0x80,
+      ((codePoint >> 18) & 0x3F) | 0x80,
+      ((codePoint >> 12) & 0x3F) | 0x80,
+      ((codePoint >> 6) & 0x3F) | 0x80,
+      (codePoint & 0x3F) | 0x80
+    );
+  } else {
+    dst.add(
+      0xFE,
+      ((codePoint >> 30) & 0x03) | 0x80,
+      ((codePoint >> 24) & 0x3F) | 0x80,
+      ((codePoint >> 18) & 0x3F) | 0x80,
+      ((codePoint >> 12) & 0x3F) | 0x80,
+      ((codePoint >> 6) & 0x3F) | 0x80,
+      (codePoint & 0x3F) | 0x80
+    );
+  }
+}
+
+function encode_UTF_8(text) {
+  const src = text + '';
+  const srcLen = src.length;
+  let srcIdx = 0;
+  const dst = new typedvector.Uint8Vector(0, srcLen);
+  let prevChr = 0;
+
+  function encodeLoop() {
+    return new Promise((resolve, reject)=>{
+      window.setTimeout(()=>{
+        try {
+          for (let loopCnt = 0; loopCnt < 1; ++ loopCnt) {
+            if (srcLen <= srcIdx) {
+              if (prevChr !== 0) {
+                addUtf8(dst, prevChr);
+              }
+              dst.trimToLength();
+              resolve(dst.buffer);
+              return;
+            }
+
+            let chr = src.charCodeAt(srcIdx);
+            if (chr < 0xD800 || 0xDFFF < chr) {
+              addUtf8(dst, chr);
+              prevChr = 0;
+            } else if (chr < 0xDC00) {
+              if (prevChr !== 0) {
+                addUtf8(dst, prevChr);
+              }
+              prevChr = chr;
+            } else {
+              if (prevChr === 0) {
+                addUtf8(dst, chr);
+              } else {
+                let codePoint = surrogatePairToCodePoint(prevChr, chr);
+                addUtf8(dst, codePoint);
+                prevChr = 0;
+              }
+            }
+
+            ++srcIdx;
+          }
+          resolve();
+        } catch (e) {
+          reject(e);
+        }
+      }, 0);
+    }).then((result)=>{
+      if (!result) {
+        return encodeLoop();
+      } else {
+        return result;
+      }
+    });
+  }
+
+  return encodeLoop();
+}
+
+
+function encode_Windows_31J(text, unknownCode) {
   const unknownCodeBytes = [];
   if (unknownCode !== null) {
     if (unknownCode instanceof Array) {
@@ -188,33 +442,33 @@ export function encode(text, charset, unknownCode) {
   }
 
   const src = text + '';
-  const len = src.length;
-  const buf = new Uint8Vector(0, len);
-  let idx = 0;
+  const srcLen = src.length;
+  let srcIdx = 0;
+  const dst = new typedvector.Uint8Vector(0, srcLen);
   function encodeLoop() {
     return new Promise((resolve, reject)=>{
       window.setTimeout(()=>{
         try {
-          for (let cnt = 0; cnt < 1; ++cnt) {
-            if (len <= idx) {
-              buf.trimToLength();
-              resolve(buf.buffer);
+          for (let loopCnt = 0; loopCnt < 1; ++loopCnt) {
+            if (srcLen <= srcIdx) {
+              dst.trimToLength();
+              resolve(dst.buffer);
               return;
             }
 
-            let chr = src.charCodeAt(idx);
+            let chr = src.charCodeAt(srcIdx);
             if (chr < 0x80) {
-              buf.add(chr);
+              dst.add(chr);
             } else if (0xFF61 <= chr && chr <= 0xFF9F) {
-              buf.add(chr - 0xFF61 + 0xA1);
+              dst.add(chr - 0xFF61 + 0xA1);
             } else if (chr in Windows31JEncodingMap) {
               let chr2 = Windows31JEncodingMap[chr];
-              buf.add((chr2 >> 8) & 0xFF, chr2 & 0xFF);
+              dst.add((chr2 >> 8) & 0xFF, chr2 & 0xFF);
             } else {
-              buf.add(...unknownCodeBytes);
+              dst.add(...unknownCodeBytes);
             }
 
-            ++idx;
+            ++srcIdx;
           }
           resolve(null);
         } catch (e) {

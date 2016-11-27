@@ -14,52 +14,47 @@ document.addEventListener('DOMContentLoaded', ()=>{
   let fs;
   let appEnv;
   let defaultPath;
-  putp('hello, world');
+  putp('initialize process: 01:');
   rdrMsgComm.fetchClass().then(()=>{
-    putp('hello, world 2');
+    putp('initialize process: 02:');
     return rdrMsgComm.getInstance('FileSystem');
   }).then((instance)=>{
-    putp('hello, world 3: ' + instance);
+    putp('initialize process: 03: ' + instance);
     fs = instance;
     return rdrMsgComm.getInstance('AppEnv');
   }).then((instance)=>{
-    putp('hello, world 4: ' + instance);
+    putp('initialize process: 04: ' + instance);
     appEnv = instance;
-    return encoding.encode('あいうえお', 'Windows-31J');
-  }).then((data)=>{
-    putp('hello, world 5: data.length=' + data.length);
-    const datView = new Uint8Array(data);
-    const datLen = datView.length;
-    for (let datIdx = 0; datIdx < datLen; ++datIdx) {
-      putp('hello, world 5: data[' + datIdx + ']=' + utils.toHex(datView[datIdx], 2));
-    }
-  }).then(()=>{
+    return 'test';
+  }).then((result)=>{
+    putp('initialize process: 05: result=' + result);
     const fileUtils = new FileUtils(fs, appEnv);
     const tteih = new TTEnglishInputHelper(appEnv, fs, fileUtils);
     return tteih.init();
   }).then((data)=>{
-    putp('ready');
+    putp('initialize process: ready:');
     putp(data);
   }).catch((err)=>{
-    putp('error: ');
+    putp('initialize process: failure:');
     putp(err);
   });
 });
 
-function putp(str) {
-  if (str instanceof Error) {
-    if (str.stack) {
-      console.log(str.stack);
+function putp(...msgs) {
+  for (let msg of msgs) {
+    if (msg instanceof Error) {
+      if (msg.stack) {
+        console.log(msg.stack);
+      } else {
+        console.error(msg);
+      }
     } else {
-      console.error(str);
+      console.log(msg);
     }
-  } else {
-    console.log(str);
+
+    // const textNode = document.createTextNode(msg);
+    // const p = document.createElement('p');
+    // p.appendChild(textNode);
+    // document.body.appendChild(p);
   }
-/*
-  const textNode = document.createTextNode(str);
-  const p = document.createElement('p');
-  p.appendChild(textNode);
-  document.body.appendChild(p);
-*/
 }
