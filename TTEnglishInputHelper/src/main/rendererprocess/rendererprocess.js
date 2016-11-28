@@ -13,6 +13,7 @@
 import * as tt from './tt.js';
 import * as ttUst from './tt.ust.js';
 import {Progress} from './Progress.js';
+import {FilePicker} from './filepicker.js';
 import {parseCMUdict} from './parseCMUdict.js';
 import {transFromText} from './transFromText.js';
 import {VoiceMap} from './VoiceMap.js';
@@ -24,6 +25,7 @@ export class TTEnglishInputHelper {
     this._appEnv = appEnv;
     this._fs = fs;
     this._fileUtils = fileUtils;
+    this._filePicker = new FilePicker(document);
     this._progressObj = Progress.getInstance();
     this._cmdLineOps = new Map();
     this._cmdLineArgs = [];
@@ -371,12 +373,12 @@ export class TTEnglishInputHelper {
         btnProgressCancel.firstChild.nodeValue = "ok";
         btnProgressCancel.disabled = true;
       */
-      if (!ustFileName) {
-        ust = new ttUst.USTDocument();
+      if (!this._ustFileName) {
+        this._ust = new ttUst.USTDocument();
       }
 
       if (this._convNote || this._insertTextMode === 3) {
-        ust.each((elm) => {
+        this._ust.each((elm) => {
           if (/^#\d+$/.test(elm.name)) {
             elm.name = "#DELETE";
           }
@@ -393,7 +395,7 @@ export class TTEnglishInputHelper {
         p = this._pronunciation[i1];
 
         lyric = p.val.voName;
-        elm = ust.createElement();
+        elm = this._ust.createElement();
         elm.setLyric(lyric);
         elm.setLength(240);
 
@@ -409,7 +411,7 @@ export class TTEnglishInputHelper {
           prevElm = elm;
 
         } else {
-          allElms = ust.allElms;
+          allElms = this._ust.allElms;
 
           if (!this._convNote && this._insertTextMode === 2) {
             for (elmsIdx = allElms.length - 1; 0 <= elmsIdx; --elmsIdx) {
@@ -433,20 +435,20 @@ export class TTEnglishInputHelper {
             }
 
             if (!prevElm) {
-              ust.insertContentEnd(elm);
+              this._ust.insertContentEnd(elm);
               prevElm = elm;
             }
           }
         }
       }
 
-      if (ustFileName) {
-        tt.pp(ust.toString());
+      if (this._ustFileName) {
+        tt.pp(this._ust.toString());
         /*
            btnProgressCancel.disabled = false;
            btnProgressCancel.onclick = () => {
         */
-        this._fileUtils.writeTextFile(ustFileName, "Shift_JIS", ust.toString());
+        this._fileUtils.writeTextFile(this._ustFileName, "Shift_JIS", this._ust.toString());
         window.close();
         /*
            };
@@ -454,35 +456,20 @@ export class TTEnglishInputHelper {
       } else {
         var noteIdx = 0,
           noteIdxStr;
-        z1 = ust.allElms.length;
+        z1 = this._ust.allElms.length;
         for (i1 = 0; i1 < z1; ++i1) {
-          elm = ust.allElms[i1];
+          elm = this._ust.allElms[i1];
           if (/^#(\d+|INSERT)$/.test(elm.name)) {
             noteIdxStr = "0000" + noteIdx;
             elm.name = "#" + noteIdxStr.substring(noteIdxStr.length - 4);
             ++noteIdx;
           }
         }
-        elm = ust.createElement();
+        elm = this._ust.createElement();
         elm.name = "#TRACKEND";
-        ust.append(elm);
+        this._ust.append(elm);
 
-        var nsFilePicker = Components.interfaces.nsIFilePicker;
-        var outputFilePath;
-
-        var outfp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsFilePicker);
-        outfp.init(window, "Input a output .ust file name", nsFilePicker.modeSave);
-        outfp.appendFilter("output file", "*.ust");
-        var resOut = outfp.show();
-        if (resOut !== nsFilePicker.returnOK && resOut !== nsFilePicker.returnReplace) {
-          return false;
-        }
-
-        outputFilePath = outfp.file.path;
-        this._fileUtils.writeTextFile(outputFilePath, "Shift_JIS", ust.toString());
-
-        //   alert(ust.toString());
-        //   tt.pp(ust.toString());
+        this._filePicker.saveTextFile("untitled.ust", "Shift_JIS", this._ust.toString());
       }
 
     } catch (ex) {
@@ -522,12 +509,12 @@ export class TTEnglishInputHelper {
         btnProgressCancel.firstChild.nodeValue = "ok";
         btnProgressCancel.disabled = true;
       */
-      if (!ustFileName) {
-        ust = new ttUst.USTDocument();
+      if (!this._ustFileName) {
+        this._ust = new ttUst.USTDocument();
       }
 
       if (this._convNote || this._insertTextMode === 3) {
-        ust.each((elm) => {
+        this._ust.each((elm) => {
           if (/^#\d+$/.test(elm.name)) {
             elm.name = "#DELETE";
           }
@@ -545,7 +532,7 @@ export class TTEnglishInputHelper {
       z1 = syllables.length;
       for (i1 = 0; i1 < z1; ++i1) {
         lyric = syllables[i1];
-        elm = ust.createElement();
+        elm = this._ust.createElement();
         elm.setLyric(lyric);
         elm.setLength(240);
         elm.setNoteNum(60);
@@ -555,7 +542,7 @@ export class TTEnglishInputHelper {
           prevElm = elm;
 
         } else {
-          allElms = ust.allElms;
+          allElms = this._ust.allElms;
 
           if (!this._convNote && this._insertTextMode === 2) {
             for (elmsIdx = allElms.length - 1; 0 <= elmsIdx; --elmsIdx) {
@@ -579,20 +566,20 @@ export class TTEnglishInputHelper {
             }
 
             if (!prevElm) {
-              ust.insertContentEnd(elm);
+              this._ust.insertContentEnd(elm);
               prevElm = elm;
             }
           }
         }
       }
 
-      if (ustFileName) {
-        tt.pp(ust.toString());
+      if (this._ustFileName) {
+        tt.pp(this._ust.toString());
         /*
            btnProgressCancel.disabled = false;
            btnProgressCancel.onclick = () => {
         */
-        this._fileUtils.writeTextFile(ustFileName, "Shift_JIS", ust.toString());
+        this._fileUtils.writeTextFile(this._ustFileName, "Shift_JIS", this._ust.toString());
         window.close();
         /*
            };
@@ -600,35 +587,20 @@ export class TTEnglishInputHelper {
       } else {
         var noteIdx = 0,
           noteIdxStr;
-        z1 = ust.allElms.length;
+        z1 = this._ust.allElms.length;
         for (i1 = 0; i1 < z1; ++i1) {
-          elm = ust.allElms[i1];
+          elm = this._ust.allElms[i1];
           if (/^#(\d+|INSERT)$/.test(elm.name)) {
             noteIdxStr = "0000" + noteIdx;
             elm.name = "#" + noteIdxStr.substring(noteIdxStr.length - 4);
             ++noteIdx;
           }
         }
-        elm = ust.createElement();
+        elm = this._ust.createElement();
         elm.name = "#TRACKEND";
-        ust.append(elm);
+        this._ust.append(elm);
 
-        var nsFilePicker = Components.interfaces.nsIFilePicker;
-        var outputFilePath;
-
-        var outfp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsFilePicker);
-        outfp.init(window, "Input a output .ust file name", nsFilePicker.modeSave);
-        outfp.appendFilter("output file", "*.ust");
-        var resOut = outfp.show();
-        if (resOut !== nsFilePicker.returnOK && resOut !== nsFilePicker.returnReplace) {
-          return false;
-        }
-
-        outputFilePath = outfp.file.path;
-        this._fileUtils.writeTextFile(outputFilePath, "Shift_JIS", ust.toString());
-
-        //   alert(ust.toString());
-        //   tt.pp(ust.toString());
+        this._filePicker.saveTextFile("untitled.ust", "Shift_JIS", this._ust.toString());
       }
 
     } catch (ex) {
