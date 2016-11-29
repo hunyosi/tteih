@@ -3,6 +3,8 @@
 import * as utils from '../common/utils.js';
 import * as typedvector from '../common/typedvector.js';
 
+const LOOP_TIMES = 16384;
+
 let Windows31JEncodingMap = null;
 
 export function initCodePointMap() {
@@ -122,7 +124,7 @@ function encode_UTF_16BE(text) {
     return new Promise((resolve, reject)=>{
       window.setTimeout(()=>{
         try {
-          for (let loopCnt = 0; loopCnt < 1; ++ loopCnt) {
+          for (let loopCnt = 0; loopCnt < LOOP_TIMES; ++ loopCnt) {
             if (srcLen <= srcIdx) {
               dst.trimToLength();
               resolve(dst.buffer);
@@ -161,7 +163,7 @@ function encode_UTF_16LE(text) {
     return new Promise((resolve, reject)=>{
       window.setTimeout(()=>{
         try {
-          for (let loopCnt = 0; loopCnt < 1; ++ loopCnt) {
+          for (let loopCnt = 0; loopCnt < LOOP_TIMES; ++ loopCnt) {
             if (srcLen <= srcIdx) {
               dst.trimToLength();
               resolve(dst.buffer);
@@ -204,7 +206,7 @@ function encode_UTF_32BE(text) {
     return new Promise((resolve, reject)=>{
       window.setTimeout(()=>{
         try {
-          for (let loopCnt = 0; loopCnt < 1; ++ loopCnt) {
+          for (let loopCnt = 0; loopCnt < LOOP_TIMES; ++ loopCnt) {
             if (srcLen <= srcIdx) {
               if (prevChr !== 0) {
                 dst.add(0, 0, prevChr >> 8, prevChr & 0xFF);
@@ -263,7 +265,7 @@ function encode_UTF_32LE(text) {
     return new Promise((resolve, reject)=>{
       window.setTimeout(()=>{
         try {
-          for (let loopCnt = 0; loopCnt < 1; ++ loopCnt) {
+          for (let loopCnt = 0; loopCnt < LOOP_TIMES; ++ loopCnt) {
             if (srcLen <= srcIdx) {
               if (prevChr !== 0) {
                 dst.add(prevChr & 0xFF, prevChr >> 8, 0, 0);
@@ -374,7 +376,7 @@ function encode_UTF_8(text) {
     return new Promise((resolve, reject)=>{
       window.setTimeout(()=>{
         try {
-          for (let loopCnt = 0; loopCnt < 1; ++ loopCnt) {
+          for (let loopCnt = 0; loopCnt < LOOP_TIMES; ++ loopCnt) {
             if (srcLen <= srcIdx) {
               if (prevChr !== 0) {
                 addUtf8(dst, prevChr);
@@ -449,7 +451,7 @@ function encode_Windows_31J(text, unknownCode) {
     return new Promise((resolve, reject)=>{
       window.setTimeout(()=>{
         try {
-          for (let loopCnt = 0; loopCnt < 1; ++loopCnt) {
+          for (let loopCnt = 0; loopCnt < LOOP_TIMES; ++loopCnt) {
             if (srcLen <= srcIdx) {
               dst.trimToLength();
               resolve(dst.buffer);
