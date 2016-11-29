@@ -12,7 +12,11 @@
     "compile": "node prepareToCompile.js && webpack",
     "exec": "electron built/app",
     "build": "node build.js",
-    "reporters": "mocha --reporters"
+    "reporters": "mocha --reporters",
+    "ncu": "ncu",
+    "ncu-u": "ncu -u",
+    "ncu-a": "ncu -a",
+    "update": "ncu -u && npm update"
   },
   "repository": {
     "type": "git",
@@ -33,12 +37,15 @@
     "babel-core": "^6.9.1",
     "babel-loader": "^6.2.4",
     "babel-preset-es2015": "^6.9.0",
-    "electron-packager": "^5.2.0",
-    "electron-prebuilt": "^0.37.8",
+    "electron": "^1.4.10",
+    "electron-packager": "^8.3.0",
     "iconv-lite": "^0.4.13",
-    "jszip": "^2.5.0",
-    "mocha": "^2.5.3",
+    "jszip": "^3.1.3",
+    "mocha": "^3.2.0",
     "source-map-support": "^0.4.0",
     "webpack": "^1.13.1"
+  },
+  "devDependencies": {
+    "npm-check-updates": "^2.8.7"
   }
 }
