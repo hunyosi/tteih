@@ -16,6 +16,8 @@ const fs = require('fs');
 const JSZip = require('jszip');
 const iconvLite = require('iconv-lite');
 
+const fileUtil = require('./tool/fileUtil.js');
+
 
 
 
@@ -306,7 +308,9 @@ class UtauPluginPackager {
         }
       }
 
-      fs.mkdirSync('dist');
+      const distDir = new fileUtil.File('dist');
+      distDir.remove();
+      distDir.mkdir();
 
       resolve(this);
     }, 0));
@@ -347,7 +351,6 @@ class UtauPluginPackager {
         name: this.targetName,
         platform: 'win32',
         arch: 'ia32',
-        version: '0.35.4',
         out: './dist'
       }, (err, appPath) => {
         if (err) {
