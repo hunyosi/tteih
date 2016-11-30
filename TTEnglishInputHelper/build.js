@@ -214,10 +214,11 @@ const FsZip = (() => {
 
 
     writeZipFile(pathInFs) {
-      const content = this[_zip].generate({
+      return this[_zip].generateAsync({
         type: 'uint8array'
+      }).then((content)=>{
+        fs.writeFileSync(pathInFs, new Buffer(content));
       });
-      fs.writeFileSync(pathInFs, new Buffer(content));
     }
   };
 })();
@@ -339,8 +340,9 @@ class UtauPluginPackager {
       }
     }
 
-    zip.writeZipFile(`dist${this.targetName}.zip`);
-    return Promise.resolve(this);
+    return zip.writeZipFile(`dist/${this.targetName}.zip`).then(()=>{
+      return this;
+    })
   }
 
 

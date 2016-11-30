@@ -1,6 +1,6 @@
 {
   "name": "tteih-dev",
-  "version": "0.4.0",
+  "version": "0.3.1",
   "description": "English input helper for UTAU",
   "main": "build.js",
   "directories": {
@@ -32,6 +32,7 @@
     "url": "https://github.com/hunyosi/tteih/issues"
   },
   "homepage": "http://hunyoi.com/pub/tteih/",
+  "private": true,
   "devDependencies": {
     "babel-core": "^6.18.2",
     "babel-loader": "^6.2.8",

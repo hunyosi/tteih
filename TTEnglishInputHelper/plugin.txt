@@ -1,4 +1,4 @@
-name=TTEnglishInputHelper-v0.3.0
+name=TTEnglishInputHelper-v0.3.1
 execute=tteih.exe
 shell=use
 ustversion=1.00
