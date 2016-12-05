@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   }).then((instance)=>{
     putp('initialize process: 04: ' + instance);
     appEnv = instance;
-    return 'test';
+    return encoding.initCodePointMap();
   }).then((result)=>{
     putp('initialize process: 05: result=' + result);
     const fileUtils = new FileUtils(fs, appEnv);
