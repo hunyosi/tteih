@@ -3,6 +3,8 @@
 install.txt text eol=crlf
 plugin.txt text eol=crlf
 
+*.ico binary
+*.bmp binary
 *.png binary
 *.jpg binary
 *.gif binary

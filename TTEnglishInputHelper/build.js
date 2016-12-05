@@ -349,10 +349,11 @@ class UtauPluginPackager {
   makeElectronPackage() {
     return new Promise((resolve, reject) => {
       electronPackager({
-        dir: './app',
+        dir: './built/app',
         name: this.targetName,
         platform: 'win32',
         arch: 'ia32',
+        icon: './assets/icon256x256.ico',
         out: './dist'
       }, (err, appPath) => {
         if (err) {

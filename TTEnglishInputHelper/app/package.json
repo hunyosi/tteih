@@ -1,11 +1,8 @@
 {
   "name": "tteih",
   "version": "0.3.1",
-  "description": "Configuration tool for TTEnglishInputHelper.",
+  "description": "English input helper for UTAU",
   "main": "lib/mainprocess.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "keywords": ["UTAU", "TTEIH"],
   "author": "Hunyosi Asakura",
   "license": "MPL-2.0",
