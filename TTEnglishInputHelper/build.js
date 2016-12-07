@@ -259,12 +259,12 @@ class UtauPluginPackager {
       }
 
       {
-        const installFileStat = fs.statSync('install.txt');
+        const installFileStat = fs.statSync('resources/main/utauplugin/install.txt');
         if (installFileStat == null || !installFileStat.isFile()) {
           reject('"install.txt" file not found');
           return;
         }
-        const installFileText = fs.readFileSync('install.txt', 'utf8');
+        const installFileText = fs.readFileSync('resources/main/utauplugin/install.txt', 'utf8');
         const installMap = parseEqSignSepratedKVPairs(installFileText);
         let contentsDir = '';
         if (installMap.has('contentsdir')) {
@@ -281,7 +281,7 @@ class UtauPluginPackager {
       }
 
       {
-        const pluginFileText = fs.readFileSync('plugin.txt', 'utf8');
+        const pluginFileText = fs.readFileSync('resources/main/utauplugin/plugin.txt', 'utf8');
         const pluginMap = parseEqSignSepratedKVPairs(pluginFileText);
         let execPath = (pluginMap.has('execute') ? pluginMap.get('execute') : '');
         if (execPath.length < 1) {
@@ -320,11 +320,11 @@ class UtauPluginPackager {
 
   makeZipFile() {
     const zip = new FsZip();
-    zip.addLocalFile('install.txt', null, {
+    zip.addLocalFile('resources/main/utauplugin/install.txt', 'install.txt', {
       encoding: 'CP932',
       newLine: '\r\n'
     });
-    zip.addLocalFile('plugin.txt', `${this.contentsDir}/plugin.txt`, {
+    zip.addLocalFile('resources/main/utauplugin/plugin.txt', `${this.contentsDir}/plugin.txt`, {
       encoding: 'CP932',
       newLine: '\r\n'
     });

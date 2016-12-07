@@ -1,10 +1,10 @@
 {
   "toRoot": [
-    "README.md",
-    "LICENSE"
+    "../README.md",
+    "../LICENSE"
   ],
   "toContentsDir": [
-    "README.md",
-    "LICENSE"
+    "../README.md",
+    "../LICENSE"
   ]
 }

@@ -1,0 +1,27 @@
+[#VERSION]
+UST Version1.2
+Charset=UTF-8
+[#SETTING]
+Tempo=120.00
+Tracks=1
+ProjectName=New Project
+VoiceDir=%VOICE%uta
+OutFile=
+CacheDir=utau-script-utf8.cache
+Tool1=wavtool.exe
+Tool2=resampler.exe
+[#0000]
+Length=480
+Lyric=hello
+NoteNum=62
+PreUtterance=
+Intensity=100
+Modulation=0
+[#0001]
+Length=480
+Lyric=world
+NoteNum=60
+PreUtterance=
+Intensity=100
+Modulation=0
+[#TRACKEND]
