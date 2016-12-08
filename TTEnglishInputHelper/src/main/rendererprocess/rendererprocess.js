@@ -448,8 +448,9 @@ export class TTEnglishInputHelper {
            btnProgressCancel.disabled = false;
            btnProgressCancel.onclick = () => {
         */
-        this._fileUtils.writeTextFile(this._ustFileName, "Shift_JIS", this._ust.toString());
-        window.close();
+        this._fileUtils.writeTextFile(this._ustFileName, "Shift_JIS", this._ust.toString()).then(()=>{
+          window.close();
+        });
         /*
            };
         */

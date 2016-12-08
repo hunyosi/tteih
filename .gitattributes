@@ -8,4 +8,4 @@ plugin.txt text eol=crlf
 *.png binary
 *.jpg binary
 *.gif binary
-
+*.ust binary

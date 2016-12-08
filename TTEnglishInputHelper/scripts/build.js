@@ -16,7 +16,7 @@ const fs = require('fs');
 const JSZip = require('jszip');
 const iconvLite = require('iconv-lite');
 
-const fileUtil = require('./tool/fileUtil.js');
+const fileUtil = require('./fileUtil.js');
 
 
 

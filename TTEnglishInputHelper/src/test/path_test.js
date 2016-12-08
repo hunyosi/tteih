@@ -1,6 +1,6 @@
 'use strict';
 
-import * as path from '../main/common/path.js';
+import * as path from '../main/common/pathUtils.js';
 
 const assert = require('assert');
 
