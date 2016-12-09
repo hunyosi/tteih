@@ -1,4 +1,6 @@
 {
+  "installFilePath": "resources/main/utauplugin/install.txt",
+  "pluginFilePath": "resources/main/utauplugin/plugin.txt",
   "toRoot": [
     "../README.md",
     "../LICENSE"
