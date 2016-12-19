@@ -20,39 +20,21 @@ import {VoiceMap} from './VoiceMap.js';
 import {convUnknownEnglishWord} from './ConvUnknownWord.js';
 import {convForPresamp} from './convForPresamp.js';
 
-export class TTEnglishInputHelper {
-  constructor(appEnv, fs, fileUtils) {
-    this._appEnv = appEnv;
-    this._fs = fs;
-    this._fileUtils = fileUtils;
+export class TTEnglishInputHelperView {
+  constructor(model) {
+    this._model = model;
     this._filePicker = new FilePicker(document);
     this._progressObj = Progress.getInstance();
-    this._cmdLineOps = new Map();
-    this._cmdLineArgs = [];
-    this._cfg = null;
-    this._voicemaps = null;
-    this._ustFileName = null;
-    this._ust = null;
-    this._plugInMode = false;
-    this._voMapSet = null;
-    this._dictEn = null;
 
-    this._convNote = null;
-    this._insertTextMode = null;
     this._pronunciation = null;
   }
 
   init() {
-    console.log("TTEnglishInputHelper.init()");
-    tt.pp("TTEnglishInputHelper.init()");
+    tt.pp("TTEnglishInputHelperView.init()");
     return this.initUi()
-      .then(() => this.fetchCmdLineArgs())
-      .then(() => this.loadConfigFile())
-      .then(() => this.configure())
-      .then(() => this.loadFileSet())
+      .then(() => this._model.init())
       .then(() => this.initUiAfter())
-      .then(() => this.loadInputFile())
-      .then(() => tt.pp("ready"));
+      .then(() => tt.pp("TTEnglishInputHelperView ready"));
   }
 
   initUi() {
@@ -92,98 +74,13 @@ export class TTEnglishInputHelper {
 
       var btnLicenseOk = document.getElementById("btnLicenseOk");
       btnLicenseOk.addEventListener("click", () => this.doLicenseOk(), false);
-
-      resolve();
     });
-  }
-
-  fetchCmdLineArgs() {
-    tt.pp("fetchCmdLineArgs");
-    return this._appEnv.getArgv().then((cmdLine) => {
-      return new Promise((resolve, reject) => {
-        var data;
-        var i1, z1, arg, skip = false,
-          args = [];
-        tt.pp("cmdLine.length: " + cmdLine.length);
-
-        z1 = cmdLine.length;
-        for (i1 = 1; i1 < z1; ++i1) {
-          tt.pp("cmdLine[" + i1 + "]: " + cmdLine[i1]);
-          arg = cmdLine[i1];
-          if (skip) {
-            skip = false;
-          } else if (arg.substring(0, 1) === "-") {
-            skip = true;
-          } else {
-            args.push(arg);
-          }
-        }
-        this._cmdLineArgs = args;
-        resolve();
-      });
-    });
-  }
-
-  loadConfigFile() {
-    return this._fileUtils.readTextResource("data/config.json", "UTF-8")
-      .then((data)=>{
-        return new Promise((resolve, reject)=>{
-          this._cfg = JSON.parse(data);
-          resolve();
-        });
-      });
-  }
-
-  configure() {
-    return new Promise((resolve, reject) => {
-      this._voicemaps = this._cfg["voicemaps"]
-
-      if (0 < this._cmdLineArgs.length) {
-        this._ustFileName = this._cmdLineArgs[0];
-        this._plugInMode = true;
-      }
-
-      resolve();
-    });
-  }
-
-  loadFileSet() {
-    return this._fileUtils.readResources(this._cfg.files)
-      .then((dataSet)=>{
-        return new Promise((resolve, reect) => {
-          tt.pp("load dict success");
-
-          this._dictEn = parseCMUdict(dataSet["cmudict"]);
-
-          this._voMapSet = new Map();
-          for (let voicemap of this._voicemaps) {
-            const voicemapFile = voicemap.file;
-            const voMap = VoiceMap.parse(dataSet[voicemapFile]);
-            this._voMapSet.set(voicemapFile, voMap);
-            tt.pp(`VoiceMaps[${voicemapFile}].warns=`, voMap.warns);
-          }
-
-          resolve();
-        });
-      });
   }
 
   initUiAfter() {
     return new Promise((resolve, reject) => {
-      this.setVoiceMaps(this._voicemaps);
-      resolve();
+      this.setVoiceMaps(this._model.voiceMaps);
     });
-  }
-
-  loadInputFile() {
-    if (this._ustFileName != null) {
-      tt.pp("ustFileName=", this._ustFileName);
-      return this._fileUtils.readTextFile(this._ustFileName, "Shift_JIS")
-        .then((data) => {
-          tt.pp("data.length=", data.length);
-          this._ust = ttUst.parse(data);
-        });
-    }
   }
 
   setVoiceMaps(voicemaps) {
@@ -216,21 +113,17 @@ export class TTEnglishInputHelper {
       tbody.removeChild(tbody.lastChild);
     }
 
-    this._convNote = document.getElementById("chkConvNote").checked;
+    this._model.convNote = document.getElementById("chkConvNote").checked;
 
     var selInsertTextMode = document.getElementById("selInsertTextMode");
-    this._insertTextMode = selInsertTextMode.options[selInsertTextMode.selectedIndex].value | 0;
+    this._model.insertTextMode = selInsertTextMode.options[selInsertTextMode.selectedIndex].value | 0;
 
     var selType = document.getElementById("selType");
     var voicemapFile = selType.options[selType.selectedIndex].value;
 
     var txt = document.getElementById("txtInput").value;
 
-    const ust = this._ust;
-    const dictEn = this._dictEn;
-    const voMap = this._voMapSet.get(this._voicemaps[0].file);
-
-    transFromText(ust, txt, dictEn, voMap, this._insertTextMode)
+    this._model.translate(txt /*, voicemapFile*/)
       .then(
         (translated) => {
           this._pronunciation = translated;
@@ -365,114 +258,28 @@ export class TTEnglishInputHelper {
 
   doSave() {
     try {
-      /*
-        document.querySelector("#progressPage").style.display = "block";
-        tt.setCurPrintElement(document.querySelector(
-          "#progressPage .console"));
-        var btnProgressCancel =  document.getElementById("btnProgressCancel");
-        btnProgressCancel.firstChild.nodeValue = "ok";
-        btnProgressCancel.disabled = true;
-      */
-      if (!this._ustFileName) {
-        this._ust = new ttUst.USTDocument();
-      }
+      document.querySelector("#progressPage").style.display = "block";
+      tt.setCurPrintElement(document.querySelector(
+        "#progressPage .console"));
+      var btnProgressCancel =  document.getElementById("btnProgressCancel");
+      btnProgressCancel.firstChild.nodeValue = "ok";
+      btnProgressCancel.disabled = true;
 
-      if (this._convNote || this._insertTextMode === 3) {
-        this._ust.each((elm) => {
-          if (/^#\d+$/.test(elm.name)) {
-            elm.name = "#DELETE";
-          }
-        });
-      }
-
-      var p, srcUstElm;
-      var prevElm = null;
-      var elmsIdx, elmsLen, curElm, allElms;
-
-      var i1, z1, lyric, elm;
-      z1 = this._pronunciation.length;
-      for (i1 = 0; i1 < z1; ++i1) {
-        p = this._pronunciation[i1];
-
-        lyric = p.val.voName;
-        elm = this._ust.createElement();
-        elm.setLyric(lyric);
-        elm.setLength(240);
-
-        srcUstElm = p.src[0].src.src;
-        if (srcUstElm) {
-          elm.setNoteNum(srcUstElm.items["NoteNum"]);
+      this._model.save().then((saved, data)=>{
+        if (!saved) {
+          return this._filePicker.saveTextFile("untitled.ust", "Shift_JIS", data);
         } else {
-          elm.setNoteNum(60);
-        }
-
-        if (prevElm) {
-          prevElm.after(elm);
-          prevElm = elm;
-
-        } else {
-          allElms = this._ust.allElms;
-
-          if (!this._convNote && this._insertTextMode === 2) {
-            for (elmsIdx = allElms.length - 1; 0 <= elmsIdx; --elmsIdx) {
-              curElm = allElms[elmsIdx];
-              if (curElm.name !== "#NEXT" && curElm.name !== "#DELETE") {
-                curElm.after(elm);
-                prevElm = elm;
-                break;
-              }
-            }
-          }
-
-          if (!prevElm) {
-            for (elmsIdx = 0, elmsLen = allElms.length; elmsIdx < elmsLen; ++elmsIdx) {
-              curElm = allElms[elmsIdx];
-              if (curElm.name !== "#SETTING" && curElm.name !== "#PREV") {
-                curElm.before(elm);
-                prevElm = elm;
-                break;
-              }
-            }
-
-            if (!prevElm) {
-              this._ust.insertContentEnd(elm);
-              prevElm = elm;
-            }
-          }
-        }
-      }
-
-      if (this._ustFileName) {
-        tt.pp(this._ust.toString());
-        /*
-           btnProgressCancel.disabled = false;
-           btnProgressCancel.onclick = () => {
-        */
-        this._fileUtils.writeTextFile(this._ustFileName, "Shift_JIS", this._ust.toString()).then(()=>{
           window.close();
-        });
-        /*
-           };
-        */
-      } else {
-        var noteIdx = 0,
-          noteIdxStr;
-        z1 = this._ust.allElms.length;
-        for (i1 = 0; i1 < z1; ++i1) {
-          elm = this._ust.allElms[i1];
-          if (/^#(\d+|INSERT)$/.test(elm.name)) {
-            noteIdxStr = "0000" + noteIdx;
-            elm.name = "#" + noteIdxStr.substring(noteIdxStr.length - 4);
-            ++noteIdx;
-          }
         }
-        elm = this._ust.createElement();
-        elm.name = "#TRACKEND";
-        this._ust.append(elm);
-
-        this._filePicker.saveTextFile("untitled.ust", "Shift_JIS", this._ust.toString());
-      }
-
+      }).then(()=>{
+        btnProgressCancel.disabled = false;
+        btnProgressCancel.onclick = () => {
+          this.doProgressCancel();
+        };
+      }).catch((err)=>{
+        alert(ex + "\n" + ex.stack);
+        window.close();
+      });
     } catch (ex) {
       alert(ex + "\n" + ex.stack);
       window.close();
@@ -502,108 +309,30 @@ export class TTEnglishInputHelper {
 
   doSaveForPresamp() {
     try {
-      /*
-        document.querySelector("#progressPage").style.display = "block";
-        tt.setCurPrintElement(document.querySelector(
-          "#progressPage .console"));
-        var btnProgressCancel =  document.getElementById("btnProgressCancel");
-        btnProgressCancel.firstChild.nodeValue = "ok";
-        btnProgressCancel.disabled = true;
-      */
-      if (!this._ustFileName) {
-        this._ust = new ttUst.USTDocument();
-      }
-
-      if (this._convNote || this._insertTextMode === 3) {
-        this._ust.each((elm) => {
-          if (/^#\d+$/.test(elm.name)) {
-            elm.name = "#DELETE";
-          }
-        });
-      }
+      document.querySelector("#progressPage").style.display = "block";
+      tt.setCurPrintElement(document.querySelector(
+        "#progressPage .console"));
+      var btnProgressCancel =  document.getElementById("btnProgressCancel");
+      btnProgressCancel.firstChild.nodeValue = "ok";
+      btnProgressCancel.disabled = true;
 
       var txtForPresamp = document.getElementById("txtForPresamp");
       var syllablesTxt = txtForPresamp.value;
-      var syllables = syllablesTxt.split(/\s+/);
-
-      var prevElm = null;
-      var elmsIdx, elmsLen, curElm, allElms;
-
-      var i1, z1, lyric, elm;
-      z1 = syllables.length;
-      for (i1 = 0; i1 < z1; ++i1) {
-        lyric = syllables[i1];
-        elm = this._ust.createElement();
-        elm.setLyric(lyric);
-        elm.setLength(240);
-        elm.setNoteNum(60);
-
-        if (prevElm) {
-          prevElm.after(elm);
-          prevElm = elm;
-
+      this._model.saveForPresamp(syllablesTxt).then((saved, data)=>{
+        if (!saved) {
+          return this._filePicker.saveTextFile("untitled.ust", "Shift_JIS", data);
         } else {
-          allElms = this._ust.allElms;
-
-          if (!this._convNote && this._insertTextMode === 2) {
-            for (elmsIdx = allElms.length - 1; 0 <= elmsIdx; --elmsIdx) {
-              curElm = allElms[elmsIdx];
-              if (curElm.name !== "#NEXT" && curElm.name !== "#DELETE") {
-                curElm.after(elm);
-                prevElm = elm;
-                break;
-              }
-            }
-          }
-
-          if (!prevElm) {
-            for (elmsIdx = 0, elmsLen = allElms.length; elmsIdx < elmsLen; ++elmsIdx) {
-              curElm = allElms[elmsIdx];
-              if (curElm.name !== "#SETTING" && curElm.name !== "#PREV") {
-                curElm.before(elm);
-                prevElm = elm;
-                break;
-              }
-            }
-
-            if (!prevElm) {
-              this._ust.insertContentEnd(elm);
-              prevElm = elm;
-            }
-          }
+          window.close();
         }
-      }
-
-      if (this._ustFileName) {
-        tt.pp(this._ust.toString());
-        /*
-           btnProgressCancel.disabled = false;
-           btnProgressCancel.onclick = () => {
-        */
-        this._fileUtils.writeTextFile(this._ustFileName, "Shift_JIS", this._ust.toString());
+      }).then(()=>{
+        btnProgressCancel.disabled = false;
+        btnProgressCancel.onclick = () => {
+          this.doProgressCancel();
+        };
+      }).catch((err)=>{
+        alert(ex + "\n" + ex.stack);
         window.close();
-        /*
-           };
-        */
-      } else {
-        var noteIdx = 0,
-          noteIdxStr;
-        z1 = this._ust.allElms.length;
-        for (i1 = 0; i1 < z1; ++i1) {
-          elm = this._ust.allElms[i1];
-          if (/^#(\d+|INSERT)$/.test(elm.name)) {
-            noteIdxStr = "0000" + noteIdx;
-            elm.name = "#" + noteIdxStr.substring(noteIdxStr.length - 4);
-            ++noteIdx;
-          }
-        }
-        elm = this._ust.createElement();
-        elm.name = "#TRACKEND";
-        this._ust.append(elm);
-
-        this._filePicker.saveTextFile("untitled.ust", "Shift_JIS", this._ust.toString());
-      }
-
+      });
     } catch (ex) {
       alert(ex + "\n" + ex.stack);
       window.close();
