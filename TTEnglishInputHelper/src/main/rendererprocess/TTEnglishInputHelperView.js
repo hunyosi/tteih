@@ -11,14 +11,9 @@
 # [/COPYING]
 */
 import * as tt from './tt.js';
-import * as ttUst from './tt.ust.js';
 import {Progress} from './Progress.js';
 import {FilePicker} from './filepicker.js';
-import {parseCMUdict} from './parseCMUdict.js';
-import {transFromText} from './transFromText.js';
-import {VoiceMap} from './VoiceMap.js';
-import {convUnknownEnglishWord} from './ConvUnknownWord.js';
-import {convForPresamp} from './convForPresamp.js';
+
 
 export class TTEnglishInputHelperView {
   constructor(model) {
